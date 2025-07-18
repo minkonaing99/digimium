@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>Product Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -34,7 +34,7 @@
         <section class="menu-bar py-2">
             <div class="row d-flex justify-content-between align-items-center">
                 <div class="col text-start">
-                    <h1>Product Sold</h1>
+                    <h1>Product Page</h1>
                 </div>
                 <div class="col text-end">
                     <div class="btn-group">
@@ -49,36 +49,38 @@
         <section class="table-section">
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
                 <!-- form staring point -->
-                <form>
+                <!-- <form>
                     <div class="d-flex flex-wrap align-items-end gap-3 justify-content-evenly">
-                        <div style="min-width: 180px; max-width: 300px; flex-grow: 1;">
-                            <label for="product" class="form-label">Product List</label>
-                            <select class="form-select form-select-sm" id="product">
-                                <option selected disabled>Choose...</option>
-                                <option>Spotify</option>
-                                <option>Apple Music</option>
-                                <option>ChatGpt</option>
-                            </select>
+                        <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
+                            <label for="product" class="form-label">Product</label>
+                            <input type="text" class="form-control form-control-sm" id="product" placeholder="product">
+                        </div>
+
+                        <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
+                            <label for="duration" class="form-label">Duration</label>
+                            <input type="text" class="form-control form-control-sm" id="duration"
+                                placeholder="duration">
+                        </div>
+
+                        <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
+                            <label for="supplier" class="form-label">Supplier</label>
+                            <input type="text" class="form-control form-control-sm" id="supplier"
+                                placeholder="Supplier">
                         </div>
 
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="customer" class="form-label">Customer</label>
-                            <input type="text" class="form-control form-control-sm" id="customer" placeholder="Name">
-                        </div>
-                        <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="text" class="form-control form-control-sm" id="email"
-                                placeholder="...@gmail.com">
+                            <input type="text" class="form-control form-control-sm" id="customer"
+                                placeholder="Customer">
                         </div>
 
-                        <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
-                            <label for="purchase_date" class="form-label">Purchase Date</label>
-                            <input type="date" class="form-control form-control-sm" id="purchase_date">
+                        <div style="min-width: 150px; max-width: 200px; flex-grow: 1;">
+                            <label for="wc_price" class="form-label">WC Price</label>
+                            <input type="number" class="form-control form-control-sm" id="wc_price">
                         </div>
-
-                        <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
-                            <label for="seller" class="form-label">Seller</label>
-                            <input type="text" class="form-control form-control-sm" id="seller" placeholder="seller">
+                        <div style="min-width: 150px; max-width: 200px; flex-grow: 1;">
+                            <label for="retail_price" class="form-label">Retail Price</label>
+                            <input type="number" class="form-control form-control-sm" id="retail_price">
                         </div>
 
                         <div style="min-width: 250px; max-width: 300px; flex-grow: 1;">
@@ -87,12 +89,74 @@
                                 autocomplete="off">
                         </div>
 
+                        <div style="min-width: 250px; max-width: 300px; flex-grow: 1;">
+                            <label for="link" class="form-label">Link</label>
+                            <input type="text" class="form-control form-control-sm" id="link" placeholder="Link"
+                                autocomplete="off">
+                        </div>
+
                         <div style="min-width: 80px; flex-shrink: 0;">
                             <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">Save</button>
                         </div>
 
                     </div>
+                </form> -->
+                <form>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-md">
+                            <label for="product" class="form-label">Product</label>
+                            <input type="text" class="form-control form-control-sm" id="product" placeholder="Product">
+                        </div>
+
+                        <div class="col-12 col-md">
+                            <label for="duration" class="form-label">Duration</label>
+                            <input type="text" class="form-control form-control-sm" id="duration"
+                                placeholder="Duration">
+                        </div>
+
+                        <div class="col-12 col-md">
+                            <label for="supplier" class="form-label">Supplier</label>
+                            <input type="text" class="form-control form-control-sm" id="supplier"
+                                placeholder="Supplier">
+                        </div>
+
+                        <div class="col-12 col-md">
+                            <label for="customer" class="form-label">Customer</label>
+                            <input type="text" class="form-control form-control-sm" id="customer"
+                                placeholder="Customer">
+                        </div>
+
+                        <div class="col-12 col-md">
+                            <label for="wc_price" class="form-label">WC Price</label>
+                            <input type="number" class="form-control form-control-sm" id="wc_price">
+                        </div>
+
+                        <div class="col-12 col-md">
+                            <label for="retail_price" class="form-label">Retail Price</label>
+                            <input type="number" class="form-control form-control-sm" id="retail_price">
+                        </div>
+
+                        <div class="col-12 col-md">
+                            <label for="Notes" class="form-label">Notes</label>
+                            <input type="text" class="form-control form-control-sm" id="Notes" placeholder="Note"
+                                autocomplete="off">
+                        </div>
+
+                        <div class="col-12 col-md">
+                            <label for="link" class="form-label">Link</label>
+                            <input type="text" class="form-control form-control-sm" id="link" placeholder="Link"
+                                autocomplete="off">
+                        </div>
+
+                        <div class="col-12 col-md-auto">
+                            <button type="submit" class="btn btn-primary btn-sm mt-2 w-100">Save</button>
+                        </div>
+                    </div>
                 </form>
+
+
+
+
             </div>
 
 
@@ -105,12 +169,12 @@
                             <th>#</th>
                             <th>Product</th>
                             <th>Duration</th>
-                            <th>Customer</th>
-                            <th>Price</th>
-                            <th>Purchase Date</th>
-                            <th>End Date</th>
-                            <th>Seller</th>
+                            <th>Supplier</th>
+                            <th>WC Price</th>
+                            <th>Retail Price</th>
+
                             <th>Note</th>
+                            <th>Link</th>
                             <th>Set</th>
                         </tr>
                     </thead>
@@ -119,15 +183,16 @@
                             <td>1</td>
                             <td>Example Product</td>
                             <td>1</td>
-                            <td>John Doe John Doe</td>
+                            <td>ABC Supplier</td>
                             <td>$80</td>
-                            <td>2025-07-01</td>
-                            <td>2026-07-01</td>
-                            <td>John Doe</td>
+                            <td>$100</td>
+
                             <td class="td-scrollable">
                                 Special discount with extended warranty details and terms.
                             </td>
-
+                            <td class="td-scrollable">
+                                <a href="#">https://example.com/very/long/link/that/might/overflow</a>
+                            </td>
                             <td style="width: 60px; text-align: right; white-space: nowrap;">
                                 <button type="button" class="btn btn-link p-0 me-2" aria-label="Edit">
                                     <img src="./assets/edit-svgrepo-com.svg" alt="Edit" style="width: 24px;">
@@ -141,13 +206,12 @@
                             <td>2</td>
                             <td>Example Product</td>
                             <td>1</td>
-                            <td>John Doe</td>
+                            <td>ABC Supplier</td>
                             <td>$80</td>
-                            <td>2025-07-01</td>
-                            <td>2026-07-01</td>
-                            <td>John Doe</td>
+                            <td>$100</td>
 
                             <td>Special discount</td>
+                            <td><a href="#">View</a></td>
                             <td style="width: 60px; text-align: right; white-space: nowrap;">
                                 <button type="button" class="btn btn-link p-0 me-2" aria-label="Edit">
                                     <img src="./assets/edit-svgrepo-com.svg" alt="Edit" style="width: 24px;">

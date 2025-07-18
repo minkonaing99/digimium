@@ -1,0 +1,61 @@
+.expired-row {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.expired-row p {
+    margin: 0;
+}
+
+/* Column-specific widths */
+.expired-row p:nth-child(1) {
+    /* # */
+    flex: 0 0 30px;
+    /* Don't grow, fixed width */
+    text-align: left;
+}
+
+.expired-row p:nth-child(2) {
+    /* Customer Name */
+    flex: 2;
+    /* Take more space */
+}
+
+.expired-row p:nth-child(3) {
+    /* Expired Date */
+    flex: 1;
+}
+
+.expired-row p:nth-child(4) {
+    /* Date Left */
+    flex: 1;
+}
+
+.showcase {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* left align content */
+    justify-content: center;
+    margin: 1rem 1rem;
+    padding: 1rem 1.5rem;
+    border: solid 1px black;
+    width: 300px;
+    border-radius: 20px;
+    background-color: #f9f9f9;
+    /* optional: light background */
+}
+
+.title {
+    color: grey;
+    font-size: 0.95rem;
+}
+
+.amount {
+    font-weight: 600;
+    text-align: right;
+    font-size: 1.3rem;
+    width: 100%;
+}
