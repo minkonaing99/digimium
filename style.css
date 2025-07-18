@@ -187,3 +187,11 @@
         color: var(--dark);
         border-color: var(--dark);
     }
+
+    .btn-group {
+        display: flex;
+        gap: .5rem;
+        /* adjust as needed */
+        flex-wrap: wrap;
+        /* optional for responsiveness */
+    }
