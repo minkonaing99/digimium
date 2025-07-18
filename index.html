@@ -4,37 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Responsive Animated Navbar</title>
+    <title>Product Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <style>
-        .table-section form label {
-            font-weight: 500;
-        }
-
-        .table-section .form-control-sm,
-        .form-select-sm {
-            font-size: 0.85rem;
-        }
-
-        .td-scrollable {
-            max-width: 180px;
-            overflow-x: auto;
-            white-space: nowrap;
-            scrollbar-width: none;
-            /* Firefox */
-            -ms-overflow-style: none;
-            /* IE and Edge */
-        }
-
-        .td-scrollable::-webkit-scrollbar {
-            display: none;
-            /* Chrome, Safari */
-        }
-    </style>
-
 
 </head>
 
@@ -43,8 +17,8 @@
         <div class="logo" aria-label="Home"><a href="#"><img src="./assets/logo_digimium.png" alt=""></a></div>
         <nav>
             <div class="nav-links" id="navLinks">
-                <a href="#about" aria-label="About">Home</a>
-                <a href="#certificate" aria-label="Certificate">Summary</a>
+                <a href="./index.html" aria-label="Home">Home</a>
+                <a href="./summary.html" aria-label="Summary">Summary</a>
                 <button class="contact-btn" onclick="window.location.href='#contact'" aria-label="Contact Us">Log
                     Out</button>
             </div>
@@ -64,18 +38,15 @@
                 </div>
                 <div class="col text-end">
                     <button class="contact-btn menu-btn" id="editBtn">Admin</button>
-                    <button class="contact-btn menu-btn" id="addBtn">Add</button>
                 </div>
             </div>
         </section>
 
         <section class="table-section">
-            <!-- Add New Row Form -->
-
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
+                <!-- form staring point -->
                 <form>
                     <div class="d-flex flex-wrap align-items-end gap-3 justify-content-evenly">
-
                         <div style="min-width: 180px; max-width: 300px; flex-grow: 1;">
                             <label for="product" class="form-label">Product</label>
                             <select class="form-select form-select-sm" id="product">
@@ -171,10 +142,6 @@
                             <td class="td-scrollable">
                                 <a href="#">https://example.com/very/long/link/that/might/overflow</a>
                             </td>
-
-
-
-
                             <td style="width: 60px; text-align: right; white-space: nowrap;">
                                 <button type="button" class="btn btn-link p-0 me-2" aria-label="Edit">
                                     <img src="./assets/edit-svgrepo-com.svg" alt="Edit" style="width: 24px;">
@@ -208,26 +175,32 @@
                     </tbody>
                 </table>
             </div>
+
         </section>
+    </div>
 
 
 
-        <script>
-            const nav = document.getElementById('navbar');
-            const navLinks = document.getElementById('navLinks');
-            const burger = document.getElementById('burger');
+    <script>
+        function toggleMenu() {
+            const burger = document.getElementById("burger");
+            const navLinks = document.getElementById("navLinks");
 
-            function toggleMenu() {
-                navLinks.classList.toggle('active');
-                burger.classList.toggle('open');
-            }
-        </script>
-        <script>
-            document.getElementById('addBtn').addEventListener('click', function () {
-                const inputRow = document.getElementById('inputRow');
-                inputRow.style.display = inputRow.style.display === 'none' ? 'block' : 'none';
+            burger.classList.toggle("open");
+            navLinks.classList.toggle("active");
+        }
+
+        document.querySelectorAll('#navLinks a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById("navLinks").classList.remove("active");
+                document.getElementById("burger").classList.remove("open");
             });
-        </script>
+        });
+        document.getElementById('addBtn').addEventListener('click', function () {
+            const inputRow = document.getElementById('inputRow');
+            inputRow.style.display = inputRow.style.display === 'none' ? 'block' : 'none';
+        });
+    </script>
 
 
 
