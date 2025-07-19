@@ -47,7 +47,7 @@ function loadProductOptions() {
           opt.value = p.product_id;
           opt.dataset.duration = p.duration;
           opt.dataset.price = p.retail_price;
-          opt.dataset.wcPrice = p.wc_price; // ✅ Correct
+          opt.dataset.wcPrice = p.wc_price;
           opt.textContent = `${p.product_name}`;
           productSelect.appendChild(opt);
         });
@@ -65,7 +65,6 @@ function loadSoldProductTable() {
         const tbody = document.querySelector("tbody");
         tbody.innerHTML = "";
 
-        // Group by purchase_date
         const groupedByDate = {};
         result.data.forEach((item) => {
           const date = item.purchase_date;
@@ -73,7 +72,6 @@ function loadSoldProductTable() {
           groupedByDate[date].push(item);
         });
 
-        // Render each group
         Object.keys(groupedByDate)
           .sort((a, b) => b.localeCompare(a))
           .forEach((date) => {
@@ -93,7 +91,24 @@ function loadSoldProductTable() {
                             <td>${item.purchase_date}</td>
                             <td>${item.end_date}</td>
                             <td>${item.seller || ""}</td>
-                            <td class="td-scrollable">${item.note || ""}</td>
+                            <td class="td-scrollable">
+                            <button type="button" class="btn btn-link p-0 edit-note-btn" data-id="${
+                              item.id
+                            }" aria-label="Edit Note">
+                              <img src="./assets/edit-svgrepo-com.svg" alt="Edit" style="width: 24px;">
+                            </button>
+                            <span class="note-text">${item.note || ""}</span>
+                            <div class="d-flex align-items-center gap-2 mt-1 d-none note-edit-wrapper">
+                              <input type="text" class="form-control form-control-sm note-input" value="${
+                                item.note || ""
+                              }" />
+                              <button type="button" class="btn btn-link p-0 save-note-btn" data-id="${
+                                item.id
+                              }" aria-label="Save Note">
+                                <img src="./assets/tick-square-svgrepo-com.svg" alt="Save" style="width: 20px;">
+                              </button>
+                            </div>
+                            </td>
                             <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
                               item.price
                             ).toFixed(0)} Ks</td>
@@ -160,21 +175,15 @@ function resetAddForm() {
   const form = document.querySelector("#inputRow form");
   form.reset();
 
-  // Reset hidden inputs
   document.getElementById("duration").value = "";
   document.getElementById("end_date").value = "";
-
-  // Reset purchase date to today again
   document.getElementById("purchase_date").value = getThailandTodayDate();
-
-  // Restore default option for product dropdown
   const productSelect = document.getElementById("product");
   productSelect.selectedIndex = 0;
 }
 
 // ========== INITIATE FORM BEHAVIOR ==========
 document.addEventListener("DOMContentLoaded", () => {
-  // Initial table and product dropdown
   loadSoldProductTable();
   loadProductOptions();
 
@@ -200,29 +209,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Add form submission
   document
     .querySelector("#inputRow form")
     .addEventListener("submit", function (e) {
       e.preventDefault();
-
-      // ADD form submission
-      // Replace the current script block in your DOMContentLoaded handler with this:
-
       const selectedOption =
         document.getElementById("product").selectedOptions[0];
       const priceRaw = selectedOption?.dataset.price;
-      const wcPriceRaw = selectedOption?.dataset.wcPrice; // ✅ fixed camelCase reference
+      const wcPriceRaw = selectedOption?.dataset.wcPrice;
 
       const price = priceRaw && !isNaN(priceRaw) ? parseFloat(priceRaw) : 0;
       const wcPrice =
         wcPriceRaw && !isNaN(wcPriceRaw) ? parseFloat(wcPriceRaw) : 0;
       const profit = price - wcPrice;
-
-      console.log("✅ Price:", price);
-      console.log("✅ WC Price:", wcPrice);
-      console.log("✅ Profit:", profit);
-
       const formData = new FormData();
       formData.append("product_id", document.getElementById("product").value);
       formData.append(
@@ -245,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "note",
         document.getElementById("Notes").value.trim() || "-"
       );
-
       fetch("./api/insert_sold_product.php", {
         method: "POST",
         body: formData,
@@ -271,20 +269,15 @@ document
   .addEventListener("input", function () {
     const searchTerm = this.value.trim().toLowerCase();
     const rows = document.querySelectorAll("tbody tr");
-
     let withinMatchGroup = false;
-
     rows.forEach((row) => {
       const isSubtotalRow = row.innerText.includes("Total for");
-
       if (searchTerm === "") {
-        // No search term: show everything
         row.style.display = "";
       } else if (isSubtotalRow) {
-        // Always hide subtotal rows during search
         row.style.display = "none";
       } else {
-        const customerCell = row.children[3]; // 4th column = customer
+        const customerCell = row.children[3];
         const matches =
           customerCell &&
           customerCell.textContent.toLowerCase().includes(searchTerm);
@@ -292,3 +285,38 @@ document
       }
     });
   });
+document.addEventListener("click", function (e) {
+  if (e.target.closest(".edit-note-btn")) {
+    const btn = e.target.closest(".edit-note-btn");
+    const td = btn.closest("td");
+
+    td.querySelector(".note-text").classList.add("d-none");
+    td.querySelector(".note-edit-wrapper").classList.remove("d-none");
+    btn.classList.add("d-none");
+  }
+  if (e.target.closest(".save-note-btn")) {
+    const btn = e.target.closest(".save-note-btn");
+    const td = btn.closest("td");
+    const input = td.querySelector(".note-input");
+    const note = input.value.trim();
+    const noteText = td.querySelector(".note-text");
+    noteText.textContent = note;
+    td.querySelector(".note-edit-wrapper").classList.add("d-none");
+    noteText.classList.remove("d-none");
+    td.querySelector(".edit-note-btn").classList.remove("d-none");
+    fetch("./api/edit_note.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        note,
+      }),
+    }).then((res) => {
+      if (!res.ok) {
+        alert("Failed to update note!");
+      }
+    });
+  }
+});

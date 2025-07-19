@@ -103,7 +103,7 @@ if (
                         </div>
 
                         <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
-                            <label for="seller" class="form-label">Seller</label>
+                            <label for="seller" class="form-label">Manager</label>
                             <input type="text" class="form-control form-control-sm" id="seller" placeholder="seller"
                                 value="Kaung Lin Thant">
                         </div>
@@ -143,7 +143,7 @@ if (
                             <th>Gmail</th>
                             <th>Purchase Date</th>
                             <th>End Date</th>
-                            <th>Seller</th>
+                            <th>Manager</th>
                             <th>Note</th>
                             <th style="text-align: right; padding-right: 1.2rem">Price</th>
                             <th></th>
