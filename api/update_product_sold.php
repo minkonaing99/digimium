@@ -11,6 +11,7 @@ try {
     $end_date      = $_POST['end_date'] ?? '';
     $seller        = trim($_POST['seller'] ?? '');
     $note          = trim($_POST['note'] ?? '-');
+    $profit        = is_numeric($_POST['profit'] ?? null) ? (float) $_POST['profit'] : 0;
 
     if (!$id || !$product_id || !$customer || !$purchase_date || !$end_date || !$seller) {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
@@ -30,9 +31,11 @@ try {
             purchase_date = :purchase_date,
             end_date = :end_date,
             seller = :seller,
-            note = :note
+            note = :note,
+            profit = :profit
         WHERE id = :id
     ");
+
     $stmt->execute([
         ':id'            => $id,
         ':product_id'    => $product_id,
@@ -41,7 +44,8 @@ try {
         ':purchase_date' => $purchase_date,
         ':end_date'      => $end_date,
         ':seller'        => $seller,
-        ':note'          => $note
+        ':note'          => $note,
+        ':profit'        => $profit
     ]);
 
     echo json_encode(['status' => 'success']);

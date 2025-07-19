@@ -10,6 +10,7 @@ try {
     $end_date       = $_POST['end_date'] ?? null;
     $seller         = trim($_POST['seller'] ?? '');
     $note           = trim($_POST['note'] ?? '');
+    $profit         = isset($_POST['profit']) ? floatval($_POST['profit']) : 0; // ✅ This was missing
 
     // Validate base fields
     if (!$product_id || !$customer || !$gmail || !$purchase_date || !$end_date || !$seller) {
@@ -36,9 +37,9 @@ try {
     // Insert full snapshot into product_sold
     $stmt = $pdo->prepare("
         INSERT INTO product_sold 
-            (product_id, product_name, duration, customer, gmail, price, purchase_date, end_date, seller, note)
+            (product_id, product_name, duration, customer, gmail, price, purchase_date, end_date, seller, note, profit)
         VALUES 
-            (:product_id, :product_name, :duration, :customer, :gmail, :price, :purchase_date, :end_date, :seller, :note)
+            (:product_id, :product_name, :duration, :customer, :gmail, :price, :purchase_date, :end_date, :seller, :note, :profit)
     ");
 
     $stmt->execute([
@@ -51,7 +52,8 @@ try {
         ':purchase_date' => $purchase_date,
         ':end_date'      => $end_date,
         ':seller'        => $seller,
-        ':note'          => $note ?: '-'
+        ':note'          => $note ?: '-',
+        ':profit'        => $profit
     ]);
 
     echo json_encode(['status' => 'success', 'message' => 'Product sold record inserted.']);

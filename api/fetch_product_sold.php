@@ -3,10 +3,23 @@ require_once 'dbinfo.php';
 
 try {
     $stmt = $pdo->prepare("
-        SELECT ps.id, pl.product_name, pl.duration, ps.customer, ps.gmail, ps.price, ps.purchase_date, ps.end_date, ps.seller, ps.note
-        FROM product_sold ps
-        JOIN product_list pl ON ps.product_id = pl.product_id
-        ORDER BY ps.purchase_date DESC, ps.id DESC
+        SELECT 
+    id, 
+    product_name, 
+    duration, 
+    customer, 
+    gmail, 
+    price, 
+    purchase_date, 
+    end_date, 
+    seller, 
+    note
+FROM 
+    product_sold
+ORDER BY 
+    purchase_date DESC, 
+    id DESC;
+
     ");
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);

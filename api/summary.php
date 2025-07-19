@@ -13,7 +13,7 @@ try {
 
     // No more JOIN needed — product_name and price are stored directly
     $stmt = $pdo->prepare("
-        SELECT id, product_name, customer, price, end_date
+        SELECT id, product_name, customer, price, end_date, profit
         FROM product_sold
         WHERE purchase_date = :date
         ORDER BY id DESC

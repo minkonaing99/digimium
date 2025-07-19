@@ -4,7 +4,7 @@ require_once 'dbinfo.php'; // Make sure the path is correct
 header('Content-Type: application/json');
 
 try {
-    $stmt = $pdo->prepare("SELECT product_id, product_name, duration, retail_price FROM product_list ORDER BY product_name ASC");
+    $stmt = $pdo->prepare("SELECT product_id, product_name, duration, wc_price, retail_price FROM product_list ORDER BY product_name ASC");
     $stmt->execute();
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
