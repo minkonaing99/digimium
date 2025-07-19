@@ -186,6 +186,8 @@
     .menu-btn {
         color: var(--dark);
         border-color: var(--dark);
+        padding: 0.2rem 1rem;
+
     }
 
     .btn-group {
