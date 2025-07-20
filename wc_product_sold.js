@@ -5,7 +5,7 @@
 
   // ========== Form Validation ==========
   function initFormValidation() {
-    const inputs = ["product", "customer", "purchase_date", "seller"].map($);
+    const inputs = ["product", "customer", "quantity", "date", "seller"].map($);
     inputs.forEach((input) => {
       input.addEventListener("input", validateFormFields);
       input.addEventListener("change", validateFormFields);
@@ -46,11 +46,12 @@
 
   // ========== Product Options ==========
   function loadProductOptions() {
-    fetch("./api/fetch_product_options.php")
+    fetch("./api/fetch_wc_product_options.php")
       .then((res) => res.json())
       .then((data) => {
-        const product = $("product");
+        const product = document.getElementById("product"); // Fixes: $("product") ➜ document.getElementById
         product.innerHTML = `<option selected disabled>Choose...</option>`;
+
         if (data.status === "success") {
           data.products.forEach((p) => {
             const opt = new Option(p.product_name, p.product_id);
@@ -59,6 +60,8 @@
             opt.dataset.wcPrice = p.wc_price;
             product.add(opt);
           });
+        } else {
+          console.warn("Failed to load product options:", data.message);
         }
       })
       .catch((e) => console.error("Product options load failed", e));
@@ -66,7 +69,7 @@
 
   // ========== Sold Product Table ==========
   function loadSoldProductTable() {
-    fetch("./api/fetch_product_sold.php")
+    fetch("./api/fetch_wc_product_sold.php") // Make sure the endpoint is correct
       .then((res) => res.json())
       .then((result) => {
         if (result.status !== "success") return alert(result.message);
@@ -76,47 +79,46 @@
         const groups = {};
 
         result.data.forEach((item) => {
-          (groups[item.purchase_date] ??= []).push(item);
+          (groups[item.date] ??= []).push(item); // Group by `date`
         });
 
         Object.entries(groups)
-          .sort(([a], [b]) => b.localeCompare(a))
+          .sort(([a], [b]) => b.localeCompare(a)) // Sort by date descending
           .forEach(([date, rows]) => {
             let total = 0;
+
             rows.forEach((item, i) => {
               total += parseFloat(item.price);
-              // Conditionally define the delete column
+
               const deleteColumn = IS_ADMIN
                 ? `<td style="width:60px; text-align:right;">
-         <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
-           <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
-         </button>
-       </td>`
+                  <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
+                    <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
+                  </button>
+                </td>`
                 : "<td></td>";
 
               const tr = document.createElement("tr");
               tr.innerHTML = `
-    <td>${i + 1}</td>
-    <td>${item.product_name}</td>
-    <td>${item.duration}</td>
-    <td>${item.customer || ""}</td>
-    <td>${item.gmail || ""}</td>
-    <td>${item.purchase_date}</td>
-    <td>${item.end_date}</td>
-    <td>${item.seller || ""}</td>
-    <td class="td-scrollable editable-note" data-id="${item.id}">
-      <span class="note-text">${item.note || ""}</span>
-      <input type="text" class="form-control form-control-sm note-input d-none" value="${
-        item.note || ""
-      }" />
-    </td>
-    <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
-      item.price
-    ).toFixed(0)} Ks</td>
-    ${deleteColumn}
-  `;
+              <td>${i + 1}</td>
+              <td>${item.product_name}</td>
+              <td style="text-align: left;">${item.quantity || 1}</td>
+              <td>${item.customer || ""}</td>
+              <td>${item.email || ""}</td>
+              <td>${item.date || ""}</td>
+              <td>${item.seller || ""}</td>
+              <td class="td-scrollable editable-note" data-id="${item.id}">
+                <span class="note-text">${item.note || ""}</span>
+                <input type="text" class="form-control form-control-sm note-input d-none" value="${
+                  item.note || ""
+                }" />
+              </td>
+              <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
+                item.price
+              ).toFixed(0)} Ks</td>
+              ${deleteColumn}
+            `;
 
-              // Add delete event listener only if admin
               if (IS_ADMIN) {
                 tr.querySelector('[aria-label="Delete"]').onclick = () =>
                   handleDelete(item.id);
@@ -127,9 +129,10 @@
 
             const totalRow = document.createElement("tr");
             totalRow.innerHTML = `
-<td colspan="9" style="text-align:right;font-weight:bold;">Total for ${date}</td>
-<td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
-<td></td>`;
+            <td colspan="8" style="text-align:right;font-weight:bold;">Total for ${date}</td>
+            <td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
+            <td></td>
+          `;
             totalRow.style.backgroundColor = "#f8f9fa";
             tbody.appendChild(totalRow);
           });
@@ -142,23 +145,30 @@
 
   function handleDelete(id) {
     if (!confirm("Are you sure you want to delete this entry?")) return;
-    fetch("./api/delete_product_sold.php", {
+
+    fetch("./api/delete_wc_product_sold.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: "id=" + encodeURIComponent(id),
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.status === "success") loadSoldProductTable();
-        else alert("Delete failed: " + data.message);
+        if (data.status === "success") {
+          loadSoldProductTable();
+        } else {
+          alert("Delete failed: " + data.message);
+        }
       })
       .catch((e) => {
         console.error(e);
         alert("An error occurred while deleting.");
       });
   }
+
   function validateFormFields() {
-    const required = ["product", "customer", "purchase_date", "seller"].map($);
+    const required = ["product", "quantity", "customer", "date", "seller"].map(
+      $
+    );
     required.forEach((input) => {
       const label = input.closest("div").querySelector("label");
       const isInvalid = !input.value.trim() || input.value === "Choose...";
@@ -171,9 +181,7 @@
     const form = document.querySelector("#inputRow form");
     form.reset();
 
-    $("duration").value = "";
-    $("end_date").value = "";
-    $("purchase_date").value = todayDate();
+    $("date").value = todayDate();
     $("product").selectedIndex = 0;
 
     // Re-validate to update label colors
@@ -183,44 +191,41 @@
   function initFormSubmission() {
     const form = document.querySelector("#inputRow form");
     const product = $("product");
-    const purchaseDate = $("purchase_date");
-    const endDate = $("end_date");
-    const duration = $("duration");
     const amount = $("amount");
+    const quantity = $("quantity");
+    const date = $("date");
 
-    purchaseDate.value = todayDate();
-
-    product.onchange = () => {
-      const opt = product.selectedOptions[0];
-      const dur = opt?.dataset.duration || 0;
-      duration.value = dur;
-      endDate.value = addMonthsToDate(purchaseDate.value, dur);
-    };
-
-    purchaseDate.onchange = () => product.onchange();
+    // Set today's date as default
+    date.value = todayDate();
 
     form.onsubmit = (e) => {
       e.preventDefault();
+
       const opt = product.selectedOptions[0] || {};
+      const qty = parseInt(quantity.value, 10);
+      const validQuantity = !isNaN(qty) && qty > 0 ? qty : 1;
+
       const manual = parseFloat(amount?.value);
       const price = !isNaN(manual)
         ? manual
         : parseFloat(opt.dataset.price || 0);
       const wc = parseFloat(opt.dataset.wcPrice || 0);
-      const profit = price - wc;
+      const profit = (price - wc) * validQuantity;
+      const newPrice = price * validQuantity;
 
       const data = new FormData();
       data.append("product_id", product.value);
+      data.append("product_name", opt.textContent.trim());
+      data.append("quantity", validQuantity);
       data.append("customer", $("customer").value.trim());
-      data.append("gmail", $("email").value.trim() || "-");
-      data.append("price", price.toFixed(2));
+      data.append("email", $("email").value.trim() || "-");
+      data.append("price", newPrice.toFixed(2));
       data.append("profit", profit.toFixed(2));
-      data.append("purchase_date", purchaseDate.value);
-      data.append("end_date", endDate.value);
       data.append("seller", $("seller").value.trim());
       data.append("note", $("Notes").value.trim() || "-");
+      data.append("date", date.value);
 
-      fetch("./api/insert_sold_product.php", {
+      fetch("./api/insert_sold_wc_product.php", {
         method: "POST",
         body: data,
       })
@@ -230,7 +235,9 @@
             $("inputRow").style.display = "none";
             resetAddForm();
             loadSoldProductTable();
-          } else alert("Insert failed: " + res.message);
+          } else {
+            alert("Insert failed: " + res.message);
+          }
         })
         .catch((e) => {
           console.error(e);
@@ -276,11 +283,13 @@
       // If not already editing, activate this cell
       if (!td.classList.contains("editing")) {
         td.classList.add("editing");
+
         const input = td.querySelector(".note-input");
         const span = td.querySelector(".note-text");
 
-        // Set input value to current visible text (reset in case of stale value)
-        input.value = span.textContent.trim();
+        // Set input value to current visible text
+        const noteText = span.textContent.trim();
+        input.value = noteText === "-" ? "" : noteText; // ← this line clears dashes
         span.classList.add("d-none");
         input.classList.remove("d-none");
         input.focus();
@@ -307,6 +316,7 @@
       true
     );
   }
+
   function cancelNote(td) {
     if (!td || !td.classList.contains("editing")) return;
 
@@ -339,7 +349,7 @@
     input.classList.add("d-none");
     span.classList.remove("d-none");
 
-    fetch("./api/edit_note.php", {
+    fetch("./api/edit_wc_note.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, note: newNote }),

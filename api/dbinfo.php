@@ -4,7 +4,7 @@
 // $dbname = 'digimium';
 // $username = 'root';
 // $password = 'Tkhantnaing1';
-$host = 'digimium.cxgik26kid7z.ap-southeast-1.rds.amazonaws.com';
+$host = 'digimium-server.cxgik26kid7z.ap-southeast-1.rds.amazonaws.com';
 $username = 'admin';
 $port = 3306;
 $password = 'Tkhantnaing1'; // replace with your RDS password

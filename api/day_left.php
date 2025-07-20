@@ -8,7 +8,8 @@ try {
             product_name,
             customer,
             purchase_date,
-            end_date
+            end_date,
+            gmail
         FROM product_sold
     ");
     $stmt->execute();

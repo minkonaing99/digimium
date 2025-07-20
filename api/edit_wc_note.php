@@ -1,0 +1,35 @@
+<?php
+header("Content-Type: application/json");
+
+// Load database connection
+require_once "dbinfo.php";
+
+// Read JSON input
+$data = json_decode(file_get_contents("php://input"), true);
+
+// Validate input
+if (!isset($data["id"]) || !isset($data["note"])) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Missing 'id' or 'note'"]);
+    exit;
+}
+
+$id = (int)$data["id"];
+$note = trim($data["note"]);
+
+try {
+    // Prepare and execute the update
+    $stmt = $pdo->prepare("UPDATE wc_product_sold SET note = :note WHERE id = :id");
+    $stmt->execute([
+        ":note" => $note,
+        ":id" => $id
+    ]);
+
+    echo json_encode(["success" => true, "message" => "Note updated"]);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode([
+        "success" => false,
+        "message" => "Database error: " . $e->getMessage()
+    ]);
+}

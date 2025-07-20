@@ -23,7 +23,13 @@ try {
         $_SESSION['privilege'] = $user['privilege'];
 
         // Assign login code
-        $_SESSION['logincode'] = $user['privilege'] === 'admin' ? '200068' : '200038';
+        if ($user['privilege'] === 'admin' || $user['privilege'] === 'owner') {
+            $_SESSION['logincode'] = '200068';
+        } else {
+            $_SESSION['logincode'] = '200038'; // for staff or others
+        }
+
+
 
         // Set 7-day cookies
         setcookie("username", $_SESSION['username'], time() + 604800, "/");

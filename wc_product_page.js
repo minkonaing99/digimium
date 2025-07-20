@@ -22,7 +22,7 @@ document.getElementById("addBtn").addEventListener("click", function () {
 
 // Load product table
 function loadProductTable() {
-  fetch("./api/fetching_productlist.php")
+  fetch("./api/fetching_wc_productlist.php")
     .then((response) => response.json())
     .then((result) => {
       const tableBody = document.getElementById("productTableBody");
@@ -32,12 +32,12 @@ function loadProductTable() {
         result.data.forEach((item, index) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${item.product_name}</td>
-                        <td>${item.duration}</td>
-                        <td>${item.supplier || ""}</td>
-                        <td class="td-scrollable">${item.notes || ""}</td>
-                        <td class="td-scrollable">
+      <td>${index + 1}</td>
+      <td>${item.product_name}</td>
+      <td>${item.duration}</td>
+      <td>${item.supplier || ""}</td>
+      <td class="td-scrollable">${item.notes || ""}</td>
+      <td class="td-scrollable">
   ${
     item.link
       ? `
@@ -48,30 +48,32 @@ function loadProductTable() {
       : ""
   }
 </td>
-                        <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
-                          item.wc_price
-                        ).toFixed(0)} Ks</td>
-                        <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
-                          item.retail_price
-                        ).toFixed(0)} Ks</td>
-                        <td style="width: 60px; text-align: right; white-space: nowrap;">
-                            <button type="button" class="btn btn-link p-0 me-2 edit-btn" aria-label="Edit"
-                                data-id="${item.product_id}"
-                                data-product="${item.product_name}"
-                                data-duration="${item.duration}"
-                                data-supplier="${item.supplier}"
-                                data-wc_price="${item.wc_price}"
-                                data-retail_price="${item.retail_price}"
-                                data-notes="${item.notes}"
-                                data-link="${item.link}">
-                                <img src="./assets/edit-svgrepo-com.svg" alt="Edit" style="width: 24px;">
-                            </button>
-                            <button type="button" class="btn btn-link p-0 delete-btn" aria-label="Delete" data-id="${
-                              item.product_id
-                            }">
-                                <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
-                            </button>
-                        </td>`;
+
+
+      <td style="text-align: right; padding-right: 1.2rem">
+        ${item.wc_price ? parseFloat(item.wc_price).toFixed(0) : "0"} Ks
+      </td>
+      <td style="text-align: right; padding-right: 1.2rem">
+        ${item.retail_price ? parseFloat(item.retail_price).toFixed(0) : "0"} Ks
+      </td>
+      <td style="width: 60px; text-align: right; white-space: nowrap;">
+        <button type="button" class="btn btn-link p-0 me-2 edit-btn" aria-label="Edit"
+          data-id="${item.product_id}"
+          data-product="${item.product_name}"
+          data-duration="${item.duration}"
+          data-supplier="${item.supplier}"
+          data-notes="${item.notes}"
+          data-link="${item.link}"
+          data-wc_price="${item.wc_price}"
+          data-retail_price="${item.retail_price}">
+          <img src="./assets/edit-svgrepo-com.svg" alt="Edit" style="width: 24px;">
+        </button>
+        <button type="button" class="btn btn-link p-0 delete-btn" aria-label="Delete" 
+          data-id="${item.product_id}">
+          <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
+        </button>
+      </td>
+    `;
 
           tableBody.appendChild(row);
         });
@@ -101,6 +103,7 @@ document.addEventListener("click", function (e) {
       });
   }
 });
+
 // Handle form submission for adding product
 document.querySelector("form").addEventListener("submit", function (e) {
   e.preventDefault();
@@ -133,7 +136,7 @@ document.querySelector("form").addEventListener("submit", function (e) {
   formData.append("notes", notes);
   formData.append("link", link);
 
-  fetch("./api/insert_product.php", {
+  fetch("./api/insert_wc_product.php", {
     method: "POST",
     body: formData,
   })
@@ -180,7 +183,7 @@ document.addEventListener("click", function (e) {
   if (deleteBtn) {
     const productId = deleteBtn.getAttribute("data-id");
     if (confirm("Are you sure you want to delete this product?")) {
-      fetch("./api/delete_product.php", {
+      fetch("./api/delete_wc_product.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `product_id=${encodeURIComponent(productId)}`,
@@ -236,7 +239,7 @@ document.addEventListener("submit", function (e) {
       document.getElementById("edit_link").value.trim() || "-"
     );
 
-    fetch("./api/update_product.php", {
+    fetch("./api/update_wc_product.php", {
       method: "POST",
       body: formData,
     })

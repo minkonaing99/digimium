@@ -63,8 +63,8 @@ if (
             <div class="row d-flex justify-content-between align-items-center">
                 <div class="col text-start">
                     <h1>
-                        Retail Sales Overview |
-                        <a href="./wc_product_sold.php" class="title_link">WC</a>
+                        WC Sales Overview |
+                        <a href="./home.php" class="title_link">Retail</a>
                     </h1>
                 </div>
                 <div class="col d-flex justify-content-end">
@@ -98,6 +98,10 @@ if (
                                 <!-- Options will be added via JS -->
                             </select>
                         </div>
+                        <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="text" class="form-control form-control-sm" id="quantity" placeholder="1-10">
+                        </div>
 
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="customer" class="form-label">Customer</label>
@@ -110,8 +114,8 @@ if (
                         </div>
 
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
-                            <label for="purchase_date" class="form-label">Purchase Date</label>
-                            <input type="date" class="form-control form-control-sm" id="purchase_date">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control form-control-sm" id="date">
                         </div>
 
                         <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
@@ -136,8 +140,6 @@ if (
                         </div>
 
                     </div>
-                    <input type="hidden" id="duration"> <!-- Hidden, used for end_date calculation -->
-                    <input type="hidden" id="end_date"> <!-- Hidden, gets submitted with the form -->
 
                 </form>
             </div>
@@ -155,11 +157,10 @@ if (
                         <tr>
                             <th>#</th>
                             <th>Product</th>
-                            <th>Duration</th>
+                            <th>Quantity</th>
                             <th>Customer</th>
-                            <th>Gmail</th>
-                            <th>Purchase Date</th>
-                            <th>End Date</th>
+                            <th>Email</th>
+                            <th>Date</th>
                             <th>Manager</th>
                             <th>Note</th>
                             <th style="text-align: right; padding-right: 1.2rem">Price</th>
@@ -178,13 +179,13 @@ if (
 
 
 
-    <script src="app.js"></script>
+    <script src="./wc_product_sold.js"></script>
     <script>
         const IS_ADMIN = <?= isset($_SESSION['privilege']) && $_SESSION['privilege'] === 'admin' ? 'true' : 'false' ?>;
         console.log(IS_ADMIN);
         document.getElementById("downloadBtn").addEventListener("click", () => {
             if (confirm("Do you want to download the product sold data as CSV?")) {
-                window.location.href = "./api/download_product_sold.php";
+                window.location.href = "./api/download_wc_product_sold.php";
             }
         });
     </script>
