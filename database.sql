@@ -1,100 +1,69 @@
 CREATE DATABASE digimium;
 USE digimium;
-CREATE TABLE user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    privilege ENUM('admin', 'staff', 'viewer') NOT NULL DEFAULT 'staff'
+CREATE TABLE `product_list` (
+    `product_id` INT NOT NULL AUTO_INCREMENT,
+    `product_name` VARCHAR(150) NOT NULL,
+    `duration` VARCHAR(50) NOT NULL,
+    `supplier` VARCHAR(100) DEFAULT NULL,
+    `wc_price` DECIMAL(10, 2) DEFAULT NULL,
+    `retail_price` DECIMAL(10, 2) DEFAULT NULL,
+    `notes` TEXT,
+    `link` TEXT,
+    PRIMARY KEY (`product_id`)
 );
-CREATE TABLE product_list (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_name VARCHAR(150) NOT NULL,
-    duration VARCHAR(50) NOT NULL,
-    supplier VARCHAR(100),
-    wc_price DECIMAL(10, 2),
-    retail_price DECIMAL(10, 2),
-    notes TEXT,
-    link TEXT
+-- product_sodl
+CREATE TABLE `product_sold` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `product_id` INT DEFAULT NULL,
+    `product_name` VARCHAR(255) NOT NULL,
+    `duration` VARCHAR(50) NOT NULL,
+    `customer` VARCHAR(150) DEFAULT NULL,
+    `gmail` VARCHAR(150) DEFAULT NULL,
+    `price` DECIMAL(10, 2) DEFAULT NULL,
+    `profit` DECIMAL(10, 2) DEFAULT '0.00',
+    `purchase_date` DATE DEFAULT NULL,
+    `end_date` DATE DEFAULT NULL,
+    `seller` VARCHAR(100) DEFAULT NULL,
+    `note` TEXT,
+    PRIMARY KEY (`id`)
 );
-CREATE TABLE product_sold (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    duration VARCHAR(50) NOT NULL,
-    customer VARCHAR(150),
-    price DECIMAL(10, 2),
-    purchase_date DATE,
-    end_date DATE,
-    seller VARCHAR(100),
-    note TEXT,
-    FOREIGN KEY (product_id) REFERENCES product_list(product_id) ON DELETE CASCADE
+CREATE TABLE `wc_product_sold` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `product_id` INT DEFAULT NULL,
+    `product_name` VARCHAR(255) NOT NULL,
+    `customer` VARCHAR(150) DEFAULT NULL,
+    `email` VARCHAR(150) DEFAULT NULL,
+    `quantity` INT DEFAULT '1',
+    `price` DECIMAL(10, 2) NOT NULL,
+    `profit` DECIMAL(10, 2) DEFAULT '0.00',
+    `seller` VARCHAR(100) DEFAULT NULL,
+    `note` TEXT,
+    `date` DATE DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
-SELECT product_id,
-    product_name,
-    duration
-FROM product_list;
-ALTER TABLE product_sold
-ADD COLUMN gmail VARCHAR(150)
-AFTER customer;
-CREATE TABLE product_sold (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    duration VARCHAR(50) NOT NULL,
-    customer VARCHAR(150),
-    gmail VARCHAR(150),
-    -- Newly added
-    price DECIMAL(10, 2),
-    purchase_date DATE,
-    end_date DATE,
-    seller VARCHAR(100),
-    note TEXT,
-    FOREIGN KEY (product_id) REFERENCES product_list(product_id) ON DELETE CASCADE
+CREATE TABLE `wc_product_list` (
+    `product_id` INT NOT NULL AUTO_INCREMENT,
+    `product_name` VARCHAR(150) NOT NULL,
+    `duration` VARCHAR(50) NOT NULL,
+    `supplier` VARCHAR(100) DEFAULT NULL,
+    `wc_price` DECIMAL(10, 2) DEFAULT NULL,
+    `retail_price` DECIMAL(10, 2) DEFAULT NULL,
+    `notes` TEXT,
+    `link` TEXT,
+    PRIMARY KEY (`product_id`)
 );
-ALTER TABLE product_sold
-ADD COLUMN product_name VARCHAR(255);
-ALTER TABLE product_sold
-ADD COLUMN profit DECIMAL(10, 2) DEFAULT 0;
-ALTER TABLE product_sold DROP COLUMN product_id;
-CREATE DATABASE digimium;
-USE digimium;
--- User Table
-CREATE TABLE user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    privilege ENUM('admin', 'staff', 'viewer') NOT NULL DEFAULT 'staff'
+CREATE TABLE `user` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(100) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `privilege` ENUM('owner', 'admin', 'staff') NOT NULL DEFAULT 'staff',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `username` (`username`)
 );
--- Product List Table
-CREATE TABLE product_list (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_name VARCHAR(150) NOT NULL,
-    duration VARCHAR(50) NOT NULL,
-    supplier VARCHAR(100),
-    wc_price DECIMAL(10, 2),
-    retail_price DECIMAL(10, 2),
-    notes TEXT,
-    link TEXT
-);
--- Product Sold Table (NO product_id, uses product_name instead)
-CREATE TABLE product_sold (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT,
-    product_name VARCHAR(255) NOT NULL,
-    duration VARCHAR(50) NOT NULL,
-    customer VARCHAR(150),
-    gmail VARCHAR(150),
-    price DECIMAL(10, 2),
-    profit DECIMAL(10, 2) DEFAULT 0,
-    purchase_date DATE,
-    end_date DATE,
-    seller VARCHAR(100),
-    note TEXT
-);
-ALTER TABLE product_sold
-ADD COLUMN product_id INT
-AFTER id;
-create database digimium;
-use digimium;
-INSERT INTO users (username, password, privilege)
-VALUES ('kaunglinthant', SHA2('kaunglinthant1', 256), 1);
-INSERT INTO users (username, password, privilege)
-VALUES ('someone', SHA2('some1', 256), 2);
+INSERT INTO user (id, username, password, privilege)
+VALUES (
+        1,
+        'administrator',
+        '$2y$10$zhZL2jdXcwFwQwk4WiUJ6.Y5Lp/ZBgmaL81g7hKhpaEcndNKDVcgW',
+        'owner'
+    );

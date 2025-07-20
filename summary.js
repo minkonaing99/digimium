@@ -21,7 +21,7 @@ console.log(getThailandTodayDate());
 
 function getThailandTodayDate() {
   const today = new Date();
-  return today.toLocaleDateString("en-CA");
+  return today.toLocaleDateString("en-CA"); // e.g. 2025-07-21
 }
 
 function loadSalesSummary() {
@@ -36,89 +36,77 @@ function loadSalesSummary() {
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.status === "success") {
-        const sales = data.data;
-        console.log(sales);
+      if (data.status !== "success") return showSummaryError(data.message);
 
-        // === Pie Chart Data ===
-        const grouped = {};
-        sales.forEach((item) => {
-          const name = item.product_name;
-          const price = parseFloat(item.price);
-          grouped[name] = (grouped[name] || 0) + price;
-        });
-        drawSalesPieChart(grouped);
+      const monthlySales = data.data || []; // Full current month
+      console.log(monthlySales);
+      const dailySales = data.today || []; // Only today
+      console.log(dailySales);
 
-        // === Daily Amount ===
-        const dailyTotal = sales.reduce(
-          (sum, item) => sum + parseFloat(item.price),
-          0
-        );
-        document.getElementById(
-          "daily_sales"
-        ).textContent = `${dailyTotal.toLocaleString()} Ks`;
+      // === Pie Chart (Monthly) ===
+      const grouped = {};
+      monthlySales.forEach((item) => {
+        const name = item.product_name;
+        const price = parseFloat(item.price);
+        grouped[name] = (grouped[name] || 0) + price;
+      });
+      drawSalesPieChart(grouped);
 
-        // === Monthly Amount (same data because backend filters by month already) ===
-        document.getElementById(
-          "monthly_sales"
-        ).textContent = `${dailyTotal.toLocaleString()} Ks
-                        `;
+      // === Daily Sales Total ===
+      const dailyTotal = dailySales.reduce(
+        (sum, item) => sum + parseFloat(item.price),
+        0
+      );
+      document.getElementById(
+        "daily_sales"
+      ).textContent = `${dailyTotal.toLocaleString()} Ks`;
 
-        // === Daily Product Report ===
-        const productCount = {};
-        sales.forEach((item) => {
-          const name = item.product_name;
-          productCount[name] = (productCount[name] || 0) + 1;
-        });
-        // === Monthly Profit ===
-        const monthlyProfit = sales.reduce(
-          (sum, item) => sum + parseFloat(item.profit || 0),
-          0
-        );
-        document.getElementById(
-          "monthly_profits"
-        ).textContent = `${monthlyProfit.toLocaleString()} Ks`;
+      // === Monthly Sales Total ===
+      const monthlyTotal = monthlySales.reduce(
+        (sum, item) => sum + parseFloat(item.price),
+        0
+      );
+      document.getElementById(
+        "monthly_sales"
+      ).textContent = `${monthlyTotal.toLocaleString()} Ks`;
 
-        const reportDiv = document.getElementById("report");
+      // === Monthly Profit Total ===
+      const monthlyProfit = monthlySales.reduce(
+        (sum, item) => sum + parseFloat(item.profit || 0),
+        0
+      );
+      document.getElementById(
+        "monthly_profits"
+      ).textContent = `${monthlyProfit.toLocaleString()} Ks`;
 
-        if (sales.length === 0) {
-          reportDiv.innerHTML = `<p>No sales recorded for today (${today}).</p>`;
-        } else {
-          // Group sales by product name
-          const productSummary = {};
-
-          sales.forEach((item) => {
-            const name = item.product_name;
-            const profit = parseFloat(item.profit || 0);
-
-            if (!productSummary[name]) {
-              productSummary[name] = {
-                count: 0,
-                totalProfit: 0,
-              };
-            }
-
-            productSummary[name].count += 1;
-            productSummary[name].totalProfit += profit;
-          });
-
-          // Build and display report
-          let html = `<ul>`;
-          for (const [name, data] of Object.entries(productSummary)) {
-            html += `<li>${name}: <strong>${
-              data.count
-            }  sold </strong>,  profit : <strong>${data.totalProfit.toLocaleString()} Ks
-        </strong></li>`;
-          }
-          html += `</ul>`;
-          reportDiv.innerHTML = html;
-        }
-      } else {
-        showSummaryError(data.message);
+      // === Daily Product Breakdown ===
+      const reportDiv = document.getElementById("report");
+      if (dailySales.length === 0) {
+        reportDiv.innerHTML = `<p>No sales recorded for today (${today}).</p>`;
+        return;
       }
+
+      const productSummary = {};
+      dailySales.forEach((item) => {
+        const name = item.product_name;
+        const profit = parseFloat(item.profit || 0);
+        if (!productSummary[name])
+          productSummary[name] = { count: 0, totalProfit: 0 };
+        productSummary[name].count += 1;
+        productSummary[name].totalProfit += profit;
+      });
+
+      let html = `<ul>`;
+      for (const [name, info] of Object.entries(productSummary)) {
+        html += `<li>${name}: <strong>${
+          info.count
+        } sold</strong>, profit: <strong>${info.totalProfit.toLocaleString()} Ks</strong></li>`;
+      }
+      html += `</ul>`;
+      reportDiv.innerHTML = html;
     })
     .catch((err) => {
-      console.error("🚨 Fetch Error:", err);
+      console.error("🚨 Fetch error:", err);
       showSummaryError(err.message);
     });
 }

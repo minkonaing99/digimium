@@ -1,21 +1,20 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username']) && isset($_COOKIE['username'])) {
+if (!isset($_SESSION['username']) && isset($_COOKIE['username'], $_COOKIE['privilege'], $_COOKIE['logincode'])) {
     $_SESSION['username'] = $_COOKIE['username'];
     $_SESSION['privilege'] = $_COOKIE['privilege'];
     $_SESSION['logincode'] = $_COOKIE['logincode'];
 }
 
-// Allow list
-$allowedPrivileges = ['admin', 'staff'];
-$allowedLogincodes = ['200068', '200038'];
+$allowedPrivileges = ['admin', 'owner'];
+$allowedLogincodes = ['200068'];
 
 if (
-    (isset($_SESSION['privilege']) && in_array($_SESSION['privilege'], $allowedPrivileges)) ||
-    (isset($_SESSION['logincode']) && in_array($_SESSION['logincode'], $allowedLogincodes))
+    isset($_SESSION['privilege'], $_SESSION['logincode']) &&
+    in_array($_SESSION['privilege'], $allowedPrivileges) &&
+    in_array($_SESSION['logincode'], $allowedLogincodes)
 ) {
-    // allow access
 } else {
     header("Location: index.php");
     exit();
@@ -43,10 +42,11 @@ if (
         <nav>
             <div class="nav-links" id="navLinks">
                 <a href="./home.php" aria-label="Home">Home</a>
-                <?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] === 'admin'): ?>
+                <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
                     <a href="./admin.php" aria-label="Admin">Admin</a>
                     <a href="./summary.php" aria-label="Summary">Summary</a>
                 <?php endif; ?>
+
                 <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">Log
                     Out</button>
             </div>
@@ -91,17 +91,24 @@ if (
             <div class="row">
                 <h3 class="col-12">Daily Product Sold</h3>
 
-                <div class="col-md-6 col-12">
-                    <div style="height: 100%; max-height: 40vh; margin: auto;">
+                <div class="col-md-4 col-12">
+                    <div style="height: 100%; max-height: 50vh; margin: auto;">
                         <canvas id="salesPieChart"></canvas>
                     </div>
                 </div>
-                <div class="col-md-6 col-12" id="report">
+                <div class="col-md-4 col-12">
+                    <div style="height: 100%; max-height: 50vh; margin: auto;">
+                        <canvas id="profitsPieChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12 d-flex justify-content-center align-items-center" id="report"
+                    style="height: 100%; max-height: 50vh; margin: auto; text-align: left;">
                     This is the report
                 </div>
+
             </div>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 mt-3">
                     <h3>Expire Soon</h3>
                     <div class="table-responsive">
                         <table class="table align-middle table-hover">
@@ -123,7 +130,14 @@ if (
                     </div>
                 </div>
             </div>
-            <canvas id="monthlyProfitLineChart" height="100"></canvas>
+            <div class="row mt-3">
+                <h3 class="col-12">30-Day Performance</h3>
+
+                <div class="chart-container" style="position: relative; height:40vh;">
+                    <canvas id="profitLineChart"></canvas>
+                </div>
+
+            </div>
         </section>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -167,99 +181,154 @@ if (
                 })
                 .then((res) => res.json())
                 .then((data) => {
-                    if (data.status === "success") {
-                        const sales = data.data;
-                        console.log(sales);
-
-                        // === Pie Chart Data ===
-                        const grouped = {};
-                        sales.forEach((item) => {
-                            const name = item.product_name;
-                            const price = parseFloat(item.price);
-                            grouped[name] = (grouped[name] || 0) + price;
-                        });
-                        drawSalesPieChart(grouped);
-
-                        // === Daily Amount ===
-                        const dailyTotal = sales.reduce(
-                            (sum, item) => sum + parseFloat(item.price),
-                            0
-                        );
-                        document.getElementById(
-                            "daily_sales"
-                        ).textContent = `${dailyTotal.toLocaleString()} Ks`;
-
-                        // === Monthly Amount (same data because backend filters by month already) ===
-                        document.getElementById(
-                            "monthly_sales"
-                        ).textContent = `${dailyTotal.toLocaleString()} Ks
-                        `;
-
-                        // === Daily Product Report ===
-                        const productCount = {};
-                        sales.forEach((item) => {
-                            const name = item.product_name;
-                            productCount[name] = (productCount[name] || 0) + 1;
-                        });
-                        // === Monthly Profit ===
-                        const monthlyProfit = sales.reduce(
-                            (sum, item) => sum + parseFloat(item.profit || 0),
-                            0
-                        );
-                        document.getElementById(
-                            "monthly_profits"
-                        ).textContent = `${monthlyProfit.toLocaleString()} Ks`;
-                        // === Daily Profit ===
-                        const dailyProfit = sales.reduce(
-                            (sum, item) => sum + parseFloat(item.profit || 0),
-                            0
-                        );
-                        document.getElementById("daily_profits").textContent = `${dailyProfit.toLocaleString()} Ks`;
-
-
-                        const reportDiv = document.getElementById("report");
-
-                        if (sales.length === 0) {
-                            reportDiv.innerHTML = `<p>No sales recorded for today (${today}).</p>`;
-                        } else {
-                            // Group sales by product name
-                            const productSummary = {};
-
-                            sales.forEach((item) => {
-                                const name = item.product_name;
-                                const profit = parseFloat(item.profit || 0);
-
-                                if (!productSummary[name]) {
-                                    productSummary[name] = {
-                                        count: 0,
-                                        totalProfit: 0,
-                                    };
-                                }
-
-                                productSummary[name].count += 1;
-                                productSummary[name].totalProfit += profit;
-                            });
-
-                            // Build and display report
-                            let html = `<ul>`;
-                            for (const [name, data] of Object.entries(productSummary)) {
-                                html += `<li>${name}: <strong>${
-              data.count
-            }  sold </strong>,  profit : <strong>${data.totalProfit.toLocaleString()} Ks
-        </strong></li>`;
-                            }
-                            html += `</ul>`;
-                            reportDiv.innerHTML = html;
-                        }
-                    } else {
+                    if (data.status !== "success") {
                         showSummaryError(data.message);
+                        return;
                     }
+
+                    const monthlySales = data.data || [];
+                    const dailySales = data.today || [];
+
+                    // === Pie Chart Data (Use Daily Sales Only) ===
+                    const grouped = {};
+                    const profitGrouped = {};
+                    dailySales.forEach((item) => {
+                        const name = item.product_name;
+                        const price = parseFloat(item.price);
+                        const profit = parseFloat(item.profit || 0);
+
+                        grouped[name] = (grouped[name] || 0) + price;
+                        profitGrouped[name] = (profitGrouped[name] || 0) + profit;
+                    });
+                    drawSalesPieChart(grouped);
+                    drawProfitsPieChart(profitGrouped);
+
+                    // === Daily Total Price & Profit ===
+                    const dailyTotal = dailySales.reduce(
+                        (sum, item) => sum + parseFloat(item.price),
+                        0
+                    );
+                    const dailyProfit = dailySales.reduce(
+                        (sum, item) => sum + parseFloat(item.profit || 0),
+                        0
+                    );
+                    document.getElementById("daily_sales").textContent =
+                        dailyTotal.toLocaleString() + " Ks";
+                    document.getElementById("daily_profits").textContent =
+                        dailyProfit.toLocaleString() + " Ks";
+
+                    // === Monthly Total Price & Profit ===
+                    const monthlyTotal = monthlySales.reduce(
+                        (sum, item) => sum + parseFloat(item.price),
+                        0
+                    );
+                    const monthlyProfit = monthlySales.reduce(
+                        (sum, item) => sum + parseFloat(item.profit || 0),
+                        0
+                    );
+                    document.getElementById("monthly_sales").textContent =
+                        monthlyTotal.toLocaleString() + " Ks";
+                    document.getElementById("monthly_profits").textContent =
+                        monthlyProfit.toLocaleString() + " Ks";
+
+                    // === Daily Breakdown by Product ===
+                    const reportDiv = document.getElementById("report");
+                    if (dailySales.length === 0) {
+                        reportDiv.innerHTML = `<p>No sales recorded for today (${today}).</p>`;
+                        return;
+                    }
+
+                    const productSummary = {};
+                    dailySales.forEach((item) => {
+                        const name = item.product_name;
+                        const profit = parseFloat(item.profit || 0);
+
+                        if (!productSummary[name]) {
+                            productSummary[name] = {
+                                count: 0,
+                                totalProfit: 0
+                            };
+                        }
+                        productSummary[name].count += 1;
+                        productSummary[name].totalProfit += profit;
+                    });
+
+                    let html = `<ul>`;
+                    for (const [name, info] of Object.entries(productSummary)) {
+                        html += `<li>${name}: <strong>${info.count} sold</strong>, profit: <strong>${info.totalProfit.toLocaleString()} Ks</strong></li>`;
+                    }
+                    html += `</ul>`;
+                    reportDiv.innerHTML = html;
                 })
                 .catch((err) => {
-                    console.error("🚨 Fetch Error:", err);
+                    console.error("🚨 Fetch error:", err);
                     showSummaryError(err.message);
                 });
         }
+
+
+        function drawProfitsPieChart(groupedProfits) {
+            const labels = Object.keys(groupedProfits);
+            const values = Object.values(groupedProfits);
+            const ctx = document.getElementById("profitsPieChart").getContext("2d");
+
+            new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            "#FF6384",
+                            "#36A2EB",
+                            "#FFCE56",
+                            "#4BC0C0",
+                            "#9966FF",
+                            "#FF9F40",
+                        ],
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Today's Sales by Product",
+                            position: "left", // Vertical on the left side
+                            align: 'center',
+                            font: {
+                                size: 14,
+                                weight: 'bold',
+                                lineHeight: 1.2
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            },
+                            color: '#384959'
+                        },
+                        legend: {
+                            position: "right",
+                            labels: {
+                                padding: 10,
+                                boxWidth: 30
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 60,
+                            right: 60,
+                            top: 10,
+                            bottom: 10
+                        }
+                    }
+                }
+            });
+        }
+
 
         function drawSalesPieChart(groupedData) {
             const labels = Object.keys(groupedData);
@@ -287,20 +356,38 @@ if (
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: "bottom",
-                            labels: {
-                                padding: 20,
-                            },
-                        },
                         title: {
                             display: true,
                             text: "Today's Sales by Product",
+                            position: "left", // Vertical on the left side
+                            align: 'center',
+                            font: {
+                                size: 14,
+                                weight: 'bold',
+                                lineHeight: 1.2
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            },
+                            color: '#384959'
                         },
+                        legend: {
+                            position: "right",
+                            labels: {
+                                padding: 10,
+                                boxWidth: 30
+                            }
+                        }
                     },
                     layout: {
-                        padding: 20,
-                    },
+                        padding: {
+                            left: 60,
+                            right: 60,
+                            top: 10,
+                            bottom: 10
+                        }
+                    }
                 },
             });
         }
@@ -352,6 +439,84 @@ if (
         }
 
         document.addEventListener("DOMContentLoaded", fetchExpiringSoon);
+
+        function loadProfitChartData() {
+            fetch("./api/profit_chart.php")
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.status === "success") {
+                        const labels = [];
+                        const profits = [];
+
+                        data.data.forEach((item) => {
+                            labels.push(item.date);
+                            profits.push(parseFloat(item.profit));
+                        });
+
+                        drawProfitLineChart(labels, profits);
+                    } else {
+                        console.error("Profit data error:", data.message);
+                    }
+                })
+                .catch((err) => {
+                    console.error("Profit chart fetch error:", err);
+                });
+        }
+
+        function drawProfitLineChart(labels, profits) {
+            const ctx = document.getElementById("profitLineChart").getContext("2d");
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Daily Profit (Ks)',
+                        data: profits,
+                        borderColor: '#1cc88a',
+                        backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Profits (Last 30 Days)'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 90,
+                                minRotation: 90,
+                                autoSkip: true,
+                                maxTicksLimit: 15
+                            },
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Profit (Ks)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadProfitChartData);
     </script>
 </body>
 
