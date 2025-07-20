@@ -56,7 +56,6 @@ if (
                 <div></div>
             </div>
         </nav>
-
     </header>
     <div class="container-fluid">
         <section class="menu-bar p-5 py-3">
@@ -69,18 +68,14 @@ if (
                 </div>
                 <div class="col d-flex justify-content-end">
                     <div class="btn-group">
-
                         <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
                             <button class="contact-btn menu-btn" id="downloadBtn" style="border: none; background: none; padding: 0;">
                                 <img src="./assets/download-svgrepo-com.svg" alt="" width="24px" style="border: none;">
                             </button>
                         <?php endif; ?>
-
-
                         <input type="text" id="searchCustomer" class="form-control-sm mx-md-4"
                             placeholder="Search by customer name..." />
                         <button class="contact-btn menu-btn" id="addBtn">Add Sale</button>
-
                     </div>
                 </div>
             </div>
@@ -88,17 +83,14 @@ if (
 
         <section class="table-section">
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
-                <!-- form staring point -->
                 <form>
                     <div class="d-flex flex-wrap align-items-end gap-3 justify-content-evenly">
                         <div style="min-width: 180px; max-width: 300px; flex-grow: 1;">
                             <label for="product" class="form-label">Product List</label>
                             <select class="form-select form-select-sm" id="product">
                                 <option selected disabled>Choose...</option>
-                                <!-- Options will be added via JS -->
                             </select>
                         </div>
-
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="customer" class="form-label">Customer</label>
                             <input type="text" class="form-control form-control-sm" id="customer" placeholder="Name">
@@ -108,12 +100,10 @@ if (
                             <input type="text" class="form-control form-control-sm" id="email"
                                 placeholder="...@....">
                         </div>
-
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="purchase_date" class="form-label">Purchase Date</label>
                             <input type="date" class="form-control form-control-sm" id="purchase_date">
                         </div>
-
                         <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="seller" class="form-label">Manager</label>
                             <input type="text" class="form-control form-control-sm" id="seller" placeholder="seller"
@@ -122,33 +112,22 @@ if (
                         <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="amount" class="form-label">Amount</label>
                             <input type="number" id="amount" class="form-control form-control-sm" step="1" placeholder="Enter price (optional)">
-
                         </div>
-
                         <div style="min-width: 250px; max-width: 300px; flex-grow: 1;">
                             <label for="Notes" class="form-label">Notes</label>
                             <input type="text" class="form-control form-control-sm" id="Notes" placeholder="Note"
                                 autocomplete="off">
                         </div>
-
                         <div style="min-width: 80px; flex-shrink: 0;">
                             <button type="submit" class="contact-btn menu-btn mt-2 w-100" id="submitBtn" id="submitBtn">Save</button>
                         </div>
-
                     </div>
                     <input type="hidden" id="duration"> <!-- Hidden, used for end_date calculation -->
                     <input type="hidden" id="end_date"> <!-- Hidden, gets submitted with the form -->
-
                 </form>
             </div>
             <div id="editRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
-
             </div>
-
-
-
-
-            <!-- Table Section -->
             <div class="table-responsive">
                 <table class="table align-middle table-hover">
                     <thead class="table-light">
@@ -167,17 +146,11 @@ if (
                         </tr>
                     </thead>
                     <tbody>
-
                     </tbody>
                 </table>
             </div>
-
         </section>
     </div>
-
-
-
-
     <script src="app.js"></script>
     <script>
         const IS_ADMIN = <?= isset($_SESSION['privilege']) && $_SESSION['privilege'] === 'admin' ? 'true' : 'false' ?>;
@@ -188,9 +161,6 @@ if (
             }
         });
     </script>
-
-
-
 </body>
 
 </html>

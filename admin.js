@@ -1,26 +1,19 @@
-// Toggle burger menu
 function toggleMenu() {
   const burger = document.getElementById("burger");
   const navLinks = document.getElementById("navLinks");
   burger.classList.toggle("open");
   navLinks.classList.toggle("active");
 }
-
-// Collapse nav menu on link click
 document.querySelectorAll("#navLinks a").forEach((link) => {
   link.addEventListener("click", () => {
     document.getElementById("navLinks").classList.remove("active");
     document.getElementById("burger").classList.remove("open");
   });
 });
-
-// Toggle input row visibility
 document.getElementById("addBtn").addEventListener("click", function () {
   const inputRow = document.getElementById("inputRow");
   inputRow.style.display = inputRow.style.display === "none" ? "block" : "none";
 });
-
-// Load product table
 function loadProductTable() {
   fetch("./api/fetching_productlist.php")
     .then((response) => response.json())
@@ -72,7 +65,6 @@ function loadProductTable() {
                                 <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
                             </button>
                         </td>`;
-
           tableBody.appendChild(row);
         });
       } else {
@@ -90,7 +82,6 @@ document.addEventListener("click", function (e) {
     navigator.clipboard
       .writeText(linkText)
       .then(() => {
-        // Optional: show feedback (e.g., change color briefly or tooltip)
         e.target.style.color = "green";
         setTimeout(() => {
           e.target.style.color = "blue";
@@ -101,7 +92,6 @@ document.addEventListener("click", function (e) {
       });
   }
 });
-// Handle form submission for adding product
 document.querySelector("form").addEventListener("submit", function (e) {
   e.preventDefault();
   const product = document.getElementById("product").value.trim();
@@ -123,7 +113,6 @@ document.querySelector("form").addEventListener("submit", function (e) {
     " " +
     (duration == 1 ? "Month" : "Months") +
     ")";
-
   const formData = new FormData();
   formData.append("product_name", product_name);
   formData.append("duration", duration);
@@ -132,7 +121,6 @@ document.querySelector("form").addEventListener("submit", function (e) {
   formData.append("retail_price", retail_price);
   formData.append("notes", notes);
   formData.append("link", link);
-
   fetch("./api/insert_product.php", {
     method: "POST",
     body: formData,
@@ -151,16 +139,12 @@ document.querySelector("form").addEventListener("submit", function (e) {
       alert("An error occurred while inserting.");
     });
 });
-
-// Delegated event listener for Edit and Delete buttons
 document.addEventListener("click", function (e) {
   const editBtn = e.target.closest(".edit-btn");
   const deleteBtn = e.target.closest(".delete-btn");
-
   if (editBtn) {
     const editRow = document.getElementById("editRow");
     editRow.style.display = "block";
-
     editRow.innerHTML = `
         <form id="editForm">
             <input type="hidden" id="edit_id" value="${editBtn.dataset.id}">
@@ -176,7 +160,6 @@ document.addEventListener("click", function (e) {
             </div>
         </form>`;
   }
-
   if (deleteBtn) {
     const productId = deleteBtn.getAttribute("data-id");
     if (confirm("Are you sure you want to delete this product?")) {
@@ -200,8 +183,6 @@ document.addEventListener("click", function (e) {
     }
   }
 });
-
-// Handle edit form submission
 document.addEventListener("submit", function (e) {
   if (e.target.id === "editForm") {
     e.preventDefault();
@@ -255,6 +236,4 @@ document.addEventListener("submit", function (e) {
       });
   }
 });
-
-// Load initial table on page load
 document.addEventListener("DOMContentLoaded", loadProductTable);

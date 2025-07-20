@@ -1,7 +1,6 @@
 <?php
-// Continue safely with your DB access or business logic
 
-require_once 'dbinfo.php'; // Make sure the path is correct
+require_once 'dbinfo.php';
 
 header('Content-Type: application/json');
 

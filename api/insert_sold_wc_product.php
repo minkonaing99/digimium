@@ -14,19 +14,16 @@ try {
     $note         = trim($_POST['note'] ?? '-');
     $date         = $_POST['date'] ?? null;
 
-    // ✅ Basic validation
     if (!$product_id || !$product_name || !$price || !$date || !$seller) {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields.']);
         exit;
     }
 
-    // ✅ Email validation (if not empty or dash)
     if ($email !== '-' && $email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid email format.']);
         exit;
     }
 
-    // ✅ Quantity fallback
     if ($quantity <= 0) $quantity = 1;
 
     $stmt = $pdo->prepare("

@@ -1,4 +1,3 @@
-// Toggle burger menu
 function toggleMenu() {
   const burger = document.getElementById("burger");
   const navLinks = document.getElementById("navLinks");
@@ -6,7 +5,6 @@ function toggleMenu() {
   navLinks.classList.toggle("active");
 }
 
-// Collapse nav menu on link click
 document.querySelectorAll("#navLinks a").forEach((link) => {
   link.addEventListener("click", () => {
     document.getElementById("navLinks").classList.remove("active");
@@ -14,13 +12,11 @@ document.querySelectorAll("#navLinks a").forEach((link) => {
   });
 });
 
-// Toggle input row visibility
 document.getElementById("addBtn").addEventListener("click", function () {
   const inputRow = document.getElementById("inputRow");
   inputRow.style.display = inputRow.style.display === "none" ? "block" : "none";
 });
 
-// Load product table
 function loadProductTable() {
   fetch("./api/fetching_wc_productlist.php")
     .then((response) => response.json())
@@ -48,8 +44,6 @@ function loadProductTable() {
       : ""
   }
 </td>
-
-
       <td style="text-align: right; padding-right: 1.2rem">
         ${item.wc_price ? parseFloat(item.wc_price).toFixed(0) : "0"} Ks
       </td>
@@ -74,7 +68,6 @@ function loadProductTable() {
         </button>
       </td>
     `;
-
           tableBody.appendChild(row);
         });
       } else {
@@ -92,7 +85,6 @@ document.addEventListener("click", function (e) {
     navigator.clipboard
       .writeText(linkText)
       .then(() => {
-        // Optional: show feedback (e.g., change color briefly or tooltip)
         e.target.style.color = "green";
         setTimeout(() => {
           e.target.style.color = "blue";
@@ -104,7 +96,6 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// Handle form submission for adding product
 document.querySelector("form").addEventListener("submit", function (e) {
   e.preventDefault();
   const product = document.getElementById("product").value.trim();
@@ -155,7 +146,6 @@ document.querySelector("form").addEventListener("submit", function (e) {
     });
 });
 
-// Delegated event listener for Edit and Delete buttons
 document.addEventListener("click", function (e) {
   const editBtn = e.target.closest(".edit-btn");
   const deleteBtn = e.target.closest(".delete-btn");
@@ -259,5 +249,4 @@ document.addEventListener("submit", function (e) {
   }
 });
 
-// Load initial table on page load
 document.addEventListener("DOMContentLoaded", loadProductTable);

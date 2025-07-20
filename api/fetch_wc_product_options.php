@@ -1,10 +1,6 @@
 <?php
-// Continue safely with your DB access or business logic
-
-require_once 'dbinfo.php'; // Make sure the path is correct
-
+require_once 'dbinfo.php';
 header('Content-Type: application/json');
-
 try {
     $stmt = $pdo->prepare("SELECT product_id, product_name, duration, wc_price, retail_price FROM wc_product_list ORDER BY product_name ASC");
     $stmt->execute();

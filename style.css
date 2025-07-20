@@ -69,8 +69,6 @@
         position: relative;
         transition: color 0.3s;
         font-size: 1rem;
-        /* or any consistent size like 16px */
-
     }
 
     .nav-links a:hover {
@@ -143,7 +141,6 @@
             background-color: var(--dark);
             position: fixed;
             top: 70px;
-            /* Adjust to match header height */
             left: 0;
             width: 100vw;
             padding: 1rem;
@@ -176,14 +173,9 @@
 
     .td-scrollable {
         max-width: 200px;
-        /* or whatever fits your table layout */
         overflow-x: auto;
-        /* enable horizontal scroll */
         white-space: nowrap;
-        /* prevent line wrapping */
-
         scrollbar-width: thin;
-        /* optional: thinner scrollbar */
     }
 
     .menu-btn {
@@ -196,16 +188,13 @@
     .btn-group {
         display: flex;
         gap: .5rem;
-        /* adjust as needed */
         flex-wrap: wrap;
-        /* optional for responsiveness */
     }
 
     .showcase {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        /* left align content */
         justify-content: center;
         margin: 1rem 1rem;
         padding: 1rem 1.5rem;
@@ -213,7 +202,6 @@
         width: 300px;
         border-radius: 20px;
         background-color: #f9f9f9;
-        /* optional: light background */
     }
 
     .title {

@@ -1,4 +1,3 @@
-// ========== NAVIGATION TOGGLE ==========
 function toggleMenu() {
   const burger = document.getElementById("burger");
   const navLinks = document.getElementById("navLinks");
@@ -15,13 +14,13 @@ document.querySelectorAll("#navLinks a").forEach((link) => {
 
 function getThailandTodayDate() {
   const today = new Date();
-  return today.toLocaleDateString("en-CA"); // returns 'YYYY-MM-DD'
+  return today.toLocaleDateString("en-CA");
 }
 console.log(getThailandTodayDate());
 
 function getThailandTodayDate() {
   const today = new Date();
-  return today.toLocaleDateString("en-CA"); // e.g. 2025-07-21
+  return today.toLocaleDateString("en-CA");
 }
 
 function loadSalesSummary() {
@@ -36,50 +35,66 @@ function loadSalesSummary() {
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.status !== "success") return showSummaryError(data.message);
+      if (data.status !== "success") {
+        showSummaryError(data.message);
+        return;
+      }
 
-      const monthlySales = data.data || []; // Full current month
+      const monthlySales = data.data || [];
       console.log(monthlySales);
-      const dailySales = data.today || []; // Only today
+      const dailySales = data.today || [];
       console.log(dailySales);
 
-      // === Pie Chart (Monthly) ===
       const grouped = {};
-      monthlySales.forEach((item) => {
+      const profitGrouped = {};
+      dailySales.forEach((item) => {
         const name = item.product_name;
         const price = parseFloat(item.price);
+        const profit = parseFloat(item.profit || 0);
+
         grouped[name] = (grouped[name] || 0) + price;
+        profitGrouped[name] = (profitGrouped[name] || 0) + profit;
       });
       drawSalesPieChart(grouped);
+      drawProfitsPieChart(profitGrouped);
 
-      // === Daily Sales Total ===
       const dailyTotal = dailySales.reduce(
-        (sum, item) => sum + parseFloat(item.price),
+        (sum, item) => sum + (parseFloat(item.price) || 0),
         0
       );
-      document.getElementById(
-        "daily_sales"
-      ).textContent = `${dailyTotal.toLocaleString()} Ks`;
 
-      // === Monthly Sales Total ===
+      const dailyProfit = dailySales.reduce(
+        (sum, item) => sum + (parseFloat(item.profit) || 0),
+        0
+      );
+
+      document.getElementById("daily_sales").textContent =
+        dailyTotal.toLocaleString() + " Ks";
+      document.getElementById("daily_profits").textContent =
+        dailyProfit.toLocaleString() + " Ks";
+
       const monthlyTotal = monthlySales.reduce(
-        (sum, item) => sum + parseFloat(item.price),
+        (sum, item) => sum + (parseFloat(item.price) || 0),
         0
       );
-      document.getElementById(
-        "monthly_sales"
-      ).textContent = `${monthlyTotal.toLocaleString()} Ks`;
 
-      // === Monthly Profit Total ===
       const monthlyProfit = monthlySales.reduce(
-        (sum, item) => sum + parseFloat(item.profit || 0),
+        (sum, item) => sum + (parseFloat(item.profit) || 0),
         0
       );
-      document.getElementById(
-        "monthly_profits"
-      ).textContent = `${monthlyProfit.toLocaleString()} Ks`;
 
-      // === Daily Product Breakdown ===
+      document.getElementById("monthly_sales").textContent =
+        monthlyTotal.toLocaleString() + " Ks";
+      document.getElementById("monthly_profits").textContent =
+        monthlyProfit.toLocaleString() + " Ks";
+
+      console.log(monthlyProfit);
+
+      document.getElementById("monthly_sales").textContent =
+        monthlyTotal.toLocaleString() + " Ks";
+      document.getElementById("monthly_profits").textContent =
+        monthlyProfit.toLocaleString() + " Ks";
+
       const reportDiv = document.getElementById("report");
       if (dailySales.length === 0) {
         reportDiv.innerHTML = `<p>No sales recorded for today (${today}).</p>`;
@@ -90,8 +105,13 @@ function loadSalesSummary() {
       dailySales.forEach((item) => {
         const name = item.product_name;
         const profit = parseFloat(item.profit || 0);
-        if (!productSummary[name])
-          productSummary[name] = { count: 0, totalProfit: 0 };
+
+        if (!productSummary[name]) {
+          productSummary[name] = {
+            count: 0,
+            totalProfit: 0,
+          };
+        }
         productSummary[name].count += 1;
         productSummary[name].totalProfit += profit;
       });
@@ -111,11 +131,74 @@ function loadSalesSummary() {
     });
 }
 
+function drawProfitsPieChart(groupedProfits) {
+  const labels = Object.keys(groupedProfits);
+  const values = Object.values(groupedProfits);
+  const ctx = document.getElementById("profitsPieChart").getContext("2d");
+
+  new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: values,
+          backgroundColor: [
+            "#FF6384",
+            "#36A2EB",
+            "#FFCE56",
+            "#4BC0C0",
+            "#9966FF",
+            "#FF9F40",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: "Today's Sales by Product",
+          position: "left",
+          align: "center",
+          font: {
+            size: 14,
+            weight: "bold",
+            lineHeight: 1.2,
+          },
+          padding: {
+            top: 10,
+            bottom: 10,
+          },
+          color: "#384959",
+        },
+        legend: {
+          position: "right",
+          labels: {
+            padding: 10,
+            boxWidth: 30,
+          },
+        },
+      },
+      layout: {
+        padding: {
+          left: 60,
+          right: 60,
+          top: 10,
+          bottom: 10,
+        },
+      },
+    },
+  });
+}
+
 function drawSalesPieChart(groupedData) {
   const labels = Object.keys(groupedData);
   const values = Object.values(groupedData);
   const ctx = document.getElementById("salesPieChart").getContext("2d");
-
   new Chart(ctx, {
     type: "pie",
     data: {
@@ -139,19 +222,37 @@ function drawSalesPieChart(groupedData) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            padding: 20,
-          },
-        },
         title: {
           display: true,
-          text: "Today's Sales by Product",
+          text: "Today's Profit by Product",
+          position: "left",
+          align: "center",
+          font: {
+            size: 14,
+            weight: "bold",
+            lineHeight: 1.2,
+          },
+          padding: {
+            top: 10,
+            bottom: 10,
+          },
+          color: "#384959",
+        },
+        legend: {
+          position: "right",
+          labels: {
+            padding: 10,
+            boxWidth: 30,
+          },
         },
       },
       layout: {
-        padding: 20,
+        padding: {
+          left: 60,
+          right: 60,
+          top: 10,
+          bottom: 10,
+        },
       },
     },
   });
@@ -162,9 +263,7 @@ function showSummaryError(msg) {
   document.getElementById("monthly_sales").textContent = "Error";
   document.getElementById("report").innerHTML = `<p>Error: ${msg}</p>`;
 }
-
 document.addEventListener("DOMContentLoaded", loadSalesSummary);
-
 function fetchExpiringSoon() {
   fetch("./api/day_left.php")
     .then((res) => res.json())
@@ -186,7 +285,7 @@ function fetchExpiringSoon() {
                             <td>${count++}</td>
                             <td>${item.product_name}</td>
                             <td>${item.customer}</td>
-                            <td>${item.gmail}</td>
+                            <td>${item.gmail ?? "-"}</td>
                             <td>${item.purchase_date}</td>
                             <td>${item.end_date}</td>
                             <td>${daysLeft} day${daysLeft !== 1 ? "s" : ""}</td>
@@ -195,12 +294,86 @@ function fetchExpiringSoon() {
           }
         });
       } else {
-        console.error("❌ Server error:", data.message);
+        console.error("Server error:", data.message);
       }
     })
     .catch((err) => {
-      console.error("🚨 Fetch error:", err);
+      console.error("Fetch error:", err);
     });
 }
-
 document.addEventListener("DOMContentLoaded", fetchExpiringSoon);
+function loadProfitChartData() {
+  fetch("./api/profit_chart.php")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status === "success") {
+        const labels = [];
+        const profits = [];
+        data.data.forEach((item) => {
+          labels.push(item.date);
+          profits.push(parseFloat(item.profit));
+        });
+        drawProfitLineChart(labels, profits);
+      } else {
+        console.error("Profit data error:", data.message);
+      }
+    })
+    .catch((err) => {
+      console.error("Profit chart fetch error:", err);
+    });
+}
+function drawProfitLineChart(labels, profits) {
+  const ctx = document.getElementById("profitLineChart").getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Daily Profit (Ks)",
+          data: profits,
+          borderColor: "#1cc88a",
+          backgroundColor: "rgba(28, 200, 138, 0.1)",
+          tension: 0.3,
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: "Daily Profits (Last 30 Days)",
+        },
+        legend: {
+          display: false,
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            maxRotation: 90,
+            minRotation: 90,
+            autoSkip: true,
+            maxTicksLimit: 15,
+          },
+          title: {
+            display: true,
+            text: "Date",
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Profit (Ks)",
+          },
+        },
+      },
+    },
+  });
+}
+document.addEventListener("DOMContentLoaded", loadProfitChartData);

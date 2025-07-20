@@ -9,11 +9,8 @@ try {
         echo json_encode(['status' => 'error', 'message' => 'Date is required']);
         exit;
     }
-
     $monthStart = date('Y-m-01', strtotime($date));
     $monthEnd = date('Y-m-t', strtotime($date));
-
-    // WC Sales
     $stmt1 = $pdo->prepare("
         SELECT 
             CONCAT('WC:', product_name) AS product_name,
@@ -23,8 +20,6 @@ try {
     ");
     $stmt1->execute([':start' => $monthStart, ':end' => $monthEnd]);
     $wcSales = $stmt1->fetchAll(PDO::FETCH_ASSOC);
-
-    // Retail Sales
     $stmt2 = $pdo->prepare("
         SELECT 
             CONCAT('R:', product_name) AS product_name,
@@ -34,10 +29,7 @@ try {
     ");
     $stmt2->execute([':start' => $monthStart, ':end' => $monthEnd]);
     $retailSales = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-
     $allSales = array_merge($wcSales, $retailSales);
-
-    // Filter today only
     $todaySales = array_filter($allSales, function ($sale) use ($date) {
         return substr($sale['date'], 0, 10) === $date;
     });

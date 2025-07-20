@@ -1,7 +1,6 @@
 <?php
 require_once './dbinfo.php';
 header('Content-Type: application/json');
-
 try {
     $stmt = $pdo->prepare("
         SELECT 

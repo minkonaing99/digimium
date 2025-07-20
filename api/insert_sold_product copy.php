@@ -20,7 +20,6 @@ try {
         exit;
     }
 
-    // Optional: Validate email format only if not default "-"
     if ($gmail !== '-' && !filter_var($gmail, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid email format.']);
         exit;
