@@ -10,7 +10,7 @@ try {
     $end_date       = $_POST['end_date'] ?? null;
     $seller         = trim($_POST['seller'] ?? '');
     $note           = trim($_POST['note'] ?? '');
-    $profit         = isset($_POST['profit']) ? floatval($_POST['profit']) : 0; // ✅ This was missing
+    $profit         = isset($_POST['profit']) ? floatval($_POST['profit']) : 0;
 
     // Validate base fields
     if (!$product_id || !$customer || !$gmail || !$purchase_date || !$end_date || !$seller) {
@@ -24,7 +24,7 @@ try {
         exit;
     }
 
-    // Fetch product info
+    // ✅ Fetch product info
     $stmt = $pdo->prepare("SELECT product_name, duration, retail_price FROM product_list WHERE product_id = ?");
     $stmt->execute([$product_id]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,7 +34,9 @@ try {
         exit;
     }
 
-    // Insert full snapshot into product_sold
+    // ✅ Allow custom price if given
+    $price = isset($_POST['price']) ? floatval($_POST['price']) : floatval($product['retail_price']);
+
     $stmt = $pdo->prepare("
         INSERT INTO product_sold 
             (product_id, product_name, duration, customer, gmail, price, purchase_date, end_date, seller, note, profit)
@@ -48,7 +50,7 @@ try {
         ':duration'      => $product['duration'],
         ':customer'      => $customer,
         ':gmail'         => $gmail,
-        ':price'         => $product['retail_price'],
+        ':price'         => $price,
         ':purchase_date' => $purchase_date,
         ':end_date'      => $end_date,
         ':seller'        => $seller,

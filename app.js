@@ -1,322 +1,360 @@
-// ========== NAVIGATION TOGGLE ==========
-function toggleMenu() {
-  const burger = document.getElementById("burger");
-  const navLinks = document.getElementById("navLinks");
-  burger.classList.toggle("open");
-  navLinks.classList.toggle("active");
-}
+(function () {
+  // ========== DOM Helpers ==========
+  const $ = (id) => document.getElementById(id);
+  const todayDate = () => new Date().toLocaleDateString("en-CA");
 
-document.querySelectorAll("#navLinks a").forEach((link) => {
-  link.addEventListener("click", () => {
-    document.getElementById("navLinks").classList.remove("active");
-    document.getElementById("burger").classList.remove("open");
-  });
-});
+  // ========== Form Validation ==========
+  function initFormValidation() {
+    const inputs = ["product", "customer", "purchase_date", "seller"].map($);
+    inputs.forEach((input) => {
+      input.addEventListener("input", validateFormFields);
+      input.addEventListener("change", validateFormFields);
+    });
+    validateFormFields(); // Initial validation
+  }
 
-// ========== SHOW/HIDE ADD FORM ==========
-document.getElementById("addBtn").addEventListener("click", function () {
-  const inputRow = document.getElementById("inputRow");
-  inputRow.style.display = inputRow.style.display === "none" ? "block" : "none";
-});
+  // ========== Navigation ==========
+  function initNavigationToggle() {
+    const burger = $("burger"),
+      navLinks = $("navLinks");
+    burger.onclick = () => {
+      burger.classList.toggle("open");
+      navLinks.classList.toggle("active");
+    };
+    document.querySelectorAll("#navLinks a").forEach((link) =>
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("active");
+        burger.classList.remove("open");
+      })
+    );
+  }
 
-// ========== UTILITIES ==========
-function getThailandTodayDate() {
-  const today = new Date();
-  return today.toLocaleDateString("en-CA"); // returns 'YYYY-MM-DD'
-}
+  // ========== Add Form Toggle ==========
+  function initAddFormToggle() {
+    $("addBtn").onclick = () => {
+      const row = $("inputRow");
+      row.style.display = row.style.display === "none" ? "block" : "none";
+    };
+  }
 
-function addMonthsToDate(dateStr, months) {
-  const date = new Date(dateStr);
-  date.setMonth(date.getMonth() + parseInt(months));
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
+  // ========== Date Utilities ==========
+  function addMonthsToDate(dateStr, months) {
+    const date = new Date(dateStr);
+    date.setMonth(date.getMonth() + parseInt(months));
+    return date.toISOString().split("T")[0];
+  }
 
-// ========== LOAD PRODUCT OPTIONS ==========
-function loadProductOptions() {
-  fetch("./api/fetch_product_options.php")
-    .then((res) => res.json())
-    .then((data) => {
-      const productSelect = document.getElementById("product");
-      productSelect.innerHTML = "<option selected disabled>Choose...</option>";
-      if (data.status === "success") {
-        data.products.forEach((p) => {
-          const opt = document.createElement("option");
-          opt.value = p.product_id;
-          opt.dataset.duration = p.duration;
-          opt.dataset.price = p.retail_price;
-          opt.dataset.wcPrice = p.wc_price;
-          opt.textContent = `${p.product_name}`;
-          productSelect.appendChild(opt);
-        });
-      }
-    })
-    .catch((error) => console.error("Failed to load product options:", error));
-}
+  // ========== Product Options ==========
+  function loadProductOptions() {
+    fetch("./api/fetch_product_options.php")
+      .then((res) => res.json())
+      .then((data) => {
+        const product = $("product");
+        product.innerHTML = `<option selected disabled>Choose...</option>`;
+        if (data.status === "success") {
+          data.products.forEach((p) => {
+            const opt = new Option(p.product_name, p.product_id);
+            opt.dataset.duration = p.duration;
+            opt.dataset.price = p.retail_price;
+            opt.dataset.wcPrice = p.wc_price;
+            product.add(opt);
+          });
+        }
+      })
+      .catch((e) => console.error("Product options load failed", e));
+  }
 
-// ========== LOAD TABLE DATA ==========
-function loadSoldProductTable() {
-  fetch("./api/fetch_product_sold.php")
-    .then((response) => response.json())
-    .then((result) => {
-      if (result.status === "success") {
+  // ========== Sold Product Table ==========
+  function loadSoldProductTable() {
+    fetch("./api/fetch_product_sold.php")
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.status !== "success") return alert(result.message);
+
         const tbody = document.querySelector("tbody");
         tbody.innerHTML = "";
+        const groups = {};
 
-        const groupedByDate = {};
         result.data.forEach((item) => {
-          const date = item.purchase_date;
-          if (!groupedByDate[date]) groupedByDate[date] = [];
-          groupedByDate[date].push(item);
+          (groups[item.purchase_date] ??= []).push(item);
         });
 
-        Object.keys(groupedByDate)
-          .sort((a, b) => b.localeCompare(a))
-          .forEach((date) => {
-            const group = groupedByDate[date];
-            let groupTotal = 0;
+        Object.entries(groups)
+          .sort(([a], [b]) => b.localeCompare(a))
+          .forEach(([date, rows]) => {
+            let total = 0;
+            rows.forEach((item, i) => {
+              total += parseFloat(item.price);
+              // Conditionally define the delete column
+              const deleteColumn = IS_ADMIN
+                ? `<td style="width:60px; text-align:right;">
+         <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
+           <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
+         </button>
+       </td>`
+                : "<td></td>";
 
-            group.forEach((item, index) => {
-              groupTotal += parseFloat(item.price);
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+    <td>${i + 1}</td>
+    <td>${item.product_name}</td>
+    <td>${item.duration}</td>
+    <td>${item.customer || ""}</td>
+    <td>${item.gmail || ""}</td>
+    <td>${item.purchase_date}</td>
+    <td>${item.end_date}</td>
+    <td>${item.seller || ""}</td>
+    <td class="td-scrollable editable-note" data-id="${item.id}">
+      <span class="note-text">${item.note || ""}</span>
+      <input type="text" class="form-control form-control-sm note-input d-none" value="${
+        item.note || ""
+      }" />
+    </td>
+    <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
+      item.price
+    ).toFixed(0)} Ks</td>
+    ${deleteColumn}
+  `;
 
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${item.product_name}</td>
-                            <td>${item.duration}</td>
-                            <td>${item.customer || ""}</td>
-                            <td>${item.gmail || ""}</td>
-                            <td>${item.purchase_date}</td>
-                            <td>${item.end_date}</td>
-                            <td>${item.seller || ""}</td>
-                            <td class="td-scrollable">
-                            <button type="button" class="btn btn-link p-0 edit-note-btn" data-id="${
-                              item.id
-                            }" aria-label="Edit Note">
-                              <img src="./assets/edit-svgrepo-com.svg" alt="Edit" style="width: 24px;">
-                            </button>
-                            <span class="note-text">${item.note || ""}</span>
-                            <div class="d-flex align-items-center gap-2 mt-1 d-none note-edit-wrapper">
-                              <input type="text" class="form-control form-control-sm note-input" value="${
-                                item.note || ""
-                              }" />
-                              <button type="button" class="btn btn-link p-0 save-note-btn" data-id="${
-                                item.id
-                              }" aria-label="Save Note">
-                                <img src="./assets/tick-square-svgrepo-com.svg" alt="Save" style="width: 20px;">
-                              </button>
-                            </div>
-                            </td>
-                            <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
-                              item.price
-                            ).toFixed(0)} Ks</td>
-                            <td style="width: 60px; text-align: right; white-space: nowrap;">
-                                
-                                <button type="button" class="btn btn-link p-0" aria-label="Delete" data-id="${
-                                  item.id
-                                }">
-                                    <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
-                                </button>
-                            </td>
-                        `;
-              tbody.appendChild(row);
+              // Add delete event listener only if admin
+              if (IS_ADMIN) {
+                tr.querySelector('[aria-label="Delete"]').onclick = () =>
+                  handleDelete(item.id);
+              }
 
-              // DELETE HANDLER
-              row
-                .querySelector('[aria-label="Delete"]')
-                .addEventListener("click", () => {
-                  const id = row.querySelector('[aria-label="Delete"]').dataset
-                    .id;
-                  if (confirm("Are you sure you want to delete this entry?")) {
-                    fetch("./api/delete_product_sold.php", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                      },
-                      body: "id=" + encodeURIComponent(id),
-                    })
-                      .then((res) => res.json())
-                      .then((data) => {
-                        if (data.status === "success") loadSoldProductTable();
-                        else alert("Delete failed: " + data.message);
-                      })
-                      .catch((err) => {
-                        console.error(err);
-                        alert("An error occurred while deleting.");
-                      });
-                  }
-                });
+              tbody.appendChild(tr);
             });
 
-            // Add subtotal row for this date group
             const totalRow = document.createElement("tr");
             totalRow.innerHTML = `
-    <td colspan="9" style="text-align: right; font-weight: bold;">Total for ${date} </td>
-    <td style="text-align: right; padding-right: 1.2rem; font-weight: bold;">${groupTotal.toLocaleString()} Ks</td>
-    <td></td>
-`;
-
+<td colspan="9" style="text-align:right;font-weight:bold;">Total for ${date}</td>
+<td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
+<td></td>`;
             totalRow.style.backgroundColor = "#f8f9fa";
             tbody.appendChild(totalRow);
           });
-      } else {
-        alert("Error: " + result.message);
-      }
+      })
+      .catch((e) => {
+        console.error("Table load error", e);
+        alert("Failed to load table.");
+      });
+  }
+
+  function handleDelete(id) {
+    if (!confirm("Are you sure you want to delete this entry?")) return;
+    fetch("./api/delete_product_sold.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "id=" + encodeURIComponent(id),
     })
-    .catch((error) => {
-      console.error("Fetch error:", error);
-      alert("Failed to load data.");
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") loadSoldProductTable();
+        else alert("Delete failed: " + data.message);
+      })
+      .catch((e) => {
+        console.error(e);
+        alert("An error occurred while deleting.");
+      });
+  }
+  function validateFormFields() {
+    const required = ["product", "customer", "purchase_date", "seller"].map($);
+    required.forEach((input) => {
+      const label = input.closest("div").querySelector("label");
+      const isInvalid = !input.value.trim() || input.value === "Choose...";
+      label.classList.toggle("text-danger", isInvalid);
     });
-}
+  }
 
-function resetAddForm() {
-  const form = document.querySelector("#inputRow form");
-  form.reset();
+  // ========== Add Form Logic ==========
+  function resetAddForm() {
+    const form = document.querySelector("#inputRow form");
+    form.reset();
 
-  document.getElementById("duration").value = "";
-  document.getElementById("end_date").value = "";
-  document.getElementById("purchase_date").value = getThailandTodayDate();
-  const productSelect = document.getElementById("product");
-  productSelect.selectedIndex = 0;
-}
+    $("duration").value = "";
+    $("end_date").value = "";
+    $("purchase_date").value = todayDate();
+    $("product").selectedIndex = 0;
 
-// ========== INITIATE FORM BEHAVIOR ==========
-document.addEventListener("DOMContentLoaded", () => {
-  loadSoldProductTable();
-  loadProductOptions();
+    // Re-validate to update label colors
+    validateFormFields();
+  }
 
-  const purchaseDateInput = document.getElementById("purchase_date");
-  const endDateInput = document.getElementById("end_date");
-  const durationInput = document.getElementById("duration");
-  const productSelect = document.getElementById("product");
+  function initFormSubmission() {
+    const form = document.querySelector("#inputRow form");
+    const product = $("product");
+    const purchaseDate = $("purchase_date");
+    const endDate = $("end_date");
+    const duration = $("duration");
+    const amount = $("amount");
 
-  purchaseDateInput.value = getThailandTodayDate();
+    purchaseDate.value = todayDate();
 
-  productSelect.addEventListener("change", () => {
-    const selectedOption = productSelect.options[productSelect.selectedIndex];
-    const duration = selectedOption.dataset.duration || 0;
-    durationInput.value = duration;
-    endDateInput.value = addMonthsToDate(purchaseDateInput.value, duration);
-  });
+    product.onchange = () => {
+      const opt = product.selectedOptions[0];
+      const dur = opt?.dataset.duration || 0;
+      duration.value = dur;
+      endDate.value = addMonthsToDate(purchaseDate.value, dur);
+    };
 
-  purchaseDateInput.addEventListener("change", () => {
-    const selectedOption = productSelect.options[productSelect.selectedIndex];
-    if (selectedOption) {
-      const duration = selectedOption.dataset.duration || 0;
-      endDateInput.value = addMonthsToDate(purchaseDateInput.value, duration);
-    }
-  });
+    purchaseDate.onchange = () => product.onchange();
 
-  document
-    .querySelector("#inputRow form")
-    .addEventListener("submit", function (e) {
+    form.onsubmit = (e) => {
       e.preventDefault();
-      const selectedOption =
-        document.getElementById("product").selectedOptions[0];
-      const priceRaw = selectedOption?.dataset.price;
-      const wcPriceRaw = selectedOption?.dataset.wcPrice;
+      const opt = product.selectedOptions[0] || {};
+      const manual = parseFloat(amount?.value);
+      const price = !isNaN(manual)
+        ? manual
+        : parseFloat(opt.dataset.price || 0);
+      const wc = parseFloat(opt.dataset.wcPrice || 0);
+      const profit = price - wc;
 
-      const price = priceRaw && !isNaN(priceRaw) ? parseFloat(priceRaw) : 0;
-      const wcPrice =
-        wcPriceRaw && !isNaN(wcPriceRaw) ? parseFloat(wcPriceRaw) : 0;
-      const profit = price - wcPrice;
-      const formData = new FormData();
-      formData.append("product_id", document.getElementById("product").value);
-      formData.append(
-        "customer",
-        document.getElementById("customer").value.trim()
-      );
-      formData.append(
-        "gmail",
-        document.getElementById("email").value.trim() || "-"
-      );
-      formData.append("price", price.toFixed(2));
-      formData.append("profit", profit.toFixed(2));
-      formData.append(
-        "purchase_date",
-        document.getElementById("purchase_date").value
-      );
-      formData.append("end_date", document.getElementById("end_date").value);
-      formData.append("seller", document.getElementById("seller").value.trim());
-      formData.append(
-        "note",
-        document.getElementById("Notes").value.trim() || "-"
-      );
+      const data = new FormData();
+      data.append("product_id", product.value);
+      data.append("customer", $("customer").value.trim());
+      data.append("gmail", $("email").value.trim() || "-");
+      data.append("price", price.toFixed(2));
+      data.append("profit", profit.toFixed(2));
+      data.append("purchase_date", purchaseDate.value);
+      data.append("end_date", endDate.value);
+      data.append("seller", $("seller").value.trim());
+      data.append("note", $("Notes").value.trim() || "-");
+
       fetch("./api/insert_sold_product.php", {
         method: "POST",
-        body: formData,
+        body: data,
       })
         .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "success") {
-            document.getElementById("inputRow").style.display = "none";
+        .then((res) => {
+          if (res.status === "success") {
+            $("inputRow").style.display = "none";
             resetAddForm();
             loadSoldProductTable();
-          } else {
-            alert("Insert failed: " + data.message);
-          }
+          } else alert("Insert failed: " + res.message);
         })
-        .catch((err) => {
-          console.error(err);
-          alert("An error occurred while adding.");
+        .catch((e) => {
+          console.error(e);
+          alert("Error while adding.");
         });
-    });
-});
-document
-  .getElementById("searchCustomer")
-  .addEventListener("input", function () {
-    const searchTerm = this.value.trim().toLowerCase();
-    const rows = document.querySelectorAll("tbody tr");
-    let withinMatchGroup = false;
-    rows.forEach((row) => {
-      const isSubtotalRow = row.innerText.includes("Total for");
-      if (searchTerm === "") {
-        row.style.display = "";
-      } else if (isSubtotalRow) {
-        row.style.display = "none";
-      } else {
-        const customerCell = row.children[3];
-        const matches =
-          customerCell &&
-          customerCell.textContent.toLowerCase().includes(searchTerm);
-        row.style.display = matches ? "" : "none";
+    };
+  }
+
+  // ========== Search ==========
+  function initSearch() {
+    $("searchCustomer").oninput = function () {
+      const keyword = this.value.toLowerCase().trim();
+      document.querySelectorAll("tbody tr").forEach((tr) => {
+        const isTotalRow = tr.innerText.includes("Total for");
+        if (!keyword) {
+          tr.style.display = "";
+        } else if (isTotalRow) {
+          tr.style.display = "none";
+        } else {
+          const customerCell = tr.children[3];
+          tr.style.display = customerCell.textContent
+            .toLowerCase()
+            .includes(keyword)
+            ? ""
+            : "none";
+        }
+      });
+    };
+  }
+
+  // ========== Inline Note Edit ==========
+  function initInlineNoteEditing() {
+    document.addEventListener("click", (e) => {
+      const td = e.target.closest(".editable-note");
+
+      if (!td) return;
+
+      // Cancel (without saving) any other open note
+      document.querySelectorAll(".editable-note.editing").forEach((otherTd) => {
+        if (otherTd !== td) cancelNote(otherTd);
+      });
+
+      // If not already editing, activate this cell
+      if (!td.classList.contains("editing")) {
+        td.classList.add("editing");
+        const input = td.querySelector(".note-input");
+        const span = td.querySelector(".note-text");
+
+        // Set input value to current visible text (reset in case of stale value)
+        input.value = span.textContent.trim();
+        span.classList.add("d-none");
+        input.classList.remove("d-none");
+        input.focus();
       }
     });
-  });
-document.addEventListener("click", function (e) {
-  if (e.target.closest(".edit-note-btn")) {
-    const btn = e.target.closest(".edit-note-btn");
-    const td = btn.closest("td");
 
-    td.querySelector(".note-text").classList.add("d-none");
-    td.querySelector(".note-edit-wrapper").classList.remove("d-none");
-    btn.classList.add("d-none");
+    document.addEventListener("keydown", (e) => {
+      if (e.target.matches(".note-input") && e.key === "Enter") {
+        e.preventDefault();
+        saveNote(e.target);
+      }
+    });
+
+    // Cancel (revert) when input loses focus
+    document.addEventListener(
+      "blur",
+      (e) => {
+        if (e.target.matches(".note-input")) {
+          setTimeout(() => {
+            cancelNote(e.target.closest(".editable-note"));
+          }, 100);
+        }
+      },
+      true
+    );
   }
-  if (e.target.closest(".save-note-btn")) {
-    const btn = e.target.closest(".save-note-btn");
-    const td = btn.closest("td");
+  function cancelNote(td) {
+    if (!td || !td.classList.contains("editing")) return;
+
     const input = td.querySelector(".note-input");
-    const note = input.value.trim();
-    const noteText = td.querySelector(".note-text");
-    noteText.textContent = note;
-    td.querySelector(".note-edit-wrapper").classList.add("d-none");
-    noteText.classList.remove("d-none");
-    td.querySelector(".edit-note-btn").classList.remove("d-none");
+    const span = td.querySelector(".note-text");
+
+    // Revert input value back to original text
+    input.value = span.textContent.trim();
+
+    td.classList.remove("editing");
+    input.classList.add("d-none");
+    span.classList.remove("d-none");
+  }
+
+  function saveNote(input) {
+    const td = input.closest(".editable-note");
+    const span = td.querySelector(".note-text");
+    const id = td.dataset.id;
+    const newNote = input.value.trim();
+
+    if (newNote === span.textContent.trim()) {
+      td.classList.remove("editing");
+      input.classList.add("d-none");
+      span.classList.remove("d-none");
+      return;
+    }
+
+    span.textContent = newNote;
+    td.classList.remove("editing");
+    input.classList.add("d-none");
+    span.classList.remove("d-none");
+
     fetch("./api/edit_note.php", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id,
-        note,
-      }),
-    }).then((res) => {
-      if (!res.ok) {
-        alert("Failed to update note!");
-      }
-    });
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, note: newNote }),
+    }).catch(() => alert("Error saving note"));
   }
-});
+
+  // ========== Init ==========
+  document.addEventListener("DOMContentLoaded", () => {
+    initNavigationToggle();
+    initAddFormToggle();
+    initFormValidation();
+    initFormSubmission();
+    initSearch();
+    initInlineNoteEditing();
+    loadSoldProductTable();
+    loadProductOptions();
+  });
+})();

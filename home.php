@@ -38,14 +38,14 @@ if (
 
 <body>
     <header id="navbar">
-        <div class="logo" aria-label="Home"><a href="#"><img src="./assets/logo_digimium.png" alt=""></a></div>
+        <div class="logo" aria-label="Home"><a href="./index.php"><img src="./assets/logo_digimium.png" alt=""></a></div>
         <nav>
             <div class="nav-links" id="navLinks">
                 <a href="./home.php" aria-label="Home">Home</a>
                 <?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] === 'admin'): ?>
                     <a href="./admin.php" aria-label="Admin">Admin</a>
+                    <a href="./summary.php" aria-label="Summary">Summary</a>
                 <?php endif; ?>
-                <a href="./summary.php" aria-label="Summary">Summary</a>
                 <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">Log
                     Out</button>
             </div>
@@ -94,7 +94,7 @@ if (
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="text" class="form-label">Email</label>
                             <input type="text" class="form-control form-control-sm" id="email"
-                                placeholder="...@gmail.com">
+                                placeholder="...@....">
                         </div>
 
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
@@ -107,6 +107,11 @@ if (
                             <input type="text" class="form-control form-control-sm" id="seller" placeholder="seller"
                                 value="Kaung Lin Thant">
                         </div>
+                        <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" id="amount" class="form-control form-control-sm" step="1" placeholder="Enter price (optional)">
+
+                        </div>
 
                         <div style="min-width: 250px; max-width: 300px; flex-grow: 1;">
                             <label for="Notes" class="form-label">Notes</label>
@@ -115,7 +120,7 @@ if (
                         </div>
 
                         <div style="min-width: 80px; flex-shrink: 0;">
-                            <button type="submit" class=" contact-btn menu-btn mt-2 w-100">Save</button>
+                            <button type="submit" class="contact-btn menu-btn mt-2 w-100" id="submitBtn" id="submitBtn">Save</button>
                         </div>
 
                     </div>
@@ -162,6 +167,12 @@ if (
 
 
     <script src="app.js"></script>
+    <script>
+        const IS_ADMIN = <?= isset($_SESSION['privilege']) && $_SESSION['privilege'] === 'admin' ? 'true' : 'false' ?>;
+        console.log(IS_ADMIN);
+    </script>
+
+
 
 </body>
 

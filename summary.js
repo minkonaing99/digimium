@@ -38,6 +38,7 @@ function loadSalesSummary() {
     .then((data) => {
       if (data.status === "success") {
         const sales = data.data;
+        console.log(sales);
 
         // === Pie Chart Data ===
         const grouped = {};
@@ -195,8 +196,9 @@ function fetchExpiringSoon() {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                             <td>${count++}</td>
-                            <td>${item.customer}</td>
                             <td>${item.product_name}</td>
+                            <td>${item.customer}</td>
+                            <td>${item.gmail}</td>
                             <td>${item.purchase_date}</td>
                             <td>${item.end_date}</td>
                             <td>${daysLeft} day${daysLeft !== 1 ? "s" : ""}</td>

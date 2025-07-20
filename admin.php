@@ -38,12 +38,15 @@ if (
 
 <body>
     <header id="navbar">
-        <div class="logo" aria-label="Home"><a href="#"><img src="./assets/logo_digimium.png" alt=""></a></div>
+        <div class="logo" aria-label="Home"><a href="./index.php"><img src="./assets/logo_digimium.png" alt=""></a></div>
+
         <nav>
             <div class="nav-links" id="navLinks">
                 <a href="./home.php" aria-label="Home">Home</a>
-                <a href="./admin.php" aria-label="Admin">Admin</a>
-                <a href="./summary.php" aria-label="Summary">Summary</a>
+                <?php if (isset($_SESSION['privilege']) && $_SESSION['privilege'] === 'admin'): ?>
+                    <a href="./admin.php" aria-label="Admin">Admin</a>
+                    <a href="./summary.php" aria-label="Summary">Summary</a>
+                <?php endif; ?>
                 <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">Log
                     Out</button>
             </div>
