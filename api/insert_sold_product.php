@@ -12,19 +12,16 @@ try {
     $note           = trim($_POST['note'] ?? '');
     $profit         = isset($_POST['profit']) ? floatval($_POST['profit']) : 0;
 
-    // Validate base fields
     if (!$product_id || !$customer || !$gmail || !$purchase_date || !$end_date || !$seller) {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields.']);
         exit;
     }
 
-    // Validate email if not '-'
     if ($gmail !== '-' && !filter_var($gmail, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid email format.']);
         exit;
     }
 
-    // ✅ Fetch product info
     $stmt = $pdo->prepare("SELECT product_name, duration, retail_price FROM product_list WHERE product_id = ?");
     $stmt->execute([$product_id]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,7 +31,6 @@ try {
         exit;
     }
 
-    // ✅ Allow custom price if given
     $price = isset($_POST['price']) ? floatval($_POST['price']) : floatval($product['retail_price']);
 
     $stmt = $pdo->prepare("

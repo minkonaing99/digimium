@@ -1,7 +1,6 @@
     <?php
     require_once 'session_check.php';
     require_once 'dbinfo.php';
-
     try {
         $stmt = $pdo->prepare("
             SELECT 
@@ -21,12 +20,9 @@
             ORDER BY 
         date DESC, 
         id DESC;
-
         ");
-
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         echo json_encode([
             'status' => 'success',
             'data' => $data

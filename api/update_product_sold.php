@@ -17,12 +17,10 @@ try {
         echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
         exit;
     }
-
     if ($gmail !== '-' && !filter_var($gmail, FILTER_VALIDATE_EMAIL)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid email format']);
         exit;
     }
-
     $stmt = $pdo->prepare("
         UPDATE product_sold
         SET product_id = :product_id,
@@ -35,7 +33,6 @@ try {
             profit = :profit
         WHERE id = :id
     ");
-
     $stmt->execute([
         ':id'            => $id,
         ':product_id'    => $product_id,
@@ -47,7 +44,6 @@ try {
         ':note'          => $note,
         ':profit'        => $profit
     ]);
-
     echo json_encode(['status' => 'success']);
 } catch (PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

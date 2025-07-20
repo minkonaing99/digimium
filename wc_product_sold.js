@@ -1,19 +1,16 @@
 (function () {
-  // ========== DOM Helpers ==========
   const $ = (id) => document.getElementById(id);
   const todayDate = () => new Date().toLocaleDateString("en-CA");
 
-  // ========== Form Validation ==========
   function initFormValidation() {
     const inputs = ["product", "customer", "quantity", "date", "seller"].map($);
     inputs.forEach((input) => {
       input.addEventListener("input", validateFormFields);
       input.addEventListener("change", validateFormFields);
     });
-    validateFormFields(); // Initial validation
+    validateFormFields();
   }
 
-  // ========== Navigation ==========
   function initNavigationToggle() {
     const burger = $("burger"),
       navLinks = $("navLinks");
@@ -29,7 +26,6 @@
     );
   }
 
-  // ========== Add Form Toggle ==========
   function initAddFormToggle() {
     $("addBtn").onclick = () => {
       const row = $("inputRow");
@@ -37,14 +33,12 @@
     };
   }
 
-  // ========== Date Utilities ==========
   function addMonthsToDate(dateStr, months) {
     const date = new Date(dateStr);
     date.setMonth(date.getMonth() + parseInt(months));
     return date.toISOString().split("T")[0];
   }
 
-  // ========== Product Options ==========
   function loadProductOptions() {
     fetch("./api/fetch_wc_product_options.php")
       .then((res) => res.json())
@@ -67,9 +61,8 @@
       .catch((e) => console.error("Product options load failed", e));
   }
 
-  // ========== Sold Product Table ==========
   function loadSoldProductTable() {
-    fetch("./api/fetch_wc_product_sold.php") // Make sure the endpoint is correct
+    fetch("./api/fetch_wc_product_sold.php")
       .then((res) => res.json())
       .then((result) => {
         if (result.status !== "success") return alert(result.message);
@@ -79,11 +72,11 @@
         const groups = {};
 
         result.data.forEach((item) => {
-          (groups[item.date] ??= []).push(item); // Group by `date`
+          (groups[item.date] ??= []).push(item);
         });
 
         Object.entries(groups)
-          .sort(([a], [b]) => b.localeCompare(a)) // Sort by date descending
+          .sort(([a], [b]) => b.localeCompare(a))
           .forEach(([date, rows]) => {
             let total = 0;
 
@@ -176,7 +169,6 @@
     });
   }
 
-  // ========== Add Form Logic ==========
   function resetAddForm() {
     const form = document.querySelector("#inputRow form");
     form.reset();
@@ -184,7 +176,6 @@
     $("date").value = todayDate();
     $("product").selectedIndex = 0;
 
-    // Re-validate to update label colors
     validateFormFields();
   }
 
@@ -195,7 +186,6 @@
     const quantity = $("quantity");
     const date = $("date");
 
-    // Set today's date as default
     date.value = todayDate();
 
     form.onsubmit = (e) => {
@@ -246,7 +236,6 @@
     };
   }
 
-  // ========== Search ==========
   function initSearch() {
     $("searchCustomer").oninput = function () {
       const keyword = this.value.toLowerCase().trim();
@@ -268,28 +257,24 @@
     };
   }
 
-  // ========== Inline Note Edit ==========
   function initInlineNoteEditing() {
     document.addEventListener("click", (e) => {
       const td = e.target.closest(".editable-note");
 
       if (!td) return;
 
-      // Cancel (without saving) any other open note
       document.querySelectorAll(".editable-note.editing").forEach((otherTd) => {
         if (otherTd !== td) cancelNote(otherTd);
       });
 
-      // If not already editing, activate this cell
       if (!td.classList.contains("editing")) {
         td.classList.add("editing");
 
         const input = td.querySelector(".note-input");
         const span = td.querySelector(".note-text");
 
-        // Set input value to current visible text
         const noteText = span.textContent.trim();
-        input.value = noteText === "-" ? "" : noteText; // ← this line clears dashes
+        input.value = noteText === "-" ? "" : noteText;
         span.classList.add("d-none");
         input.classList.remove("d-none");
         input.focus();
@@ -303,7 +288,6 @@
       }
     });
 
-    // Cancel (revert) when input loses focus
     document.addEventListener(
       "blur",
       (e) => {
@@ -323,7 +307,6 @@
     const input = td.querySelector(".note-input");
     const span = td.querySelector(".note-text");
 
-    // Revert input value back to original text
     input.value = span.textContent.trim();
 
     td.classList.remove("editing");
@@ -356,7 +339,6 @@
     }).catch(() => alert("Error saving note"));
   }
 
-  // ========== Init ==========
   document.addEventListener("DOMContentLoaded", () => {
     initNavigationToggle();
     initAddFormToggle();

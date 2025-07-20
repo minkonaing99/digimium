@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    // Trim and sanitize input
     $product_name  = htmlspecialchars(trim($_POST['product_name'] ?? ''));
     $duration      = htmlspecialchars(trim($_POST['duration'] ?? ''));
     $supplier      = htmlspecialchars(trim($_POST['supplier'] ?? ''));
@@ -18,17 +17,14 @@ try {
     $notes         = htmlspecialchars(trim($_POST['notes'] ?? '-')) ?: '-';
     $link          = htmlspecialchars(trim($_POST['link'] ?? '-')) ?: '-';
 
-    // Validate required fields
     if (!$product_name || !$duration || !$supplier || !is_numeric($wc_price) || !is_numeric($retail_price)) {
         throw new Exception('Invalid or missing required fields.');
     }
 
-    // Optional: check input length limits
     if (strlen($product_name) > 150 || strlen($supplier) > 100 || strlen($duration) > 50) {
         throw new Exception('Input too long.');
     }
 
-    // Use prepared statements to safely insert data
     $stmt = $pdo->prepare("
         INSERT INTO wc_product_list 
         (product_name, duration, supplier, wc_price, retail_price, notes, link) 

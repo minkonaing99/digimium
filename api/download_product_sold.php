@@ -6,7 +6,6 @@ header('Content-Disposition: attachment; filename="product_sold.csv"');
 
 $output = fopen('php://output', 'w');
 
-// Write CSV column headers
 fputcsv($output, [
     "ID",
     "Product Name",
@@ -20,8 +19,6 @@ fputcsv($output, [
     "Seller",
     "Note"
 ]);
-
-// Fetch data from the `product_sold` table
 $stmt = $pdo->query("SELECT * FROM product_sold ORDER BY purchase_date DESC");
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -39,6 +36,5 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $row['note']
     ]);
 }
-
 fclose($output);
 exit;

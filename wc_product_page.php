@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username']) && isset($_COOKIE['username'], $_COOKIE['privilege'], $_COOKIE['logincode'])) {
-    $_SESSION['username'] = $_COOKIE['username'];
+if (! isset($_SESSION['username']) && isset($_COOKIE['username'], $_COOKIE['privilege'], $_COOKIE['logincode'])) {
+    $_SESSION['username']  = $_COOKIE['username'];
     $_SESSION['privilege'] = $_COOKIE['privilege'];
     $_SESSION['logincode'] = $_COOKIE['logincode'];
 }
@@ -20,7 +20,6 @@ if (
     exit();
 }
 
-
 ?>
 
 <!DOCTYPE html>
@@ -33,14 +32,11 @@ if (
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-
-
 </head>
 
 <body>
     <header id="navbar">
         <div class="logo" aria-label="Home"><a href="./index.php"><img src="./assets/logo_digimium.png" alt=""></a></div>
-
         <nav>
             <div class="nav-links" id="navLinks">
                 <a href="./home.php" aria-label="Home">Home</a>
@@ -48,7 +44,6 @@ if (
                     <a href="./admin.php" aria-label="Admin">Admin</a>
                     <a href="./summary.php" aria-label="Summary">Summary</a>
                 <?php endif; ?>
-
                 <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">Log
                     Out</button>
             </div>
@@ -58,7 +53,6 @@ if (
                 <div></div>
             </div>
         </nav>
-
     </header>
     <div class="container-fluid">
         <section class="menu-bar p-5 py-3">
@@ -77,7 +71,6 @@ if (
                 </div>
             </div>
         </section>
-
         <section class="table-section">
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
                 <!-- form staring point -->
@@ -128,13 +121,8 @@ if (
                     </div>
                 </form>
             </div>
-
             <div id="editRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
             </div>
-
-
-
-            <!-- Table Section -->
             <div class="table-responsive">
                 <table class="table align-middle table-hover">
                     <thead class="table-light">
@@ -151,21 +139,13 @@ if (
                         </tr>
                     </thead>
                     <tbody id="productTableBody">
-                        <!-- ---table content will be here---- -->
                     </tbody>
                 </table>
             </div>
 
         </section>
     </div>
-
-
     <script src="./wc_product_page.js"></script>
-
-
-
-
-
 </body>
 
 </html>
