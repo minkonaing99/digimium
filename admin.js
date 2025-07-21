@@ -156,7 +156,7 @@ document.addEventListener("click", function (e) {
                 <div class="col-12 col-md"><label class="form-label">Retail Price</label><input type="number" class="form-control form-control-sm" id="edit_retail_price" value="${editBtn.dataset.retail_price}"></div>
                 <div class="col-12 col-md"><label class="form-label">Notes</label><input type="text" class="form-control form-control-sm" id="edit_Notes" value="${editBtn.dataset.notes}"></div>
                 <div class="col-12 col-md"><label class="form-label">Link</label><input type="text" class="form-control form-control-sm" id="edit_link" value="${editBtn.dataset.link}"></div>
-                <div class="col-12 col-md-auto"><button type="submit" class="btn btn-primary btn-sm mt-2 w-100">Save</button></div>
+                <div class="col-12 col-md-auto"><button type="submit" class="contact-btn menu-btn mt-2 w-100">Update</button></div>
             </div>
         </form>`;
   }

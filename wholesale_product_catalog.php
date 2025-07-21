@@ -37,15 +37,26 @@ if (
 <body>
     <header id="navbar">
         <div class="logo" aria-label="Home"><a href="./index.php"><img src="./assets/logo_digimium.png" alt=""></a></div>
+
         <nav>
+            <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
             <div class="nav-links" id="navLinks">
-                <a href="./home.php" aria-label="Home">Home</a>
+                <a href="./retail_sales_overview.php">
+                    Sales Overview
+                </a>
+
                 <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
-                    <a href="./admin.php" aria-label="Admin">Admin</a>
-                    <a href="./summary.php" aria-label="Summary">Summary</a>
+                    <a href="./retail_product_catalog.php"
+                        class="<?= $currentPage === 'retail_product_catalog.php' || $currentPage === 'wholesale_product_catalog.php' ? 'active' : '' ?>"
+                        aria-label="Product Catalog">Product Catalog</a>
+                    <a href="./summary.php"
+                        class="<?= $currentPage === 'summary.php' ? 'active' : '' ?>"
+                        aria-label="Summary">Summary</a>
                 <?php endif; ?>
-                <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">Log
-                    Out</button>
+
+                <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">
+                    Log Out
+                </button>
             </div>
             <div class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu Toggle">
                 <div></div>
@@ -53,15 +64,13 @@ if (
                 <div></div>
             </div>
         </nav>
+
     </header>
     <div class="container-fluid">
         <section class="menu-bar p-5 py-3">
             <div class="row d-flex align-items-center">
                 <div class="col text-start">
-                    <h1>
-                        WC Product Catalog |
-                        <a href="./admin.php" class="title_link">Retails</a>
-                    </h1>
+                    <h1>Wholesale | <a href="./retail_product_catalog.php" class="title_link">Retail</a></h1>
 
                 </div>
                 <div class="col d-flex justify-content-end">
@@ -94,7 +103,7 @@ if (
                         </div>
 
                         <div class="col-12 col-md">
-                            <label for="wc_price" class="form-label">WC Price</label>
+                            <label for="wc_price" class="form-label">WS Price</label>
                             <input type="number" class="form-control form-control-sm" id="wc_price">
                         </div>
 
@@ -133,7 +142,7 @@ if (
                             <th>Supplier</th>
                             <th>Note</th>
                             <th>Link</th>
-                            <th style="text-align: right; padding-right: 1.2rem">WC Price</th>
+                            <th style="text-align: right; padding-right: 1.2rem">WS Price</th>
                             <th style="text-align: right; padding-right: 1.2rem">Retail Price</th>
                             <th>Set</th>
                         </tr>

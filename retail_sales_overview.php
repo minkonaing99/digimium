@@ -39,16 +39,27 @@ if (
 <body>
     <header id="navbar">
         <div class="logo" aria-label="Home"><a href="./index.php"><img src="./assets/logo_digimium.png" alt=""></a></div>
+
         <nav>
+            <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
             <div class="nav-links" id="navLinks">
-                <a href="./home.php" aria-label="Home">Home</a>
+                <a href="./retail_sales_overview.php"
+                    class="<?= ($currentPage === 'retail_sales_overview.php' || $currentPage === 'wholesale_sales_overview.php') ? 'active' : '' ?>">
+                    Sales Overview
+                </a>
+
                 <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
-                    <a href="./admin.php" aria-label="Admin">Admin</a>
-                    <a href="./summary.php" aria-label="Summary">Summary</a>
+                    <a href="./retail_product_catalog.php"
+                        class="<?= $currentPage === 'retail_product_catalog.php' ? 'active' : '' ?>"
+                        aria-label="Product Catalog">Product Catalog</a>
+                    <a href="./summary.php"
+                        class="<?= $currentPage === 'summary.php' ? 'active' : '' ?>"
+                        aria-label="Summary">Summary</a>
                 <?php endif; ?>
 
-                <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">Log
-                    Out</button>
+                <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">
+                    Log Out
+                </button>
             </div>
             <div class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu Toggle">
                 <div></div>
@@ -56,14 +67,15 @@ if (
                 <div></div>
             </div>
         </nav>
+
     </header>
     <div class="container-fluid">
         <section class="menu-bar p-5 py-3">
             <div class="row d-flex justify-content-between align-items-center">
                 <div class="col text-start">
                     <h1>
-                        WC Sales Overview |
-                        <a href="./home.php" class="title_link">Retail</a>
+                        Retail |
+                        <a href="./wholesale_sales_overview.php" class="title_link">Wholesale</a>
                     </h1>
                 </div>
                 <div class="col d-flex justify-content-end">
@@ -80,6 +92,7 @@ if (
                 </div>
             </div>
         </section>
+
         <section class="table-section">
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
                 <form>
@@ -91,10 +104,6 @@ if (
                             </select>
                         </div>
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
-                            <label for="quantity" class="form-label">Quantity</label>
-                            <input type="text" class="form-control form-control-sm" id="quantity" placeholder="1-10">
-                        </div>
-                        <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="customer" class="form-label">Customer</label>
                             <input type="text" class="form-control form-control-sm" id="customer" placeholder="Name">
                         </div>
@@ -104,18 +113,18 @@ if (
                                 placeholder="...@....">
                         </div>
                         <div style="min-width: 200px; max-width: 300px; flex-grow: 1;">
-                            <label for="date" class="form-label">Date</label>
-                            <input type="date" class="form-control form-control-sm" id="date">
+                            <label for="purchase_date" class="form-label">Purchase Date</label>
+                            <input type="date" class="form-control form-control-sm" id="purchase_date">
                         </div>
                         <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="seller" class="form-label">Manager</label>
                             <input type="text" class="form-control form-control-sm" id="seller" placeholder="seller"
-                                value="Kaung Lin Thant">
+                                value="<?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : '' ?>">
+
                         </div>
                         <div style=" min-width: 200px; max-width: 300px; flex-grow: 1;">
                             <label for="amount" class="form-label">Amount</label>
                             <input type="number" id="amount" class="form-control form-control-sm" step="1" placeholder="Enter price (optional)">
-
                         </div>
                         <div style="min-width: 250px; max-width: 300px; flex-grow: 1;">
                             <label for="Notes" class="form-label">Notes</label>
@@ -126,6 +135,8 @@ if (
                             <button type="submit" class="contact-btn menu-btn mt-2 w-100" id="submitBtn" id="submitBtn">Save</button>
                         </div>
                     </div>
+                    <input type="hidden" id="duration"> <!-- Hidden, used for end_date calculation -->
+                    <input type="hidden" id="end_date"> <!-- Hidden, gets submitted with the form -->
                 </form>
             </div>
             <div id="editRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
@@ -136,10 +147,11 @@ if (
                         <tr>
                             <th>#</th>
                             <th>Product</th>
-                            <th>Quantity</th>
+                            <th>Duration</th>
                             <th>Customer</th>
-                            <th>Email</th>
-                            <th>Date</th>
+                            <th>Gmail</th>
+                            <th>Purchase Date</th>
+                            <th>End Date</th>
                             <th>Manager</th>
                             <th>Note</th>
                             <th style="text-align: right; padding-right: 1.2rem">Price</th>
@@ -150,19 +162,18 @@ if (
                     </tbody>
                 </table>
             </div>
-
         </section>
     </div>
+    <script src="app.js"></script>
     <script>
         const IS_ADMIN = <?= isset($_SESSION['privilege']) && $_SESSION['privilege'] === 'admin' ? 'true' : 'false' ?>;
         console.log(IS_ADMIN);
         document.getElementById("downloadBtn").addEventListener("click", () => {
             if (confirm("Do you want to download the product sold data as CSV?")) {
-                window.location.href = "./api/download_wc_product_sold.php";
+                window.location.href = "./api/download_product_sold.php";
             }
         });
     </script>
-    <script src="./wc_product_sold.js"></script>
 </body>
 
 </html>

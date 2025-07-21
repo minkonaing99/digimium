@@ -35,16 +35,26 @@ if (
 <body>
     <header id="navbar">
         <div class="logo" aria-label="Home"><a href="./index.php"><img src="./assets/logo_digimium.png" alt=""></a></div>
+
         <nav>
+            <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
             <div class="nav-links" id="navLinks">
-                <a href="./home.php" aria-label="Home">Home</a>
+                <a href="./retail_sales_overview.php">
+                    Sales Overview
+                </a>
+
                 <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
-                    <a href="./admin.php" aria-label="Admin">Admin</a>
-                    <a href="./summary.php" aria-label="Summary">Summary</a>
+                    <a href="./retail_product_catalog.php"
+                        class="<?= $currentPage === 'retail_product_catalog.php' || $currentPage === 'wholesale_product_catalog.php' ? 'active' : '' ?>"
+                        aria-label="Product Catalog">Product Catalog</a>
+                    <a href="./summary.php"
+                        class="<?= $currentPage === 'summary.php' ? 'active' : '' ?>"
+                        aria-label="Summary">Summary</a>
                 <?php endif; ?>
 
-                <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">Log
-                    Out</button>
+                <button class="contact-btn" onclick="window.location.href='./api/logout.php'" aria-label="LogOut">
+                    Log Out
+                </button>
             </div>
             <div class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu Toggle">
                 <div></div>
@@ -52,6 +62,7 @@ if (
                 <div></div>
             </div>
         </nav>
+
     </header>
     <div class="container-fluid">
         <section class="menu-bar p-5 py-3">
