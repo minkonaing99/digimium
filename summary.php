@@ -112,6 +112,13 @@ if (
             </div>
             <div class="row">
                 <div class="col-12 mt-3">
+
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8 text-center p-5">
+                            <div id="summary">Loading summary...</div>
+                        </div>
+                    </div>
+
                     <h3>Expire Soon</h3>
                     <div class="table-responsive">
                         <table class="table align-middle table-hover">

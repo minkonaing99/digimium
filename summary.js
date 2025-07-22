@@ -377,3 +377,22 @@ function drawProfitLineChart(labels, profits) {
   });
 }
 document.addEventListener("DOMContentLoaded", loadProfitChartData);
+
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("./api/get_latest_summary.php")
+    .then((response) => {
+      if (!response.ok) throw new Error("No data");
+      return response.json();
+    })
+    .then((data) => {
+      const summaryDiv = document.getElementById("summary");
+      if (data && data.summary_text) {
+        summaryDiv.textContent = data.summary_text;
+      } else {
+        summaryDiv.textContent = "No summary available.";
+      }
+    })
+    .catch(() => {
+      document.getElementById("summary").textContent = "No summary available.";
+    });
+});
