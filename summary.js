@@ -271,7 +271,10 @@ function fetchExpiringSoon() {
       if (data.status === "success") {
         const today = new Date(getThailandTodayDate());
         const tbody = document.getElementById("expiringSoonBody");
+        const mobileContainer = document.getElementById("expiringSoonMobile");
+
         tbody.innerHTML = "";
+        mobileContainer.innerHTML = "";
 
         let count = 1;
 
@@ -280,17 +283,41 @@ function fetchExpiringSoon() {
           const daysLeft = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
 
           if (daysLeft >= 0 && daysLeft <= 4) {
+            // ---------- DESKTOP ----------
             const tr = document.createElement("tr");
+            tr.classList.add("d-none", "d-md-table-row");
             tr.innerHTML = `
-                            <td>${count++}</td>
-                            <td>${item.product_name}</td>
-                            <td>${item.customer}</td>
-                            <td>${item.gmail ?? "-"}</td>
-                            <td>${item.purchase_date}</td>
-                            <td>${item.end_date}</td>
-                            <td>${daysLeft} day${daysLeft !== 1 ? "s" : ""}</td>
-                        `;
+            <td>${count}</td>
+            <td>${item.product_name}</td>
+            <td>${item.customer}</td>
+            <td>${item.gmail ?? "-"}</td>
+            <td>${item.purchase_date}</td>
+            <td>${item.end_date}</td>
+            <td>${daysLeft} day${daysLeft !== 1 ? "s" : ""}</td>
+          `;
             tbody.appendChild(tr);
+
+            // ---------- MOBILE ----------
+            const mobileRow = document.createElement("div");
+            mobileRow.className = "row p-3 d-flex d-md-none";
+
+            mobileRow.innerHTML = `
+            <div class="col-12 d-flex align-items-center">
+              <span class="me-2">${count}</span>
+              <div class="flex-grow-1 border-bottom"></div>
+            </div>
+            <div class="col-8 product-name">${item.product_name}</div>
+            <div class="col-4 text-end"><strong>${daysLeft} day${
+              daysLeft !== 1 ? "s" : ""
+            } left</strong></div>
+            <div class="col-12">${item.customer}</div>
+            <div class="col-12">${item.gmail ?? "-"}</div>
+            <div class="col-6">PD - ${item.purchase_date}</div>
+            <div class="col-6 text-end">ED - ${item.end_date}</div>
+          `;
+            mobileContainer.appendChild(mobileRow);
+
+            count++;
           }
         });
       } else {
@@ -347,6 +374,14 @@ function drawProfitLineChart(labels, profits) {
         title: {
           display: true,
           text: "Daily Profits (Last 30 Days)",
+          font: {
+            size: 16,
+            weight: "bold",
+          },
+          padding: {
+            top: 10,
+            bottom: 10,
+          },
         },
         legend: {
           display: false,
@@ -367,6 +402,14 @@ function drawProfitLineChart(labels, profits) {
         },
         y: {
           beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              if (value >= 1000) {
+                return (value / 1000).toFixed(value % 1000 === 0 ? 0 : 1) + "k";
+              }
+              return value;
+            },
+          },
           title: {
             display: true,
             text: "Profit (Ks)",

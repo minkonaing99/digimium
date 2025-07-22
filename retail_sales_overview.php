@@ -70,9 +70,9 @@ if (
 
     </header>
     <div class="container-fluid">
-        <section class="menu-bar p-5 py-3">
+        <section class="menu-bar p-md-5 py-md-3 p-1">
             <div class="row d-flex justify-content-between align-items-center">
-                <div class="col text-start">
+                <div class="col-12 col-md text-center text-md-start">
                     <h1>
                         Retail |
                         <a href="./wholesale_sales_overview.php" class="title_link">Wholesale</a>
@@ -81,13 +81,13 @@ if (
                 <div class="col d-flex justify-content-end">
                     <div class="btn-group">
                         <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
-                            <button class="contact-btn menu-btn" id="downloadBtn" style="border: none; background: none; padding: 0;">
+                            <button class="contact-btn menu-btn order-2 order-md-1" id="downloadBtn" style="border: none; background: none; padding: 0;">
                                 <img src="./assets/download-svgrepo-com.svg" alt="" width="24px" style="border: none;">
                             </button>
                         <?php endif; ?>
-                        <input type="text" id="searchCustomer" class="form-control-sm mx-md-4"
+                        <input type="text" id="searchCustomer" class="form-control-sm mx-md-4 order-1 order-md-2 d-none d-md-inline"
                             placeholder="Search by customer name..." />
-                        <button class="contact-btn menu-btn" id="addBtn">Add Sale</button>
+                        <button class="contact-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Product</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
                     </div>
                 </div>
             </div>
@@ -141,15 +141,37 @@ if (
             </div>
             <div id="editRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
             </div>
+
+
+            <!-- ✅ This is the correct wrapper -->
+            <div id="mobile-table" class="d-md-none"></div>
+
+            <!-- <div class="row p-3 d-flex d-md-none " id="mobile-table">
+                <div class="col-8">Total for 2025-07-20</div>
+                <div class="col-4 text-end">350000KS</div>
+                <div class="col-12 d-flex align-items-center">
+                    <span class="me-2">${count}</span>
+                    <div class="flex-grow-1 border-bottom"></div>
+                </div>
+                <div class="col-8 product-name">${item.product_name}</div>
+                <div class="col-4 text-end">Price</div>
+                <div class="col-12">${item.customer}</div>
+                <div class="col-12">${item.gmail ?? "-"}</div>
+                <div class="col-6">PD - 2025-07-20</div>
+                <div class="col-6 text-end">ED - 2025-07-21</div>
+                <div class="col-2">Notes</div>
+                <div class="col-10">This is note demo</div>
+            </div> -->
+
             <div class="table-responsive">
-                <table class="table align-middle table-hover">
+                <table class="table align-middle table-hover d-none d-md-table">
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
                             <th>Product</th>
                             <th>Duration</th>
                             <th>Customer</th>
-                            <th>Gmail</th>
+                            <th>Email</th>
                             <th>Purchase Date</th>
                             <th>End Date</th>
                             <th>Manager</th>
@@ -162,6 +184,10 @@ if (
                     </tbody>
                 </table>
             </div>
+
+
+
+
         </section>
     </div>
     <script src="app.js"></script>

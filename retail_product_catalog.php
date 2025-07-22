@@ -65,7 +65,7 @@ if (
         <section class="menu-bar p-5 py-3">
             <div class="row d-flex align-items-center">
                 <div class="col text-start">
-                    <h1>Retail | <a href="./wholesale_product_catalog.php" class="title_link">WC</a></h1>
+                    <h1>Retail | <a href="./wholesale_product_catalog.php" class="title_link">Wholesale</a></h1>
                 </div>
                 <div class="col d-flex justify-content-end">
                     <div class="btn-group">

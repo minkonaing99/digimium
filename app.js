@@ -57,58 +57,104 @@
       .then((res) => res.json())
       .then((result) => {
         if (result.status !== "success") return alert(result.message);
+
         const tbody = document.querySelector("tbody");
+        const mobileContainer = document.getElementById("mobile-table");
+
         tbody.innerHTML = "";
+        mobileContainer.innerHTML = "";
+
         const groups = {};
         result.data.forEach((item) => {
           (groups[item.purchase_date] ??= []).push(item);
         });
+
         Object.entries(groups)
           .sort(([a], [b]) => b.localeCompare(a))
           .forEach(([date, rows]) => {
             let total = 0;
+
+            // Total row for mobile
+            const mobileTotal = document.createElement("div");
+            mobileTotal.className = "row p-3 pb-1 border-top";
+            mobileTotal.innerHTML = `
+            <div class="col-7 fw-bold">Total for ${date}</div>
+            <div class="col-5 text-end fw-bold">${total.toLocaleString()} Ks</div>
+          `;
+            mobileContainer.appendChild(mobileTotal);
+
             rows.forEach((item, i) => {
-              total += parseFloat(item.price);
-              // Conditionally define the delete column
+              const price = parseFloat(item.price);
+              total += price;
+
+              // ----------- DESKTOP ROW ------------
               const deleteColumn = IS_ADMIN
                 ? `<td style="width:60px; text-align:right;">
-         <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
-           <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
-         </button>
-       </td>`
+                  <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
+                    <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
+                  </button>
+                </td>`
                 : "<td></td>";
+
               const tr = document.createElement("tr");
               tr.innerHTML = `
-    <td>${i + 1}</td>
-    <td>${item.product_name}</td>
-    <td>${item.duration}</td>
-    <td>${item.customer || ""}</td>
-    <td>${item.gmail || ""}</td>
-    <td>${item.purchase_date}</td>
-    <td>${item.end_date}</td>
-    <td>${item.seller || ""}</td>
-    <td class="td-scrollable editable-note" data-id="${item.id}">
-      <span class="note-text">${item.note || ""}</span>
-      <input type="text" class="form-control form-control-sm note-input d-none" value="${
-        item.note || ""
-      }" />
-    </td>
-    <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
-      item.price
-    ).toFixed(0)} Ks</td>
-    ${deleteColumn}
-  `;
+              <td>${i + 1}</td>
+              <td>${item.product_name}</td>
+              <td>${item.duration}</td>
+              <td>${item.customer || ""}</td>
+              <td>${item.gmail || "-"}</td>
+              <td>${item.purchase_date}</td>
+              <td>${item.end_date}</td>
+              <td>${item.seller || ""}</td>
+              <td class="td-scrollable editable-note" data-id="${item.id}">
+                <span class="note-text">${item.note || ""}</span>
+                <input type="text" class="form-control form-control-sm note-input d-none" value="${
+                  item.note || ""
+                }" />
+              </td>
+              <td style="text-align:right;padding-right:1.2rem;">${price.toFixed(
+                0
+              )} Ks</td>
+              ${deleteColumn}
+            `;
               if (IS_ADMIN) {
                 tr.querySelector('[aria-label="Delete"]').onclick = () =>
                   handleDelete(item.id);
               }
               tbody.appendChild(tr);
+
+              // ----------- MOBILE CARD ------------
+              const mobileRow = document.createElement("div");
+              mobileRow.className = "row p-3 pt-1 border-bottom";
+
+              mobileRow.innerHTML = `
+              <div class="col-12 d-flex align-items-center mb-2">
+                <span class="me-2">${i + 1}</span>
+                <div class="flex-grow-1 border-bottom"></div>
+              </div>
+              <div class="col-8 product-name">${item.product_name}</div>
+              <div class="col-4 text-end">${price.toLocaleString()} Ks</div>
+              <div class="col-12">${item.customer}</div>
+              <div class="col-12">${item.gmail || "-"}</div>
+              <div class="col-6">PD - ${item.purchase_date}</div>
+              <div class="col-6 text-end">ED - ${item.end_date}</div>
+              <div class="col-2">Notes</div>
+              <div class="col-10">${item.note || "-"}</div>
+            `;
+              mobileContainer.appendChild(mobileRow);
             });
+
+            // Update total value in mobile total row
+            mobileTotal.querySelector(
+              ".col-5"
+            ).textContent = `${total.toLocaleString()} Ks`;
+
+            // ----------- DESKTOP TOTAL ROW ------------
             const totalRow = document.createElement("tr");
             totalRow.innerHTML = `
-<td colspan="9" style="text-align:right;font-weight:bold;">Total for ${date}</td>
-<td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
-<td></td>`;
+            <td colspan="9" style="text-align:right;font-weight:bold;">Total for ${date}</td>
+            <td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
+            <td></td>`;
             totalRow.style.backgroundColor = "#f8f9fa";
             tbody.appendChild(totalRow);
           });
@@ -118,6 +164,7 @@
         alert("Failed to load table.");
       });
   }
+
   function handleDelete(id) {
     if (!confirm("Are you sure you want to delete this entry?")) return;
     fetch("./api/delete_product_sold.php", {
@@ -206,7 +253,10 @@
     };
   }
   function initSearch() {
-    $("searchCustomer").oninput = function () {
+    const searchInput = document.getElementById("searchCustomer");
+    if (!searchInput) return;
+
+    searchInput.addEventListener("input", function () {
       const keyword = this.value.toLowerCase().trim();
       document.querySelectorAll("tbody tr").forEach((tr) => {
         const isTotalRow = tr.innerText.includes("Total for");
@@ -223,8 +273,9 @@
             : "none";
         }
       });
-    };
+    });
   }
+
   function initInlineNoteEditing() {
     document.addEventListener("click", (e) => {
       const td = e.target.closest(".editable-note");

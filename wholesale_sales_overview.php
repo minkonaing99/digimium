@@ -70,28 +70,32 @@ if (
 
     </header>
     <div class="container-fluid">
-        <section class="menu-bar p-5 py-3">
+        <section class="menu-bar p-md-5 py-md-3 p-1">
             <div class="row d-flex justify-content-between align-items-center">
-                <div class="col text-start">
+                <div class="col-12 col-md text-center text-md-start">
                     <h1>
                         Wholesale |
                         <a href="./retail_sales_overview.php" class="title_link">Retail</a>
                     </h1>
                 </div>
+
                 <div class="col d-flex justify-content-end">
                     <div class="btn-group">
                         <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
-                            <button class="contact-btn menu-btn" id="downloadBtn" style="border: none; background: none; padding: 0;">
+                            <button class="contact-btn menu-btn order-2 order-md-1" id="downloadBtn" style="border: none; background: none; padding: 0;">
                                 <img src="./assets/download-svgrepo-com.svg" alt="" width="24px" style="border: none;">
                             </button>
                         <?php endif; ?>
-                        <input type="text" id="searchCustomer" class="form-control-sm mx-md-4"
+                        <input type="text" id="searchCustomer" class="form-control-sm mx-md-4 order-1 order-md-2 d-none d-md-inline"
                             placeholder="Search by customer name..." />
-                        <button class="contact-btn menu-btn" id="addBtn">Add Sale</button>
+                        <button class="contact-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Product</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
                     </div>
                 </div>
+
             </div>
         </section>
+
+
         <section class="table-section">
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
                 <form>
@@ -142,8 +146,15 @@ if (
             </div>
             <div id="editRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
             </div>
+
+
+            <!-- Mobile card layout -->
+            <div id="mobile-table" class="d-md-none"></div>
+
+
+
             <div class="table-responsive">
-                <table class="table align-middle table-hover">
+                <table class="table align-middle table-hover d-none d-md-table">
                     <thead class="table-light">
                         <tr>
                             <th>#</th>

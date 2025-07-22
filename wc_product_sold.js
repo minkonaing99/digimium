@@ -68,9 +68,11 @@
         if (result.status !== "success") return alert(result.message);
 
         const tbody = document.querySelector("tbody");
+        const mobileContainer = document.getElementById("mobile-table");
         tbody.innerHTML = "";
-        const groups = {};
+        mobileContainer.innerHTML = "";
 
+        const groups = {};
         result.data.forEach((item) => {
           (groups[item.date] ??= []).push(item);
         });
@@ -80,9 +82,21 @@
           .forEach(([date, rows]) => {
             let total = 0;
 
-            rows.forEach((item, i) => {
-              total += parseFloat(item.price);
+            // Mobile total header
+            const mobileHeader = document.createElement("div");
+            mobileHeader.className = "row px-3 pt-3";
+            mobileHeader.innerHTML = `
+            <div class="col-7 fw-bold">Total for ${date}</div>
+            <div class="col-5 text-end fw-bold total-value">-</div>
+          `;
+            mobileContainer.appendChild(mobileHeader);
 
+            rows.forEach((item, i) => {
+              const price = parseFloat(item.price);
+              const quantity = parseInt(item.quantity || 1);
+              total += price;
+
+              // -------- Desktop Table Row --------
               const deleteColumn = IS_ADMIN
                 ? `<td style="width:60px; text-align:right;">
                   <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
@@ -95,7 +109,7 @@
               tr.innerHTML = `
               <td>${i + 1}</td>
               <td>${item.product_name}</td>
-              <td style="text-align: left;">${item.quantity || 1}</td>
+              <td style="text-align: left;">${quantity}</td>
               <td>${item.customer || ""}</td>
               <td>${item.email || ""}</td>
               <td>${item.date || ""}</td>
@@ -106,26 +120,50 @@
                   item.note || ""
                 }" />
               </td>
-              <td style="text-align: right; padding-right: 1.2rem">${parseFloat(
-                item.price
-              ).toFixed(0)} Ks</td>
+              <td style="text-align: right; padding-right: 1.2rem">${price.toFixed(
+                0
+              )} Ks</td>
               ${deleteColumn}
             `;
-
               if (IS_ADMIN) {
                 tr.querySelector('[aria-label="Delete"]').onclick = () =>
                   handleDelete(item.id);
               }
-
               tbody.appendChild(tr);
+
+              // -------- Mobile Card Row --------
+              const mobileRow = document.createElement("div");
+              mobileRow.className = "row p-3 pt-1 border-bottom";
+
+              mobileRow.innerHTML = `
+              <div class="col-12 d-flex align-items-center mb-2">
+                <span class="me-2">${i + 1}</span>
+                <div class="flex-grow-1 border-bottom"></div>
+              </div>
+              <div class="col-8 product-name">${
+                item.product_name
+              } × ${quantity}</div>
+              <div class="col-4 text-end">${price.toLocaleString()} Ks</div>
+              <div class="col-12 text-muted">Date: ${item.date}</div>
+              <div class="col-12">${item.customer}</div>
+              <div class="col-12">${item.email || "-"}</div>
+              <div class="col-2">Notes</div>
+              <div class="col-10">${item.note || "-"}</div>
+            `;
+              mobileContainer.appendChild(mobileRow);
             });
 
+            // Update total value
+            mobileHeader.querySelector(
+              ".total-value"
+            ).textContent = `${total.toLocaleString()} Ks`;
+
+            // -------- Desktop Total Row --------
             const totalRow = document.createElement("tr");
             totalRow.innerHTML = `
             <td colspan="8" style="text-align:right;font-weight:bold;">Total for ${date}</td>
             <td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
-            <td></td>
-          `;
+            <td></td>`;
             totalRow.style.backgroundColor = "#f8f9fa";
             tbody.appendChild(totalRow);
           });

@@ -65,79 +65,84 @@ if (
 
     </header>
     <div class="container-fluid">
-        <section class="menu-bar p-5 py-3">
+        <section class="menu-bar p-md-5 py-md-3  pb-md-0 p-1">
             <div class="row d-flex justify-content-between align-items-center">
                 <div class="col text-start">
                     <h1>Summary</h1>
                 </div>
-                <div class="col text-end">
-                </div>
             </div>
+
         </section>
-        <section class="summary-section px-5">
+        <section class="summary-section px-md-5 p-0">
             <div class="row justify-content-center">
                 <div class="showcase">
                     <div class="title">Daily Sales</div>
-                    <div class="amount" id="daily_sales">$1,250</div>
+                    <div class="amount" id="daily_sales">Loading ...</div>
                 </div>
                 <div class="showcase">
                     <div class="title">Daily Profits</div>
-                    <div class="amount" id="daily_profits">$1,250</div>
+                    <div class="amount" id="daily_profits">Loading ...</div>
                 </div>
                 <div class="showcase">
                     <div class="title">Monthly Sales</div>
-                    <div class="amount" id="monthly_sales">$1,250</div>
+                    <div class="amount" id="monthly_sales">Loading ...</div>
                 </div>
                 <div class="showcase">
                     <div class="title">Monthly Profits</div>
-                    <div class="amount" id="monthly_profits">$1,250</div>
+                    <div class="amount" id="monthly_profits">Loading ...</div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row justify-content-center">
+                <div class="alert alert-success alert-dismissible fade show mt-2 col-11 col-md-8 position-relative p-2 text-center" role="alert">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-0 p-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div id="summary">
+                        Loading summary...
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-md-2 ">
                 <h3 class="col-12">Daily Product Sold</h3>
                 <div class="col-md-4 col-12">
-                    <div style="height: 100%; max-height: 50vh; margin: auto;">
+                    <div class="chart-row">
                         <canvas id="salesPieChart"></canvas>
                     </div>
                 </div>
                 <div class="col-md-4 col-12">
-                    <div style="height: 100%; max-height: 50vh; margin: auto;">
+                    <div class="chart-row">
                         <canvas id="profitsPieChart"></canvas>
                     </div>
                 </div>
-                <div class="col-md-4 col-12 d-flex justify-content-center align-items-center" id="report"
-                    style="height: 100%; max-height: 50vh; margin: auto; text-align: left;">
+                <div class="col-md-4 col-12 d-flex justify-content-center align-items-center chart-row" id="report">
                     This is the report
                 </div>
             </div>
-            <div class="row">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-md-8 text-center p-2">
-                        <div id="summary">Loading summary...</div>
+            <div class="col-12 mt-3">
+                <h3>Expire Soon</h3>
+                <div id="expiringSoonMobile">
+                    <div class="row p-3 d-flex d-md-none">
                     </div>
                 </div>
-                <div class="col-12 mt-3">
-                    <h3>Expire Soon</h3>
-                    <div class="table-responsive">
-                        <table class="table align-middle table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Product Name</th>
-                                    <th>Customer</th>
-                                    <th>Email</th>
-                                    <th>Purchased Date</th>
-                                    <th>Expired Date</th>
-                                    <th>Date Left</th>
-                                </tr>
-                            </thead>
-                            <tbody id="expiringSoonBody">
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table align-middle table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Product Name</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Purchased Date</th>
+                                <th>Expired Date</th>
+                                <th>Date Left</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expiringSoonBody">
 
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+
             <div class="row mt-3">
                 <h3 class="col-12">30-Day Performance</h3>
                 <div class="chart-container" style="position: relative; height:40vh;">
@@ -147,6 +152,7 @@ if (
         </section>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
     <script src="summary.js"></script>
 </body>
 
