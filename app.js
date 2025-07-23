@@ -256,23 +256,31 @@
     const searchInput = document.getElementById("searchCustomer");
     if (!searchInput) return;
 
+    let debounceTimer;
+
     searchInput.addEventListener("input", function () {
-      const keyword = this.value.toLowerCase().trim();
-      document.querySelectorAll("tbody tr").forEach((tr) => {
-        const isTotalRow = tr.innerText.includes("Total for");
-        if (!keyword) {
-          tr.style.display = "";
-        } else if (isTotalRow) {
-          tr.style.display = "none";
-        } else {
-          const customerCell = tr.children[3];
-          tr.style.display = customerCell.textContent
-            .toLowerCase()
-            .includes(keyword)
-            ? ""
-            : "none";
-        }
-      });
+      clearTimeout(debounceTimer); // Reset the timer on every keystroke
+
+      debounceTimer = setTimeout(() => {
+        const keyword = this.value.toLowerCase().trim();
+
+        document.querySelectorAll("tbody tr").forEach((tr) => {
+          const isTotalRow = tr.innerText.includes("Total for");
+
+          if (!keyword) {
+            tr.style.display = "";
+          } else if (isTotalRow) {
+            tr.style.display = "none";
+          } else {
+            const customerCell = tr.children[3];
+            tr.style.display = customerCell.textContent
+              .toLowerCase()
+              .includes(keyword)
+              ? ""
+              : "none";
+          }
+        });
+      }, 500); // Delay of 1 second
     });
   }
 
