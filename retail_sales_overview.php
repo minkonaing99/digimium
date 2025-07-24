@@ -33,15 +33,6 @@ if (
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <style>
-        .nowrap {
-            white-space: nowrap !important;
-        }
-
-        .table-font {
-            font-size: .9rem;
-        }
-    </style>
 
 </head>
 
@@ -90,13 +81,18 @@ if (
                 <div class="col d-flex justify-content-end">
                     <div class="btn-group">
                         <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
-                            <button class="contact-btn menu-btn order-2 order-md-1" id="downloadBtn" style="border: none; background: none; padding: 0;">
+                            <button class="contact-btn menu-btn order-2 order-md-1 d-none d-md-inline" id="downloadBtn" style="border: none; background: none; padding: 0;">
                                 <img src="./assets/download-svgrepo-com.svg" alt="" width="24px" style="border: none;">
                             </button>
                         <?php endif; ?>
-                        <input type="text" id="searchCustomer" class="form-control-sm mx-md-4 order-1 order-md-2 d-none d-md-inline"
+                        <input type="text" id="searchCustomer"
+                            class="form-control-sm custom-input mx-md-4 order-1 order-md-2 d-none d-md-inline"
+                            style="max-width: 250px;"
                             placeholder="Search by customer name..." />
                         <button class="contact-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Product</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
+
+
+
                     </div>
                 </div>
             </div>
@@ -105,6 +101,60 @@ if (
         <section class="table-section">
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
                 <form>
+                    <div class="row gy-3 gx-4">
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="product" class="form-label text-danger">Product List</label>
+                            <select class="form-select form-select-sm" id="product">
+                                <option selected disabled>Choose...</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="customer" class="form-label text-danger">Customer</label>
+                            <input type="text" class="form-control form-control-sm" id="customer" placeholder="Name">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" class="form-control form-control-sm" id="email" placeholder="...@....">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="purchase_date" class="form-label text-danger">Purchase Date</label>
+                            <input type="date" class="form-control form-control-sm" id="purchase_date">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="seller" class="form-label">Manager</label>
+                            <input type="text" class="form-control form-control-sm" id="seller"
+                                value="<?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : '' ?>"
+                                placeholder="seller">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control form-control-sm" id="amount" step="1" placeholder="Enter price (optional)">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="Notes" class="form-label">Notes</label>
+                            <input type="text" class="form-control form-control-sm" id="Notes" placeholder="Note" autocomplete="off">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg d-grid">
+                            <label class="invisible">Save</label>
+                            <button type="submit" class="contact-btn menu-btn">Save</button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields -->
+                    <input type="hidden" id="duration">
+                    <input type="hidden" id="end_date">
+                </form>
+
+
+
+                <!-- <form>
                     <div class="d-flex flex-wrap align-items-end gap-3 justify-content-evenly">
                         <div style="min-width: 180px; max-width: 300px; flex-grow: 1;">
                             <label for="product" class="form-label">Product List</label>
@@ -144,9 +194,10 @@ if (
                             <button type="submit" class="contact-btn menu-btn mt-2 w-100" id="submitBtn" id="submitBtn">Save</button>
                         </div>
                     </div>
-                    <input type="hidden" id="duration"> <!-- Hidden, used for end_date calculation -->
-                    <input type="hidden" id="end_date"> <!-- Hidden, gets submitted with the form -->
-                </form>
+                    <input type="hidden" id="duration"> 
+                <input type="hidden" id="end_date"> 
+                </form> -->
+
             </div>
             <div id="editRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
             </div>

@@ -1,4 +1,5 @@
 (function () {
+  let SOLD_PRODUCT_DATA = []; // 💾 Global reference for all sold product rows
   const $ = (id) => document.getElementById(id);
   const todayDate = () => new Date().toLocaleDateString("en-CA");
   function initFormValidation() {
@@ -62,7 +63,9 @@
     mobileContainer.innerHTML = "";
 
     if (cached) {
-      renderSoldProductTable(JSON.parse(cached));
+      const parsed = JSON.parse(cached);
+      SOLD_PRODUCT_DATA = parsed;
+      renderSoldProductTable(parsed);
       return;
     }
 
@@ -73,6 +76,8 @@
       .then((result) => {
         if (loader) loader.style.display = "none";
         if (result.status !== "success") return alert(result.message);
+        SOLD_PRODUCT_DATA = result.data;
+        renderSoldProductTable(SOLD_PRODUCT_DATA);
 
         sessionStorage.setItem("cachedSoldData", JSON.stringify(result.data));
         renderSoldProductTable(result.data);
@@ -281,31 +286,22 @@
     const searchInput = document.getElementById("searchCustomer");
     if (!searchInput) return;
 
-    let debounceTimer;
+    searchInput.addEventListener("keydown", function (e) {
+      const keyword = this.value.toLowerCase().trim();
 
-    searchInput.addEventListener("input", function () {
-      clearTimeout(debounceTimer); // Reset the timer on every keystroke
+      if (e.key === "Enter") {
+        const filtered = !keyword
+          ? SOLD_PRODUCT_DATA
+          : SOLD_PRODUCT_DATA.filter((item) =>
+              (item.customer || "").toLowerCase().includes(keyword)
+            );
+        renderSoldProductTable(filtered);
+      }
 
-      debounceTimer = setTimeout(() => {
-        const keyword = this.value.toLowerCase().trim();
-
-        document.querySelectorAll("tbody tr").forEach((tr) => {
-          const isTotalRow = tr.innerText.includes("Total for");
-
-          if (!keyword) {
-            tr.style.display = "";
-          } else if (isTotalRow) {
-            tr.style.display = "none";
-          } else {
-            const customerCell = tr.children[3];
-            tr.style.display = customerCell.textContent
-              .toLowerCase()
-              .includes(keyword)
-              ? ""
-              : "none";
-          }
-        });
-      }, 500); // Delay of 1 second
+      if (e.key === "Escape") {
+        this.value = "";
+        renderSoldProductTable(SOLD_PRODUCT_DATA);
+      }
     });
   }
 

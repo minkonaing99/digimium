@@ -82,11 +82,11 @@ if (
                 <div class="col d-flex justify-content-end">
                     <div class="btn-group">
                         <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
-                            <button class="contact-btn menu-btn order-2 order-md-1" id="downloadBtn" style="border: none; background: none; padding: 0;">
+                            <button class="contact-btn menu-btn order-2 order-md-1 d-none d-md-inline" id="downloadBtn" style="border: none; background: none; padding: 0;">
                                 <img src="./assets/download-svgrepo-com.svg" alt="" width="24px" style="border: none;">
                             </button>
                         <?php endif; ?>
-                        <input type="text" id="searchCustomer" class="form-control-sm mx-md-4 order-1 order-md-2 d-none d-md-inline"
+                        <input type="text" id="searchCustomer" class="form-control-sm custom-input mx-md-4 order-1 order-md-2 d-none d-md-inline"
                             placeholder="Search by customer name..." />
                         <button class="contact-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Product</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
                     </div>
@@ -99,6 +99,59 @@ if (
         <section class="table-section">
             <div id="inputRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
                 <form>
+                    <div class="row gy-3 gx-4">
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="product" class="form-label">Product List</label>
+                            <select class="form-select form-select-sm" id="product">
+                                <option selected disabled>Choose...</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="text" class="form-control form-control-sm" id="quantity" placeholder="1-10">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="customer" class="form-label">Customer</label>
+                            <input type="text" class="form-control form-control-sm" id="customer" placeholder="Name">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" class="form-control form-control-sm" id="email" placeholder="...@....">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control form-control-sm" id="date">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="seller" class="form-label">Manager</label>
+                            <input type="text" class="form-control form-control-sm" id="seller" placeholder="seller"
+                                value="<?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : '' ?>">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" id="amount" class="form-control form-control-sm" step="1" placeholder="Enter price (optional)">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg">
+                            <label for="Notes" class="form-label">Notes</label>
+                            <input type="text" class="form-control form-control-sm" id="Notes" placeholder="Note" autocomplete="off">
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg d-grid">
+                            <label class="form-label invisible">Save</label>
+                            <button type="submit" class="contact-btn menu-btn mt-0 w-100" id="submitBtn">Save</button>
+                        </div>
+                    </div>
+                </form>
+
+
+                <!-- <form>
                     <div class="d-flex flex-wrap align-items-end gap-3 justify-content-evenly">
                         <div style="min-width: 180px; max-width: 300px; flex-grow: 1;">
                             <label for="product" class="form-label">Product List</label>
@@ -142,7 +195,8 @@ if (
                             <button type="submit" class="contact-btn menu-btn mt-2 w-100" id="submitBtn" id="submitBtn">Save</button>
                         </div>
                     </div>
-                </form>
+                </form> -->
+
             </div>
             <div id="editRow" style="display: none;" class="mb-3 p-3 border rounded bg-light">
             </div>
@@ -152,20 +206,19 @@ if (
             <div id="mobile-table" class="d-md-none"></div>
 
 
-
             <div class="table-responsive">
-                <table class="table align-middle table-hover d-none d-md-table">
+                <table class="table align-middle table-hover d-none d-md-table table-font">
                     <thead class="table-light">
                         <tr>
-                            <th>#</th>
+                            <th style="width: 40px;">#</th> <!-- Small index column -->
                             <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Customer</th>
-                            <th>Email</th>
-                            <th>Date</th>
-                            <th>Manager</th>
-                            <th>Note</th>
-                            <th style="text-align: right; padding-right: 1.2rem">Price</th>
+                            <th style="width: 60px;" class="text-center">Quantity</th> <!-- Tight duration -->
+                            <th style="min-width: 180px;">Customer</th> <!-- Customer name wider -->
+                            <th style="min-width: 150px;">Email</th> <!-- Give email room -->
+                            <th class="text-center no-wrap">Purchased</th>
+                            <th style="min-width: 180px;">Manager</th> <!-- Manager wide -->
+                            <th style="width: 100px;">Note</th> <!-- Fixed width for note -->
+                            <th style="width: 120px;text-align: right; padding-right: 1.2rem;">Price</th>
                             <th></th>
                         </tr>
                     </thead>
