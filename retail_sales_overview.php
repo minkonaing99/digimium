@@ -243,7 +243,7 @@ if (
                                     <th class="text-center no-wrap">End Date</th>
                                     <th style="min-width: 180px;">Manager</th> <!-- Manager wide -->
                                     <th style="width: 100px;">Note</th> <!-- Fixed width for note -->
-                                    <th style="width: 120px;text-align: right; padding-right: 1.2rem;">Price</th>
+                                    <th style="width: 300px;text-align: right; padding-right: 1rem;">Price</th>
                                     <th style="width: 25px;"></th> <!-- Optional: Delete button column -->
                                 </tr>
                             </thead>
