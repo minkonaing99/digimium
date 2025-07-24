@@ -272,49 +272,58 @@ function fetchExpiringSoon() {
         tbody.innerHTML = "";
         mobileContainer.innerHTML = "";
 
+        // Step 1: Compute daysLeft for each item and filter within 0-4 days
+        const expiringSoon = data.data
+          .map((item) => {
+            const endDate = new Date(item.end_date);
+            const daysLeft = Math.ceil(
+              (endDate - today) / (1000 * 60 * 60 * 24)
+            );
+            return { ...item, daysLeft };
+          })
+          .filter((item) => item.daysLeft >= 0 && item.daysLeft <= 4)
+          .sort((a, b) => a.daysLeft - b.daysLeft); // Sort by days left ASC
+
         let count = 1;
 
-        data.data.forEach((item) => {
-          const endDate = new Date(item.end_date);
-          const daysLeft = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
-
-          if (daysLeft >= 0 && daysLeft <= 4) {
-            // ---------- DESKTOP ----------
-            const tr = document.createElement("tr");
-            tr.classList.add("d-none", "d-md-table-row");
-            tr.innerHTML = `
+        // Step 2: Render table rows in sorted order
+        expiringSoon.forEach((item) => {
+          // ---------- DESKTOP ----------
+          const tr = document.createElement("tr");
+          tr.classList.add("d-none", "d-md-table-row");
+          tr.innerHTML = `
             <td>${count}</td>
             <td>${item.product_name}</td>
             <td>${item.customer}</td>
             <td>${item.gmail ?? "-"}</td>
             <td>${item.purchase_date}</td>
             <td>${item.end_date}</td>
-            <td>${daysLeft} day${daysLeft !== 1 ? "s" : ""}</td>
+            <td>${item.daysLeft} day${item.daysLeft !== 1 ? "s" : ""}</td>
           `;
-            tbody.appendChild(tr);
+          tbody.appendChild(tr);
 
-            // ---------- MOBILE ----------
-            const mobileRow = document.createElement("div");
-            mobileRow.className = "row p-3 d-flex d-md-none";
-
-            mobileRow.innerHTML = `
+          // ---------- MOBILE ----------
+          const mobileRow = document.createElement("div");
+          mobileRow.className = "row p-3 d-flex d-md-none";
+          mobileRow.innerHTML = `
             <div class="col-12 d-flex align-items-center">
               <span class="me-2">${count}</span>
               <div class="flex-grow-1 border-bottom"></div>
             </div>
             <div class="col-8 product-name">${item.product_name}</div>
-            <div class="col-4 text-end"><strong>${daysLeft} day${
-              daysLeft !== 1 ? "s" : ""
-            } left</strong></div>
+            <div class="col-4 text-end">
+              <strong>${item.daysLeft} day${
+            item.daysLeft !== 1 ? "s" : ""
+          } left</strong>
+            </div>
             <div class="col-12">${item.customer}</div>
             <div class="col-12">${item.gmail ?? "-"}</div>
             <div class="col-6">PD - ${item.purchase_date}</div>
             <div class="col-6 text-end">ED - ${item.end_date}</div>
           `;
-            mobileContainer.appendChild(mobileRow);
+          mobileContainer.appendChild(mobileRow);
 
-            count++;
-          }
+          count++;
         });
       } else {
         console.error("Server error:", data.message);
@@ -324,6 +333,7 @@ function fetchExpiringSoon() {
       console.error("Fetch error:", err);
     });
 }
+
 document.addEventListener("DOMContentLoaded", fetchExpiringSoon);
 function loadProfitChartData() {
   fetch("./api/profit_chart.php")
