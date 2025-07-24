@@ -140,8 +140,17 @@
         max-width: 200px;
         overflow-x: auto;
         white-space: nowrap;
-        scrollbar-width: thin;
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
     }
+
+    .td-scrollable::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari */
+    }
+
 
     .menu-btn {
         color: var(--dark);
