@@ -151,7 +151,9 @@
             <td class="text-center nowrap">${item.purchase_date}</td>
             <td class="text-center nowrap">${item.end_date}</td>
             <td>${item.seller || ""}</td>
-            <td class="td-scrollable editable-note" data-id="${item.id}">
+            <td class="td-scrollable editable-note" data-id="${
+              item.id
+            }" style="width: 100px>
               <span class="note-text">${item.note || ""}</span>
               <input type="text" class="form-control form-control-sm note-input d-none" value="${
                 item.note || ""
