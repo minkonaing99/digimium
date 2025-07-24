@@ -157,9 +157,10 @@
                 item.note || ""
               }" />
             </td>
-            <td style="text-align:right;padding-right:1.2rem;">${price.toFixed(
-              0
-            )} Ks</td>
+            <td style="white-space: nowrap; text-align: right; padding: 0 1rem;">
+             ${price.toFixed(0)} Ks
+            </td>
+
             ${deleteColumn}
           `;
             if (IS_ADMIN) {
@@ -183,7 +184,7 @@
           const totalRow = document.createElement("tr");
           totalRow.innerHTML = `
           <td colspan="9" style="text-align:right;font-weight:bold;">Total for ${date}</td>
-          <td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
+          <td style="white-space: nowrap;text-align:right;font-weight:bold;padding: 0 1rem;">${total.toLocaleString()} Ks</td>
           <td></td>
         `;
           totalRow.style.backgroundColor = "#f8f9fa";
