@@ -53,115 +53,138 @@
       .catch((e) => console.error("Product options load failed", e));
   }
   function loadSoldProductTable() {
+    const cached = sessionStorage.getItem("cachedSoldData");
+    const loader = document.getElementById("table-loader");
+    const tbody = document.querySelector("tbody");
+    const mobileContainer = document.getElementById("mobile-table");
+
+    tbody.innerHTML = "";
+    mobileContainer.innerHTML = "";
+
+    if (cached) {
+      renderSoldProductTable(JSON.parse(cached));
+      return;
+    }
+
+    if (loader) loader.style.display = "block";
+
     fetch("./api/fetch_product_sold.php")
       .then((res) => res.json())
       .then((result) => {
+        if (loader) loader.style.display = "none";
         if (result.status !== "success") return alert(result.message);
 
-        const tbody = document.querySelector("tbody");
-        const mobileContainer = document.getElementById("mobile-table");
-
-        tbody.innerHTML = "";
-        mobileContainer.innerHTML = "";
-
-        const groups = {};
-        result.data.forEach((item) => {
-          (groups[item.purchase_date] ??= []).push(item);
-        });
-
-        Object.entries(groups)
-          .sort(([a], [b]) => b.localeCompare(a))
-          .forEach(([date, rows]) => {
-            let total = 0;
-
-            // Total row for mobile
-            const mobileTotal = document.createElement("div");
-            mobileTotal.className = "row p-3 pb-1 border-top";
-            mobileTotal.innerHTML = `
-            <div class="col-7 fw-bold">Total for ${date}</div>
-            <div class="col-5 text-end fw-bold">${total.toLocaleString()} Ks</div>
-          `;
-            mobileContainer.appendChild(mobileTotal);
-
-            rows.forEach((item, i) => {
-              const price = parseFloat(item.price);
-              total += price;
-
-              // ----------- DESKTOP ROW ------------
-              const deleteColumn = IS_ADMIN
-                ? `<td style="width:60px; text-align:right;">
-                  <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
-                    <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
-                  </button>
-                </td>`
-                : "<td></td>";
-
-              const tr = document.createElement("tr");
-              tr.innerHTML = `
-              <td>${i + 1}</td>
-              <td>${item.product_name}</td>
-              <td>${item.duration}</td>
-              <td>${item.customer || ""}</td>
-              <td>${item.gmail || "-"}</td>
-              <td>${item.purchase_date}</td>
-              <td>${item.end_date}</td>
-              <td>${item.seller || ""}</td>
-              <td class="td-scrollable editable-note" data-id="${item.id}">
-                <span class="note-text">${item.note || ""}</span>
-                <input type="text" class="form-control form-control-sm note-input d-none" value="${
-                  item.note || ""
-                }" />
-              </td>
-              <td style="text-align:right;padding-right:1.2rem;">${price.toFixed(
-                0
-              )} Ks</td>
-              ${deleteColumn}
-            `;
-              if (IS_ADMIN) {
-                tr.querySelector('[aria-label="Delete"]').onclick = () =>
-                  handleDelete(item.id);
-              }
-              tbody.appendChild(tr);
-
-              // ----------- MOBILE CARD ------------
-              const mobileRow = document.createElement("div");
-              mobileRow.className = "row p-3 pt-1 border-bottom";
-
-              mobileRow.innerHTML = `
-              <div class="col-12 d-flex align-items-center mb-2">
-                <span class="me-2">${i + 1}</span>
-                <div class="flex-grow-1 border-bottom"></div>
-              </div>
-              <div class="col-8 product-name">${item.product_name}</div>
-              <div class="col-4 text-end">${price.toLocaleString()} Ks</div>
-              <div class="col-12">${item.customer}</div>
-              <div class="col-12">${item.gmail || "-"}</div>
-              <div class="col-6">PD - ${item.purchase_date}</div>
-              <div class="col-6 text-end">ED - ${item.end_date}</div>
-              <div class="col-2">Notes</div>
-              <div class="col-10">${item.note || "-"}</div>
-            `;
-              mobileContainer.appendChild(mobileRow);
-            });
-
-            // Update total value in mobile total row
-            mobileTotal.querySelector(
-              ".col-5"
-            ).textContent = `${total.toLocaleString()} Ks`;
-
-            // ----------- DESKTOP TOTAL ROW ------------
-            const totalRow = document.createElement("tr");
-            totalRow.innerHTML = `
-            <td colspan="9" style="text-align:right;font-weight:bold;">Total for ${date}</td>
-            <td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
-            <td></td>`;
-            totalRow.style.backgroundColor = "#f8f9fa";
-            tbody.appendChild(totalRow);
-          });
+        sessionStorage.setItem("cachedSoldData", JSON.stringify(result.data));
+        renderSoldProductTable(result.data);
       })
       .catch((e) => {
+        if (loader) loader.style.display = "none";
         console.error("Table load error", e);
         alert("Failed to load table.");
+      });
+  }
+
+  function renderSoldProductTable(data) {
+    const isMobile = window.innerWidth < 768;
+    const tbody = document.querySelector("tbody");
+    const mobileContainer = document.getElementById("mobile-table");
+    const loader = document.getElementById("table-loader");
+
+    tbody.innerHTML = "";
+    mobileContainer.innerHTML = "";
+    if (loader) loader.style.display = "none";
+
+    const groups = {};
+    data.forEach((item) => {
+      (groups[item.purchase_date] ??= []).push(item);
+    });
+
+    Object.entries(groups)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .forEach(([date, rows]) => {
+        let total = 0;
+        const fragment = document.createDocumentFragment();
+
+        rows.forEach((item, i) => {
+          const price = parseFloat(item.price);
+          total += price;
+
+          if (isMobile) {
+            const mobileRow = document.createElement("div");
+            mobileRow.className = "row p-3 pt-1 border-bottom";
+            mobileRow.innerHTML = `
+            <div class="col-12 d-flex align-items-center mb-2">
+              <span class="me-2">${i + 1}</span>
+              <div class="flex-grow-1 border-bottom"></div>
+            </div>
+            <div class="col-8 product-name">${item.product_name}</div>
+            <div class="col-4 text-end">${price.toLocaleString()} Ks</div>
+            <div class="col-12">${item.customer}</div>
+            <div class="col-12">${item.gmail || "-"}</div>
+            <div class="col-6">PD - ${item.purchase_date}</div>
+            <div class="col-6 text-end">ED - ${item.end_date}</div>
+            <div class="col-2">Notes</div>
+            <div class="col-10">${item.note || "-"}</div>
+          `;
+            fragment.appendChild(mobileRow);
+          } else {
+            const deleteColumn = IS_ADMIN
+              ? `<td style="width:60px; text-align:right;">
+                <button class="btn btn-link p-0" aria-label="Delete" data-id="${item.id}">
+                  <img src="./assets/delete-svgrepo-com.svg" alt="Delete" style="width: 24px;">
+                </button>
+              </td>`
+              : "<td></td>";
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td class="td-scrollable">${item.product_name}</td>
+            <td class="text-center">${item.duration}</td>
+            <td>${item.customer || ""}</td>
+            <td>${item.gmail || "-"}</td>
+            <td class="text-center nowrap">${item.purchase_date}</td>
+            <td class="text-center nowrap">${item.end_date}</td>
+            <td>${item.seller || ""}</td>
+            <td class="td-scrollable editable-note" data-id="${item.id}">
+              <span class="note-text">${item.note || ""}</span>
+              <input type="text" class="form-control form-control-sm note-input d-none" value="${
+                item.note || ""
+              }" />
+            </td>
+            <td style="text-align:right;padding-right:1.2rem;">${price.toFixed(
+              0
+            )} Ks</td>
+            ${deleteColumn}
+          `;
+            if (IS_ADMIN) {
+              tr.querySelector('[aria-label="Delete"]').onclick = () =>
+                handleDelete(item.id);
+            }
+            fragment.appendChild(tr);
+          }
+        });
+
+        if (isMobile) {
+          const mobileTotal = document.createElement("div");
+          mobileTotal.className = "row p-3 pb-1 border-top";
+          mobileTotal.innerHTML = `
+          <div class="col-7 fw-bold">Total for ${date}</div>
+          <div class="col-5 text-end fw-bold">${total.toLocaleString()} Ks</div>
+        `;
+          fragment.appendChild(mobileTotal);
+          mobileContainer.appendChild(fragment);
+        } else {
+          const totalRow = document.createElement("tr");
+          totalRow.innerHTML = `
+          <td colspan="9" style="text-align:right;font-weight:bold;">Total for ${date}</td>
+          <td style="text-align:right;font-weight:bold;padding-right:1.2rem;">${total.toLocaleString()} Ks</td>
+          <td></td>
+        `;
+          totalRow.style.backgroundColor = "#f8f9fa";
+          fragment.appendChild(totalRow);
+          tbody.appendChild(fragment);
+        }
       });
   }
 
@@ -176,6 +199,7 @@
       .then((data) => {
         if (data.status === "success") loadSoldProductTable();
         else alert("Delete failed: " + data.message);
+        sessionStorage.removeItem("cachedSoldData");
       })
       .catch((e) => {
         console.error(e);
@@ -243,6 +267,7 @@
           if (res.status === "success") {
             $("inputRow").style.display = "none";
             resetAddForm();
+            sessionStorage.removeItem("cachedSoldData");
             loadSoldProductTable();
           } else alert("Insert failed: " + res.message);
         })

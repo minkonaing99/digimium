@@ -33,6 +33,15 @@ if (
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .nowrap {
+            white-space: nowrap !important;
+        }
+
+        .table-font {
+            font-size: .9rem;
+        }
+    </style>
 
 </head>
 
@@ -162,28 +171,43 @@ if (
                 <div class="col-2">Notes</div>
                 <div class="col-10">This is note demo</div>
             </div> -->
-
+            <!-- Spinner Loader -->
+            <div id="table-loader" style="display: none; text-align: center; margin: 1rem;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             <div class="table-responsive">
-                <table class="table align-middle table-hover d-none d-md-table">
+                <table class="table align-middle table-hover d-none d-md-table table-font">
                     <thead class="table-light">
                         <tr>
-                            <th>#</th>
-                            <th>Product</th>
-                            <th>Duration</th>
-                            <th>Customer</th>
-                            <th>Email</th>
-                            <th>Purchase Date</th>
-                            <th>End Date</th>
-                            <th>Manager</th>
-                            <th>Note</th>
-                            <th style="text-align: right; padding-right: 1.2rem">Price</th>
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 40px;">#</th> <!-- Small index column -->
+                                    <th style="min-width: 200px;">Product</th> <!-- Flexible product name -->
+                                    <th style="width: 60px;">Dur</th> <!-- Tight duration -->
+                                    <th style="min-width: 180px;">Customer</th> <!-- Customer name wider -->
+                                    <th style="min-width: 150px;">Email</th> <!-- Give email room -->
+                                    <th class="text-center no-wrap">Purchased</th>
+                                    <th class="text-center no-wrap">End Date</th>
+                                    <th style="min-width: 180px;">Manager</th> <!-- Manager wide -->
+                                    <th style="width: 100px;">Note</th> <!-- Fixed width for note -->
+                                    <th style="width: 120px;text-align: right; padding-right: 1.2rem;">Price</th>
+                                    <th style="width: 25px;"></th> <!-- Optional: Delete button column -->
+                                </tr>
+                            </thead>
+
                             <th></th>
                         </tr>
                     </thead>
+
                     <tbody>
                     </tbody>
                 </table>
             </div>
+
+
+
 
 
 

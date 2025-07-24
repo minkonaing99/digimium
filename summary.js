@@ -16,12 +16,6 @@ function getThailandTodayDate() {
   const today = new Date();
   return today.toLocaleDateString("en-CA");
 }
-console.log(getThailandTodayDate());
-
-function getThailandTodayDate() {
-  const today = new Date();
-  return today.toLocaleDateString("en-CA");
-}
 
 function loadSalesSummary() {
   const today = getThailandTodayDate();
@@ -67,6 +61,7 @@ function loadSalesSummary() {
         (sum, item) => sum + (parseFloat(item.profit) || 0),
         0
       );
+      console.log(dailyProfit);
 
       document.getElementById("daily_sales").textContent =
         dailyTotal.toLocaleString() + " Ks";
@@ -115,6 +110,7 @@ function loadSalesSummary() {
         productSummary[name].count += 1;
         productSummary[name].totalProfit += profit;
       });
+      console.log(dailySales);
 
       let html = `<ul>`;
       for (const [name, info] of Object.entries(productSummary)) {
@@ -338,6 +334,7 @@ function loadProfitChartData() {
         const profits = [];
         data.data.forEach((item) => {
           labels.push(item.date);
+          console.log(item);
           profits.push(parseFloat(item.profit));
         });
         drawProfitLineChart(labels, profits);
