@@ -153,7 +153,7 @@
             <td>${item.seller || ""}</td>
             <td class="td-scrollable editable-note" data-id="${
               item.id
-            }" style="width: 100px>
+            }" style="width: 100px">
               <span class="note-text">${item.note || ""}</span>
               <input type="text" class="form-control form-control-sm note-input d-none" value="${
                 item.note || ""
