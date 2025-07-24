@@ -247,7 +247,7 @@ if (
                                     <th style="width: 25px;"></th> <!-- Optional: Delete button column -->
                                 </tr>
                             </thead>
-
+                            <!-- changes to price -->
                             <th></th>
                         </tr>
                     </thead>
