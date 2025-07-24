@@ -147,7 +147,7 @@
             <td class="td-scrollable">${item.product_name}</td>
             <td class="text-center">${item.duration}</td>
             <td>${item.customer || ""}</td>
-            <td>${item.gmail || "-"}</td>
+            <td class="td-scrollable">${item.gmail || "-"}</td>
             <td class="text-center nowrap">${item.purchase_date}</td>
             <td class="text-center nowrap">${item.end_date}</td>
             <td>${item.seller || ""}</td>
