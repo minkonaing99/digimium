@@ -154,7 +154,7 @@ if (
                             </select>
                         </div>
                         <div class="col-12 col-md-auto">
-                            <button type="submit" class="contact-btn menu-btn" id="deleteUser">Delete User</button>
+                            <button type="submit" class="contact-btn menu-btn dlt-btn" id="deleteUser">Delete User</button>
                         </div>
                     </div>
                 </form>

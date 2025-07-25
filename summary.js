@@ -35,9 +35,7 @@ function loadSalesSummary() {
       }
 
       const monthlySales = data.data || [];
-      console.log(monthlySales);
       const dailySales = data.today || [];
-      console.log(dailySales);
 
       const grouped = {};
       const profitGrouped = {};
@@ -61,7 +59,6 @@ function loadSalesSummary() {
         (sum, item) => sum + (parseFloat(item.profit) || 0),
         0
       );
-      console.log(dailyProfit);
 
       document.getElementById("daily_sales").textContent =
         dailyTotal.toLocaleString() + " Ks";
@@ -78,12 +75,17 @@ function loadSalesSummary() {
         0
       );
 
+      // const allTimeProfit = monthlySales.reduce(
+      //   (sum, item) => sum + (parseFloat(item.profit) || 0),
+      //   0
+      // );
+
+      // document.getElementById("all_time").textContent =
+      //   allTimeProfit.toLocaleString() + " Ks";
       document.getElementById("monthly_sales").textContent =
         monthlyTotal.toLocaleString() + " Ks";
       document.getElementById("monthly_profits").textContent =
         monthlyProfit.toLocaleString() + " Ks";
-
-      console.log(monthlyProfit);
 
       document.getElementById("monthly_sales").textContent =
         monthlyTotal.toLocaleString() + " Ks";
@@ -110,7 +112,6 @@ function loadSalesSummary() {
         productSummary[name].count += 1;
         productSummary[name].totalProfit += profit;
       });
-      console.log(dailySales);
 
       let html = `<ul>`;
       for (const [name, info] of Object.entries(productSummary)) {
@@ -344,7 +345,6 @@ function loadProfitChartData() {
         const profits = [];
         data.data.forEach((item) => {
           labels.push(item.date);
-          console.log(item);
           profits.push(parseFloat(item.profit));
         });
         drawProfitLineChart(labels, profits);

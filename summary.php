@@ -91,6 +91,7 @@ if (
                     <div class="title">Monthly Profits</div>
                     <div class="amount" id="monthly_profits">Loading ...</div>
                 </div>
+
             </div>
             <div class="row justify-content-center">
                 <div class="alert alert-success alert-dismissible fade show mt-2 col-11 col-md-8 position-relative p-2 text-center" role="alert">

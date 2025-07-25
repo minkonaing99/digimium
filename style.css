@@ -153,17 +153,26 @@
 
 
     .menu-btn {
-        color: var(--dark);
-        border-color: var(--dark);
+        color: var(--accent);
+        border-color: var(--accent);
         padding: 0.3rem 1rem;
-
+        background-color: var(--dark);
     }
 
-    .mobile-btn {
-        color: var(--dark);
-        border-color: var(--dark);
+    .menu-btn:hover {
+        color: var(--white);
+        border-color: var(--white);
         padding: 0.3rem 1rem;
+        background-color: var(--primary);
+    }
 
+    .dlt-btn {
+        color: var(--accent);
+        background-color: #ec625c;
+    }
+
+    .dlt-btn:hover {
+        background-color: #ff7e63;
     }
 
     .login-btn {
@@ -387,6 +396,13 @@
         #searchCustomer {
             flex: 0 0 75% !important;
             max-width: 75% !important;
+        }
+
+        .mobile-btn {
+            color: var(--dark);
+            border-color: var(--dark);
+            padding: 0.3rem 1rem;
+
         }
     }
 
