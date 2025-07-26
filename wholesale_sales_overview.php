@@ -88,7 +88,7 @@ if (
                         <?php endif; ?>
                         <input type="text" id="searchCustomer" class="form-control-sm custom-input mx-md-4 order-1 order-md-2 d-none d-md-inline"
                             placeholder="Search by customer name..." />
-                        <button class="contact-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Product</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
+                        <button class="contact-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Sales</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
                     </div>
                 </div>
 

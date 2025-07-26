@@ -158,7 +158,7 @@ function drawProfitsPieChart(groupedProfits) {
       plugins: {
         title: {
           display: true,
-          text: "Today's Sales by Product",
+          text: "Today's Profit by Product",
           position: "left",
           align: "center",
           font: {
@@ -221,7 +221,7 @@ function drawSalesPieChart(groupedData) {
       plugins: {
         title: {
           display: true,
-          text: "Today's Profit by Product",
+          text: "Today's Sales by Product",
           position: "left",
           align: "center",
           font: {

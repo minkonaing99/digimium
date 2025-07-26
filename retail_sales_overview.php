@@ -80,6 +80,9 @@ if (
                 </div>
                 <div class="col d-flex justify-content-end">
                     <div class="btn-group">
+                        <button class="contact-btn menu-btn px-md-2" id="refreshCache" style="border: none; background: none; padding: 0;">
+                            <img src="./assets/refresh.svg" alt="" width="24px" style="border: none;">
+                        </button>
                         <?php if (isset($_SESSION['privilege']) && ($_SESSION['privilege'] === 'admin' || $_SESSION['privilege'] === 'owner')): ?>
                             <button class="contact-btn menu-btn order-2 order-md-1 d-none d-md-inline" id="downloadBtn" style="border: none; background: none; padding: 0;">
                                 <img src="./assets/download-svgrepo-com.svg" alt="" width="24px" style="border: none;">
@@ -89,7 +92,7 @@ if (
                             class="form-control-sm custom-input mx-md-4 order-1 order-md-2 d-none d-md-inline"
                             style="max-width: 250px;"
                             placeholder="Search by customer name..." />
-                        <button class="contact-btn menu-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Product</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
+                        <button class="contact-btn menu-btn mobile-btn order-3" id="addBtn"><span class="d-none d-md-inline">Add Sales</span><img src="./assets/add-icon.svg" alt="" width="24px" style="border: none;" class="m-2 m-md-0 d-md-none"></button>
 
 
 

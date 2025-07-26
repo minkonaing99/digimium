@@ -80,7 +80,6 @@
         renderSoldProductTable(SOLD_PRODUCT_DATA);
 
         sessionStorage.setItem("cachedSoldData", JSON.stringify(result.data));
-        renderSoldProductTable(result.data);
       })
       .catch((e) => {
         if (loader) loader.style.display = "none";
@@ -198,6 +197,7 @@
 
   function handleDelete(id) {
     if (!confirm("Are you sure you want to delete this entry?")) return;
+
     fetch("./api/delete_product_sold.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -205,15 +205,23 @@
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.status === "success") loadSoldProductTable();
-        else alert("Delete failed: " + data.message);
-        sessionStorage.removeItem("cachedSoldData");
+        if (data.status === "success") {
+          sessionStorage.removeItem("cachedSoldData");
+
+          // ✅ Wait for sessionStorage to truly update before reloading
+          setTimeout(() => {
+            loadSoldProductTable();
+          }, 0);
+        } else {
+          alert("Delete failed: " + data.message);
+        }
       })
       .catch((e) => {
         console.error(e);
         alert("An error occurred while deleting.");
       });
   }
+
   function validateFormFields() {
     const required = ["product", "customer", "purchase_date", "seller"].map($);
     required.forEach((input) => {
@@ -232,6 +240,7 @@
     $("product").selectedIndex = 0;
     validateFormFields();
   }
+
   function initFormSubmission() {
     const form = document.querySelector("#inputRow form");
     const product = $("product");
@@ -352,6 +361,11 @@
     input.classList.add("d-none");
     span.classList.remove("d-none");
   }
+  function refreshCacheAndReload() {
+    sessionStorage.removeItem("cachedSoldData");
+    loadSoldProductTable();
+  }
+
   function saveNote(input) {
     const td = input.closest(".editable-note");
     const span = td.querySelector(".note-text");
@@ -382,5 +396,20 @@
     initInlineNoteEditing();
     loadSoldProductTable();
     loadProductOptions();
+
+    // 🚀 Refresh Cache Button Logic
+    const refreshBtn = $("refreshCache");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", function () {
+        refreshBtn.style.setProperty("display", "none", "important");
+        refreshBtn.disabled = true;
+        refreshCacheAndReload();
+
+        setTimeout(() => {
+          refreshBtn.disabled = false;
+          refreshBtn.style.setProperty("display", "inline-block", "important");
+        }, 5000);
+      });
+    }
   });
 })();
