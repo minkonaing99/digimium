@@ -1,0 +1,6 @@
+# Database configuration file
+admin.digimium.store/api/dbinfo.php
+
+
+# Telegram bot credentials
+digimium-bot/creds.py
