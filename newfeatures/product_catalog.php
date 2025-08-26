@@ -1,15 +1,3 @@
-<?php
-
-declare(strict_types=1);
-require __DIR__ . '/api/session_bootstrap.php';
-require __DIR__ . '/api/auth.php';
-
-auth_require_login(['admin', 'owner']);
-
-$role = ucfirst($_SESSION['user']['role'] ?? '');
-$user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,7 +49,10 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
         <div class="sticky-menubar">
             <section class="era-table-card mb">
                 <div class="menu-bar">
-                    <h2 id="product_catalog" class="era-table-title"><span class="btn-active" id="retail_page">Retail</span> <span class="btn-inactive" id="wholesale_page">Wholesale</span></h2>
+                    <h2 id="product_catalog" class="era-table-title">
+                        <span class="btn-active" id="retail_page">Retail</span>
+                        <span class="btn-inactive" id="wholesale_page">Wholesale</span>
+                    </h2>
 
                     <div class="btn-group">
 

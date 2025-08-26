@@ -35,6 +35,7 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
                 <a href="sales_overview.php">Sales Overview</a>
                 <?php if (in_array(($_SESSION['user']['role'] ?? ''), ['admin', 'owner'])): ?>
                     <a href="product_catalog.php" aria-label="Product Catalog">Product Catalog</a>
+                    <a href="product_showcase.php" aria-label="Product Showcase">Product Showcase</a>
                     <a href="summary.php" aria-label="Summary">Summary</a>
                 <?php endif; ?>
                 <?php if (in_array(($_SESSION['user']['role'] ?? ''), ['owner'])): ?>

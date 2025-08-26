@@ -1,6 +1,6 @@
-# Digimium Website .htaccess Configuration
+# New Features .htaccess Configuration
 
-# Performance, Security, and SEO Optimizations
+# Security and API Access for Digimium New Features
 
 # Enable Gzip Compression
 
@@ -15,23 +15,6 @@ AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 AddOutputFilterByType DEFLATE application/json
-</IfModule>
-
-# Browser Caching
-
-<IfModule mod_expires.c>
-ExpiresActive on
-ExpiresByType text/css "access plus 1 year"
-ExpiresByType application/javascript "access plus 1 year"
-ExpiresByType image/png "access plus 1 year"
-ExpiresByType image/jpg "access plus 1 year"
-ExpiresByType image/jpeg "access plus 1 year"
-ExpiresByType image/gif "access plus 1 year"
-ExpiresByType image/svg+xml "access plus 1 year"
-ExpiresByType image/webp "access plus 1 year"
-ExpiresByType image/x-icon "access plus 1 year"
-ExpiresByType application/pdf "access plus 1 month"
-ExpiresByType application/x-shockwave-flash "access plus 1 month"
 </IfModule>
 
 # Security Headers
@@ -49,8 +32,8 @@ Header always set X-Frame-Options "SAMEORIGIN"
 # Referrer Policy
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
-# Content Security Policy
-Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com;"
+# Content Security Policy for New Features
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https:; connect-src 'self';"
     
 # Permissions Policy
 Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
@@ -69,10 +52,8 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)/$ /$1 [L,R=301]
     
-# Remove .html extension
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^([^\.]+)$ $1.html [NC,L]
+# Allow API access to api_json directory
+RewriteRule ^api_json/(.*)$ api_json/$1 [L]
     
 # Custom error pages
 ErrorDocument 404 /404.html
@@ -114,13 +95,6 @@ Header set Connection keep-alive
 
 AddDefaultCharset UTF-8
 
-# Prevent access to wp-config.php (if using WordPress)
-
-<Files wp-config.php>
-Order Allow, Deny
-Deny from all
-</Files>
-
 # Custom MIME types
 
 <IfModule mod_mime.c>
@@ -138,8 +112,39 @@ AddType application/manifest+json .webmanifest
 Header set Cache-Control "public, max-age=31536000"
 </FilesMatch>
     
-# Cache control for HTML
-<FilesMatch "\.(html|htm)$">
+# Cache control for HTML and PHP
+<FilesMatch "\.(html|htm|php)$">
 Header set Cache-Control "public, max-age=3600"
 </FilesMatch>
+
+# No cache for API responses
+
+<FilesMatch "\.(json|xml)$">
+Header set Cache-Control "no-cache, no-store, must-revalidate"
+Header set Pragma "no-cache"
+Header set Expires "0"
+</FilesMatch>
 </IfModule>
+
+# Allow file uploads for API
+
+<IfModule mod_php.c>
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300
+</IfModule>
+
+# Specific rules for API JSON directory
+
+<Directory "api_json"> # Allow all methods for API
+<Limit GET POST PUT DELETE>
+Require all granted
+</Limit>
+
+    # Set proper content type for JSON responses
+    <FilesMatch "\.php$">
+        Header set Content-Type "application/json; charset=utf-8"
+    </FilesMatch>
+
+</Directory>

@@ -1,0 +1,323 @@
+[
+    {
+        "popular": [
+            {
+                "name": "Spotify Individual",
+                "price": {
+                    "1_month": "Ks 14,***",
+                    "3_months": "Ks 35,***",
+                    "6_months": "Ks 63,***",
+                    "12_months": "Ks 99,***"
+                },
+                "features": [
+                    "Ad-free listening",
+                    "Offline downloads",
+                    "High-quality audio (320kbps)",
+                    "Unlimited skips",
+                    "Crossfade between tracks"
+                ],
+                "description": "Music enthusiasts, commuters, and anyone who wants uninterrupted music streaming.",
+                "photo_url": "images\/services\/spotify.jpg"
+            },
+            {
+                "name": "Apple Music Family",
+                "price": {
+                    "1_month": "Ks 5,***",
+                    "2_months": "Ks 7,***",
+                    "3_months": "Ks 11,***",
+                    "6_months": "Ks 22,***"
+                },
+                "features": [
+                    "90+ million songs",
+                    "Spatial audio",
+                    "Apple device integration",
+                    "Offline downloads",
+                    "Family sharing"
+                ],
+                "description": "Apple ecosystem users, music lovers, and anyone who wants high-quality audio streaming.",
+                "photo_url": "images\/services\/apple-music.jpg"
+            },
+            {
+                "name": "Spotify Duo",
+                "price": {
+                    "1_month": "Ks 22,***",
+                    "3_months": "Ks 48,***",
+                    "6_months": "Ks 77,***",
+                    "12_months": "Ks 137,***"
+                },
+                "features": [
+                    "Ad-free listening",
+                    "Offline downloads",
+                    "High-quality audio (320kbps)",
+                    "Unlimited skips",
+                    "Crossfade between tracks"
+                ],
+                "description": "Two-person plan for couples or friends who want music streaming together.",
+                "photo_url": "images\/services\/spotify.jpg"
+            },
+            {
+                "name": "Netflix Premium",
+                "price": {
+                    "1_month": "Ks 14,***",
+                    "3_months": "Ks 38,***",
+                    "6_months": "Ks 76,***",
+                    "12_months": "Ks 147,***"
+                },
+                "features": [
+                    "4K Ultra HD streaming",
+                    "Multiple screens (up to 4)",
+                    "Offline downloads",
+                    "Ad-free experience",
+                    "Original content access"
+                ],
+                "description": "Movie enthusiasts, families, and binge-watchers who want the ultimate streaming experience.",
+                "photo_url": "images\/services\/netflix.jpg"
+            },
+            {
+                "name": "ChatGPT Plus (Shared 4)",
+                "price": {
+                    "1_month": "Ks 23,***",
+                    "3_months": "Ks 48,***"
+                },
+                "features": [
+                    "Priority access to GPT-4",
+                    "Faster response times",
+                    "Plugin access",
+                    "Advanced reasoning",
+                    "Code generation"
+                ],
+                "description": "Shared access for up to 4 users at an affordable price.",
+                "photo_url": "images\/services\/chatgpt.jpg"
+            }
+        ],
+        "other": [
+            {
+                "name": "Prime Video",
+                "price": {
+                    "1_month": "Ks 8,***",
+                    "3_months": "Ks 23,***",
+                    "6_months": "Ks 29,***",
+                    "12_months": "Ks 65,***"
+                },
+                "features": [
+                    "Amazon Originals",
+                    "Movies & TV shows",
+                    "4K Ultra HD streaming",
+                    "Offline downloads",
+                    "Multiple profiles"
+                ],
+                "description": "Movie enthusiasts and families who enjoy Amazon Originals and global content.",
+                "photo_url": "images\/services\/prime.jpg"
+            },
+            {
+                "name": "HBO Max",
+                "price": {
+                    "1_month": "Ks 8,***",
+                    "3_months": "Ks 23,***",
+                    "6_months": "Ks 29,***",
+                    "12_months": "Ks 65,***"
+                },
+                "features": [
+                    "HBO premium content",
+                    "Warner Bros. movies",
+                    "Exclusive original series",
+                    "4K Ultra HD streaming",
+                    "Offline downloads"
+                ],
+                "description": "TV series fans, movie enthusiasts, and anyone who loves premium entertainment.",
+                "photo_url": "images\/services\/hbo.jpg"
+            },
+            {
+                "name": "Discord Nitro",
+                "price": {
+                    "1_month": "Ks 28,***"
+                },
+                "features": [
+                    "Custom emojis",
+                    "Animated avatars",
+                    "HD video streaming",
+                    "Server boosts",
+                    "Enhanced upload limits"
+                ],
+                "description": "Gamers, content creators, communities, and anyone who uses Discord regularly.",
+                "photo_url": "images\/services\/discord.jpg"
+            },
+            {
+                "name": "Hulu",
+                "price": {
+                    "1_month": "Ks 8,***",
+                    "3_months": "Ks 23,***",
+                    "6_months": "Ks 29,***",
+                    "12_months": "Ks 65,***"
+                },
+                "features": [
+                    "Exclusive TV shows and movies",
+                    "Hulu Originals",
+                    "4K Ultra HD streaming",
+                    "Offline downloads",
+                    "Multiple device support"
+                ],
+                "description": "TV lovers and binge-watchers who want exclusive Hulu Originals and popular series.",
+                "photo_url": "images\/services\/hulu.jpg"
+            },
+            {
+                "name": "Canva Pro (Manager)",
+                "price": {
+                    "1_month": "Ks 15,***"
+                },
+                "features": [
+                    "Premium templates",
+                    "Brand kits",
+                    "Advanced design tools",
+                    "Background remover",
+                    "Team collaboration"
+                ],
+                "description": "Designers, marketers, content creators, and anyone who needs professional design tools.",
+                "photo_url": "images\/services\/canva.jpg"
+            },
+            {
+                "name": "Gemini Pro",
+                "price": {
+                    "1_month": "Ks 4*,***"
+                },
+                "features": [
+                    "Multimodal capabilities",
+                    "Coding assistance",
+                    "Creative writing tools",
+                    "Advanced reasoning",
+                    "Google integration"
+                ],
+                "description": "Developers, researchers, writers, and anyone who needs advanced AI assistance.",
+                "photo_url": "images\/services\/gemini.jpg"
+            },
+            {
+                "name": "Super Duolingo",
+                "price": {
+                    "1_month": "Ks 3,***",
+                    "12_months": "Ks 38,***"
+                },
+                "features": [
+                    "Ad-free learning",
+                    "Unlimited hearts",
+                    "Offline lessons",
+                    "Progress tracking",
+                    "Mastery quizzes"
+                ],
+                "description": "Language learners, students, travelers, and anyone who wants to learn new languages.",
+                "photo_url": "images\/services\/duolingo.jpg"
+            },
+            {
+                "name": "Microsoft 365",
+                "price": {
+                    "12_months": "Ks 40,***"
+                },
+                "features": [
+                    "Word, Excel, PowerPoint",
+                    "Outlook email",
+                    "OneDrive cloud storage",
+                    "Teams collaboration",
+                    "Premium templates"
+                ],
+                "description": "Students, professionals, businesses, and anyone who needs office productivity tools.",
+                "photo_url": "images\/services\/microsoft365.jpg"
+            },
+            {
+                "name": "Adobe Creative Cloud (Individual)",
+                "price": {
+                    "1_month": "Ks 45,***",
+                    "12_months": "Ks 430,***"
+                },
+                "features": [
+                    "Photoshop & Illustrator",
+                    "Premiere Pro & After Effects",
+                    "InDesign & XD",
+                    "Cloud storage",
+                    "Creative libraries"
+                ],
+                "description": "Designers, photographers, video editors, and creative professionals.",
+                "photo_url": "images\/services\/adobe.jpg"
+            },
+            {
+                "name": "Telegram Premium",
+                "price": {
+                    "1_month": "Ks 29,***",
+                    "3_months": "Ks 63,***",
+                    "6_months": "Ks 89,***",
+                    "12_months": "Ks 149,***"
+                },
+                "features": [
+                    "Unlimited uploads",
+                    "Faster downloads",
+                    "Exclusive customization",
+                    "Advanced chat features",
+                    "Premium stickers"
+                ],
+                "description": "Telegram power users, content creators, and anyone who wants enhanced messaging features.",
+                "photo_url": "images\/services\/telegram-premium.jpg"
+            },
+            {
+                "name": "CapCut Pro",
+                "price": {
+                    "1_month": "Ks 2,***"
+                },
+                "features": [
+                    "Premium effects",
+                    "No watermark",
+                    "Stock assets",
+                    "Advanced editing tools",
+                    "Cross-platform sync"
+                ],
+                "description": "Content creators and editors who want professional video editing features.",
+                "photo_url": "images\/services\/capcut.jpg"
+            },
+            {
+                "name": "Perplexity AI Pro",
+                "price": {
+                    "1_month": "Ks 12,***"
+                },
+                "features": [
+                    "Unlimited searches",
+                    "Priority support",
+                    "Enhanced analytics",
+                    "Advanced research tools",
+                    "Citation tracking"
+                ],
+                "description": "Researchers, students, professionals, and anyone who needs advanced AI research capabilities.",
+                "photo_url": "images\/services\/perplexity.jpg"
+            },
+            {
+                "name": "ChatGPT Plus (Team Plan)",
+                "price": {
+                    "1_month": "Ks 9*,***"
+                },
+                "features": [
+                    "Priority access to GPT-4",
+                    "Faster response times",
+                    "Plugin access",
+                    "Advanced reasoning",
+                    "Team collaboration tools"
+                ],
+                "description": "Best option for small teams who need AI collaboration and productivity.",
+                "photo_url": "images\/services\/chatgpt.jpg"
+            },
+            {
+                "name": "Disney+",
+                "price": {
+                    "1_month": "Ks 8,***",
+                    "3_months": "Ks 23,***",
+                    "6_months": "Ks 29,***",
+                    "12_months": "Ks 65,***"
+                },
+                "features": [
+                    "4K Ultra HD streaming",
+                    "Disney, Pixar, Marvel content",
+                    "Star Wars universe",
+                    "National Geographic",
+                    "Offline downloads"
+                ],
+                "description": "Families, Disney fans, and anyone who loves classic and modern entertainment.",
+                "photo_url": "images\/services\/disney.jpg"
+            }
+        ]
+    }
+]
