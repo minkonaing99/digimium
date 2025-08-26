@@ -1,5 +1,5 @@
 <?php
-$json_file_path = '/var/www/html/digimium.store/data/services.json';
+$json_file_path = '../../digimium.store/data/services.json';
 
 if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'GET') {
     if (file_exists($json_file_path)) {

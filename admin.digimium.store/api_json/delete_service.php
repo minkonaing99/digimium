@@ -1,7 +1,7 @@
 <?php
 
 
-$json_file_path = '/var/www/html/digimium.store/data/services.json';
+$json_file_path = '../../digimium.store/data/services.json';
 
 if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -44,7 +44,7 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
 
     // Delete the associated photo if it exists
     if (isset($service_to_delete['photo_url']) && !empty($service_to_delete['photo_url'])) {
-        $photo_path = '/var/www/html/digimium.store/' . $service_to_delete['photo_url'];
+        $photo_path = '../../digimium.store/' . $service_to_delete['photo_url'];
         if (file_exists($photo_path)) {
             unlink($photo_path);
         }

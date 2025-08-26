@@ -1,13 +1,13 @@
 <?php
 
-declare(strict_types=1);
-require __DIR__ . '/api/session_bootstrap.php';
-require __DIR__ . '/api/auth.php';
+// declare(strict_types=1);
+// require __DIR__ . '/api/session_bootstrap.php';
+// require __DIR__ . '/api/auth.php';
 
-auth_require_login(['admin', 'owner']);
+// auth_require_login(['admin', 'owner']);
 
-$role = ucfirst($_SESSION['user']['role'] ?? '');
-$user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
+// $role = ucfirst($_SESSION['user']['role'] ?? '');
+// $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
 ?>
 
 <!DOCTYPE html>
@@ -219,7 +219,7 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
     </main>
 
     <script src="./js/nav.js"></script>
-    <script src="./js/product_showcase.js"></script>
+    <script src="./js/product_showcase.js?v=<?php echo time(); ?>"></script>
 
 </body>
 
