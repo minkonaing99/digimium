@@ -1,7 +1,7 @@
 <?php
 
-$json_file_path = '/var/www/html/digimium.store/data/services.json';
-$upload_dir = '/var/www/html/digimium.store/images/services/';
+$json_file_path = '../../digimium.store/data/services.json';
+$upload_dir = '../../digimium.store/images/services/';
 
 // Create upload directory if it doesn't exist
 if (!is_dir($upload_dir)) {
@@ -76,7 +76,7 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
 
         // Move uploaded file
         if (move_uploaded_file($uploaded_file['tmp_name'], $file_path)) {
-            $photo_url = 'images/services/' . $filename;
+            $photo_url = '../../digimium.store/images/services/' . $filename;
         } else {
             http_response_code(500);
             echo json_encode(['error' => 'Failed to save uploaded file']);

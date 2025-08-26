@@ -435,7 +435,7 @@ class ProductShowcase {
       const serviceName = formData.get("services_name").trim().toLowerCase();
       const fileExtension = photoFile.name.split(".").pop();
       const fileName = `${serviceName}.${fileExtension}`;
-      photoUrl = `../../digimium.store/images/services/${fileName}`;
+      photoUrl = `/images/services/${fileName}`;
     } else if (isEditing && this.editingService.service.photo_url) {
       // Keep existing photo when editing
       photoUrl = this.editingService.service.photo_url;
@@ -792,17 +792,23 @@ class ProductShowcase {
   getImageUrl(photoUrl) {
     // Convert relative path to absolute URL for browser access
     if (photoUrl && photoUrl.startsWith("../../digimium.store/")) {
-      // Convert to absolute path from the root
+      // Convert to cross-domain URL
       const convertedUrl = photoUrl.replace(
         "../../digimium.store/",
-        "/digimium/digimium.store/"
+        "https://digimium.store/"
       );
       return convertedUrl;
+    }
+    // For new format: /images/services/filename.jpg
+    if (photoUrl && photoUrl.startsWith("/images/services/")) {
+      const fileName = photoUrl.split("/").pop();
+      const fixedUrl = `https://digimium.store/images/services/${fileName}`;
+      return fixedUrl;
     }
     // If it doesn't start with the expected path, try to fix it
     if (photoUrl && photoUrl.includes("images/services/")) {
       const fileName = photoUrl.split("/").pop();
-      const fixedUrl = `/digimium/digimium.store/images/services/${fileName}`;
+      const fixedUrl = `https://digimium.store/images/services/${fileName}`;
       return fixedUrl;
     }
     return photoUrl;

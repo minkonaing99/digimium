@@ -100,6 +100,17 @@
                 ],
                 "description": "Best option for small teams who need AI collaboration and productivity.",
                 "photo_url": "images\/services\/chatgpt.jpg"
+            },
+            {
+                "name": "Gemini Pro",
+                "price": {
+                    "1_month": "Ks 4*,***"
+                },
+                "features": [
+                    "Multimodal capabilities"
+                ],
+                "description": "Developers, researchers, writers, and anyone who needs advanced AI assistance.",
+                "photo_url": "\/images\/services\/geminipro.jpg"
             }
         ],
         "other": [
@@ -234,21 +245,6 @@
                 ],
                 "description": "Students, professionals, writers, and anyone who wants to improve their writing.",
                 "photo_url": "images\/services\/grammarly.jpg"
-            },
-            {
-                "name": "Gemini Pro",
-                "price": {
-                    "1_month": "Ks 4*,***"
-                },
-                "features": [
-                    "Multimodal capabilities",
-                    "Coding assistance",
-                    "Creative writing tools",
-                    "Advanced reasoning",
-                    "Google integration"
-                ],
-                "description": "Developers, researchers, writers, and anyone who needs advanced AI assistance.",
-                "photo_url": "images\/services\/gemini.jpg"
             },
             {
                 "name": "Discord Nitro",

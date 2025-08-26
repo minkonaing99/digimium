@@ -175,7 +175,7 @@ class ProductShowcase {
                          ? `
                      <div class="service-photo">
                          <img src="${this.escapeHtml(
-                           service.photo_url
+                           this.getImageUrl(service.photo_url)
                          )}" alt="${this.escapeHtml(
                              service.name
                            )}" onerror="this.style.display='none'">
@@ -435,7 +435,7 @@ class ProductShowcase {
       const serviceName = formData.get("services_name").trim().toLowerCase();
       const fileExtension = photoFile.name.split(".").pop();
       const fileName = `${serviceName}.${fileExtension}`;
-      photoUrl = `images/services/${fileName}`;
+      photoUrl = `/images/services/${fileName}`;
     } else if (isEditing && this.editingService.service.photo_url) {
       // Keep existing photo when editing
       photoUrl = this.editingService.service.photo_url;
@@ -706,7 +706,9 @@ class ProductShowcase {
       photoPreview.innerHTML = `
         <div style="margin-top: 1rem;">
           <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-bottom: 0.5rem;">Current Photo:</p>
-          <img src="${photoUrl}" alt="Current service photo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line);">
+          <img src="${this.getImageUrl(
+            photoUrl
+          )}" alt="Current service photo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line);">
         </div>
       `;
     }
@@ -752,8 +754,7 @@ class ProductShowcase {
       </div>
       <div class="features-col">
         <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
-      </div>
-    `;
+      </div>    `;
 
     featuresContainer.appendChild(newRow);
   }
@@ -787,6 +788,24 @@ class ProductShowcase {
     return div.innerHTML;
   }
 
+  getImageUrl(photoUrl) {
+    // Convert relative path to absolute URL for browser access
+    if (photoUrl && photoUrl.startsWith("../../digimium.store/")) {
+      // Convert to absolute path from the root
+      const convertedUrl = photoUrl.replace(
+        "../../digimium.store/",
+        "/digimium.store/"
+      );
+      return convertedUrl;
+    }
+    // If it doesn't start with the expected path, try to fix it
+    if (photoUrl && photoUrl.includes("images/services/")) {
+      const fileName = photoUrl.split("/").pop();
+      const fixedUrl = `https://digimium.store/images/services/${fileName}`;
+      return fixedUrl;
+    }
+    return photoUrl;
+  }
   formatDuration(duration) {
     const durationMap = {
       "1_month": "1 Month",

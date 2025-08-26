@@ -1,13 +1,13 @@
 <?php
 
-// declare(strict_types=1);
-// require __DIR__ . '/api/session_bootstrap.php';
-// require __DIR__ . '/api/auth.php';
+declare(strict_types=1);
+require __DIR__ . '/api/session_bootstrap.php';
+require __DIR__ . '/api/auth.php';
 
-// auth_require_login(['admin', 'owner']);
+auth_require_login(['admin', 'owner']);
 
-// $role = ucfirst($_SESSION['user']['role'] ?? '');
-// $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
+$role = ucfirst($_SESSION['user']['role'] ?? '');
+$user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +16,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Digimium • Product Catalog</title>
+    <title>Digimium • Product Showcase</title>
     <link rel="stylesheet" href="./style/style.min.css">
     <link rel="stylesheet" href="./style/wholesale.min.css">
     <link rel="stylesheet" href="./style/product_showcase.css">

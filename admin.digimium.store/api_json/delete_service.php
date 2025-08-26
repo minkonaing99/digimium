@@ -44,7 +44,20 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
 
     // Delete the associated photo if it exists
     if (isset($service_to_delete['photo_url']) && !empty($service_to_delete['photo_url'])) {
-        $photo_path = '../../digimium.store/' . $service_to_delete['photo_url'];
+        // Handle different URL formats
+        if (strpos($service_to_delete['photo_url'], 'https://') === 0) {
+            // For production URLs, extract the filename and use local path
+            $filename = basename($service_to_delete['photo_url']);
+            $photo_path = '../../digimium.store/images/services/' . $filename;
+        } elseif (strpos($service_to_delete['photo_url'], '/images/services/') === 0) {
+            // For new format: /images/services/filename.jpg
+            $filename = basename($service_to_delete['photo_url']);
+            $photo_path = '../../digimium.store/images/services/' . $filename;
+        } else {
+            // For old relative paths
+            $photo_path = '../../digimium.store/' . $service_to_delete['photo_url'];
+        }
+
         if (file_exists($photo_path)) {
             unlink($photo_path);
         }
@@ -67,3 +80,4 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
 }
+

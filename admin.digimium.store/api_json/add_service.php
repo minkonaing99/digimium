@@ -1,11 +1,28 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 $json_file_path = '../../digimium.store/data/services.json';
 $upload_dir = '../../digimium.store/images/services/';
 
 // Create upload directory if it doesn't exist
 if (!is_dir($upload_dir)) {
-    mkdir($upload_dir, 0755, true);
+    if (!mkdir($upload_dir, 0755, true)) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to create upload directory']);
+        exit;
+    }
+}
+
+// Check if JSON file directory exists
+$json_dir = dirname($json_file_path);
+if (!is_dir($json_dir)) {
+    if (!mkdir($json_dir, 0755, true)) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to create JSON directory']);
+        exit;
+    }
 }
 
 if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -40,7 +57,20 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
     $current_data = [];
     if (file_exists($json_file_path)) {
         $json_content = file_get_contents($json_file_path);
-        $current_data = json_decode($json_content, true) ?: [];
+        if ($json_content === false) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to read JSON file']);
+            exit;
+        }
+        $current_data = json_decode($json_content, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Invalid JSON in services file: ' . json_last_error_msg()]);
+            exit;
+        }
+        if ($current_data === null) {
+            $current_data = [];
+        }
     }
 
     // Initialize structure if empty
@@ -76,7 +106,7 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
 
         // Move uploaded file
         if (move_uploaded_file($uploaded_file['tmp_name'], $file_path)) {
-            $photo_url = '../../digimium.store/images/services/' . $filename;
+            $photo_url = '/images/services/' . $filename;
         } else {
             http_response_code(500);
             echo json_encode(['error' => 'Failed to save uploaded file']);
@@ -114,16 +144,24 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
             $current_data[0][$category][] = $service_data;
 
             // Save updated data
-            if (file_put_contents($json_file_path, json_encode($current_data, JSON_PRETTY_PRINT))) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Service updated successfully!',
-                    'service' => $service_data
-                ]);
-            } else {
+            $json_data = json_encode($current_data, JSON_PRETTY_PRINT);
+            if ($json_data === false) {
                 http_response_code(500);
-                echo json_encode(['error' => 'Failed to update service.']);
+                echo json_encode(['error' => 'Failed to encode JSON data']);
+                exit;
             }
+
+            if (file_put_contents($json_file_path, $json_data) === false) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to write to JSON file. Check file permissions.']);
+                exit;
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Service updated successfully!',
+                'service' => $service_data
+            ]);
         } else {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid category']);
@@ -134,16 +172,24 @@ if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] === 'POST')
             $current_data[0][$category][] = $service_data;
 
             // Save updated data
-            if (file_put_contents($json_file_path, json_encode($current_data, JSON_PRETTY_PRINT))) {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'New service added successfully!',
-                    'service' => $service_data
-                ]);
-            } else {
+            $json_data = json_encode($current_data, JSON_PRETTY_PRINT);
+            if ($json_data === false) {
                 http_response_code(500);
-                echo json_encode(['error' => 'Failed to add service.']);
+                echo json_encode(['error' => 'Failed to encode JSON data']);
+                exit;
             }
+
+            if (file_put_contents($json_file_path, $json_data) === false) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to write to JSON file. Check file permissions.']);
+                exit;
+            }
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'New service added successfully!',
+                'service' => $service_data
+            ]);
         } else {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid category']);
