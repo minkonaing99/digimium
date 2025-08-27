@@ -359,10 +359,19 @@ nav {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    min-height: calc(80vh - 60px);
+}
+
+h2 {
+    padding: 0;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+
+
+
+
     .hero {
         min-height: 80vh;
         padding: 0 2rem;
@@ -373,6 +382,7 @@ nav {
     .hero-container {
         max-width: 100%;
         padding: 1.5rem 2rem;
+        min-height: calc(80vh - 60px);
     }
 
     .hero-subtitle {
@@ -395,6 +405,11 @@ nav {
 }
 
 @media (max-width: 480px) {
+
+    h2 {
+        padding: 0 .5rem;
+    }
+
     .hero {
         min-height: 80vh;
         padding: 0 1.5rem;
@@ -404,6 +419,7 @@ nav {
 
     .hero-container {
         padding: 1rem 1.5rem;
+        min-height: calc(80vh - 60px);
     }
 
     .hero-subtitle {
@@ -418,7 +434,7 @@ nav {
     }
 
     #navbar {
-        padding: 0.6rem 1.5rem;
+        padding: 0rem 1.5rem;
     }
 }
 
@@ -556,6 +572,15 @@ section:nth-child(even) {
     color: rgba(245, 253, 253, 0.95);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+
+.about-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(245, 253, 253, 0.95);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+
 
 .about .portfolio-grid {
     position: relative;
@@ -1146,14 +1171,16 @@ section:nth-child(even) {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
     font-weight: 600;
     font-size: 1rem;
     position: relative;
     z-index: 1;
     overflow: hidden;
     backdrop-filter: blur(10px);
+    min-width: 140px;
+    justify-content: center;
 }
 
 .btn-telegram img {
@@ -1232,7 +1259,7 @@ section:nth-child(even) {
 }
 
 .footer-section h4 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: var(--white);
     font-size: 1.3rem;
     font-weight: 600;
@@ -1284,7 +1311,7 @@ section:nth-child(even) {
 }
 
 .footer-section ul li {
-    margin-bottom: 0.75rem;
+    margin-bottom: .5rem;
 }
 
 .footer-section a {
@@ -1402,6 +1429,15 @@ section:nth-child(even) {
     text-shadow: 0 0 10px rgba(52, 119, 148, 0.5);
 }
 
+
+.description-mobile {
+    display: none;
+}
+
+.description-desktop {
+    display: block;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .container {
@@ -1410,6 +1446,11 @@ section:nth-child(even) {
 }
 
 @media (max-width: 992px) {
+
+    .about p {
+        font-size: 1.1rem;
+    }
+
     .container {
         max-width: 720px;
     }
@@ -1429,6 +1470,10 @@ section:nth-child(even) {
     section {
         padding: 4rem 0;
     }
+
+    .footer-section ul li {
+        margin-bottom: .1rem;
+    }
 }
 
 @media (min-width: 1200px) {
@@ -1438,6 +1483,19 @@ section:nth-child(even) {
 }
 
 @media (max-width: 768px) {
+
+    .description-mobile {
+        display: block;
+    }
+
+    .description-desktop {
+        display: none;
+    }
+
+    .about p {
+        font-size: 1rem;
+    }
+
     .container {
         max-width: 540px;
     }
@@ -1447,7 +1505,7 @@ section:nth-child(even) {
     }
 
     #navbar {
-        padding: 0.8rem 2rem;
+        padding: 0.3rem 2rem;
     }
 
     /* Disable grid hover effect on mobile for better performance */
@@ -1458,17 +1516,18 @@ section:nth-child(even) {
     .nav-links {
         display: none;
         flex-direction: column;
-        background-color: var(--primary);
         position: fixed;
-        top: 56px;
+        top: 60px;
         left: 0;
         width: 100vw;
         padding: 1rem;
         border-top: 1px solid var(--line);
         border-bottom: 1px solid var(--line);
-        animation: slideDown .3s ease-in-out;
         z-index: 1001;
+        background-color: rgba(22, 26, 34, 0.9);
         backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: slideDown .3s ease-in-out;
     }
 
     .nav-links.active {
@@ -1543,6 +1602,7 @@ section:nth-child(even) {
 
     .telegram-channel {
         padding: 2rem;
+        text-align: center;
     }
 
     .telegram-contact h3 {
@@ -1573,8 +1633,12 @@ section:nth-child(even) {
     }
 
     .btn-telegram {
-        padding: 1rem 2rem;
+        padding: 0.5rem 1rem;
         font-size: 1rem;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        min-width: 140px;
     }
 
     .services-grid {
@@ -1736,6 +1800,13 @@ section:nth-child(even) {
 }
 
 @media (max-width: 576px) {
+
+
+
+    .description-mobile {
+        padding: 0 1rem;
+    }
+
     .container {
         padding: 0 0.75rem;
     }
@@ -1857,6 +1928,7 @@ section:nth-child(even) {
 
     .telegram-channel {
         padding: 1.5rem;
+        text-align: center;
     }
 
     .telegram-contact h3 {
@@ -1887,8 +1959,12 @@ section:nth-child(even) {
     }
 
     .btn-telegram {
-        padding: 0.8rem 1.5rem;
+        padding: 0.5rem 1rem;
         font-size: 0.9rem;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        min-width: 140px;
     }
 
     .btn {
@@ -1928,6 +2004,9 @@ section:nth-child(even) {
 
 /* Mobile - Extra Small */
 @media (max-width: 420px) {
+
+
+
     .container {
         padding: 0 0.75rem;
     }
