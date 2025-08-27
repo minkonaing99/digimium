@@ -1157,13 +1157,22 @@ document
   }
 
   // Init
-  if (elPurchase && !elPurchase.value) elPurchase.value = todayDate();
+  // On page refresh, always use today's date as default
+  if (elPurchase && !elPurchase.value) {
+    elPurchase.value = todayDate();
+  }
   await loadProductOptions();
   validate();
 
   elProduct?.addEventListener("change", onProductChange);
   elCustomer?.addEventListener("input", validate);
-  elPurchase?.addEventListener("change", onPurchaseDateChange);
+  elPurchase?.addEventListener("change", (e) => {
+    // Save the user's chosen date to localStorage
+    if (e.target.value) {
+      localStorage.setItem("retail_preferred_purchase_date", e.target.value);
+    }
+    onPurchaseDateChange();
+  });
 
   // Submit
   // Allowed renew integers for sales insert
@@ -1266,7 +1275,9 @@ document
       // Reset fields
       form.reset();
       if (elProduct) elProduct.selectedIndex = 0;
-      if (elPurchase) elPurchase.value = todayDate();
+      // Use saved preferred date or today's date as fallback
+      const savedDate = localStorage.getItem("retail_preferred_purchase_date");
+      if (elPurchase) elPurchase.value = savedDate || todayDate();
       if (elEndDate) elEndDate.value = "";
       validate();
     } catch (err) {
