@@ -1,7 +1,9 @@
 # Digimium Website .htaccess Configuration
+
 # Performance, Security, and SEO Optimizations
 
 # Enable Gzip Compression
+
 <IfModule mod_deflate.c>
 AddOutputFilterByType DEFLATE text/plain
 AddOutputFilterByType DEFLATE text/html
@@ -16,6 +18,7 @@ AddOutputFilterByType DEFLATE application/json
 </IfModule>
 
 # Browser Caching
+
 <IfModule mod_expires.c>
 ExpiresActive on
 ExpiresByType text/css "access plus 1 year"
@@ -32,6 +35,7 @@ ExpiresByType application/x-shockwave-flash "access plus 1 month"
 </IfModule>
 
 # Security Headers
+
 <IfModule mod_headers.c>
 # XSS Protection
 Header always set X-XSS-Protection "1; mode=block"
@@ -53,21 +57,22 @@ Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
 </IfModule>
 
 # URL Rewriting for Clean URLs
+
 <IfModule mod_rewrite.c>
 RewriteEngine On
     
-# Force HTTPS
-RewriteCond % { HTTPS } off
-RewriteRule ^(.*)$ https://% { HTTP_HOST }% { REQUEST_URI } [L, R=301]
+# Force HTTPS (commented out for development)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     
 # Remove trailing slashes
-RewriteCond % { REQUEST_FILENAME } !-d
-RewriteRule ^(.*)/$ /$1 [L, R=301]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
     
 # Remove .html extension
-RewriteCond % { REQUEST_FILENAME } !-d
-RewriteCond % { REQUEST_FILENAME } !-f
-RewriteRule ^([^\.]+)$ $1.html [NC, L]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.html [NC,L]
     
 # Custom error pages
 ErrorDocument 404 /404.html
@@ -75,41 +80,49 @@ ErrorDocument 500 /500.html
 </IfModule>
 
 # Prevent access to sensitive files
+
 <FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
 Order Allow, Deny
 Deny from all
 </FilesMatch>
 
 # Prevent access to hidden files
+
 <FilesMatch "^\.">
 Order Allow, Deny
 Deny from all
 </FilesMatch>
 
 # Disable directory browsing
+
 Options -Indexes
 
 # Prevent access to backup files
+
 <FilesMatch "\.(bak|backup|old|orig|save|swp|tmp)$">
 Order Allow, Deny
 Deny from all
 </FilesMatch>
 
 # Enable Keep-Alive
+
 <IfModule mod_headers.c>
 Header set Connection keep-alive
 </IfModule>
 
 # Set default character set
+
 AddDefaultCharset UTF-8
 
 # Prevent access to wp-config.php (if using WordPress)
+
 <Files wp-config.php>
 Order Allow, Deny
 Deny from all
 </Files>
 
 # Custom MIME types
+
 <IfModule mod_mime.c>
 AddType application/javascript .js
 AddType text/css .css
@@ -118,6 +131,7 @@ AddType application/manifest+json .webmanifest
 </IfModule>
 
 # Performance optimizations
+
 <IfModule mod_headers.c>
 # Cache control for static assets
 <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
