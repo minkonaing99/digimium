@@ -231,8 +231,6 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
                         <tr>
                             <th class="era-num">#</th>
                             <th>Product</th>
-                            <th class="era-dur column-hide">Dur</th>
-                            <th class="era-renew" style="text-align: center;">Renew</th>
                             <th>Customer</th>
                             <th class=" era-email">Email</th>
                             <th style="text-align: center;">Purchased</th>
@@ -259,9 +257,6 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
                         <tr>
                             <th class="era-num">#</th>
                             <th>Product</th>
-                            <th class="era-dur column-hide">Dur</th>
-                            <th class="era-dur">Qty</th>
-                            <th class="era-renew column-hide" style="text-align: center;">Renew</th>
                             <th>Customer</th>
                             <th class=" era-email">Email</th>
                             <th style="text-align: center;">Purchased</th>

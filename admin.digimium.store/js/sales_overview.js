@@ -77,7 +77,7 @@ document
 
   const MQ_MOBILE = window.matchMedia("(max-width: 640px)");
 
-  const COLSPAN = 12;
+  const COLSPAN = 10;
   const CACHE_KEY = "cachedSales:v1";
   const PAGE_SIZE = 100;
 
@@ -270,15 +270,6 @@ document
     const tdProd = document.createElement("td");
     tdProd.textContent = s.sale_product ?? "-";
 
-    const tdDur = document.createElement("td");
-    tdDur.className = "era-dur column-hide";
-    tdDur.innerHTML = `<span class="era-badge">${s.duration ?? "-"}</span>`;
-
-    const tdRenew = document.createElement("td");
-    tdRenew.className = "era-renew";
-    const renewInt = Number.isInteger(+s.renew) ? +s.renew : 0;
-    tdRenew.textContent = String(renewInt);
-
     const makeEditable = (field, text, extraClass = "") => {
       const td = document.createElement("td");
       td.className =
@@ -304,7 +295,11 @@ document
     tdExpired.className = "text-center";
     tdExpired.textContent = formatDate(s.expired_date);
 
-    const tdManager = makeEditable("manager", s.manager, "column-hide");
+    const tdManager = makeEditable(
+      "manager",
+      s.manager,
+      "era-muted column-hide"
+    );
     const tdNote = makeEditable("note", s.note, "era-muted column-hide");
 
     const tdPrice = document.createElement("td");
@@ -325,8 +320,6 @@ document
     tr.append(
       tdNum,
       tdProd,
-      tdDur,
-      tdRenew,
       tdCustomer,
       tdEmail,
       tdPurchased,
@@ -340,26 +333,26 @@ document
   }
 
   // Keep these in sync with your table:
-  // total columns = 12, price is the 2nd-to-last column.
-  const TOTAL_COLS = 12;
-  const PRICE_COL_INDEX = TOTAL_COLS - 2; // 10
+  // total columns = 10, price is the 2nd-to-last column.
+  const TOTAL_COLS = 10;
+  const PRICE_COL_INDEX = TOTAL_COLS - 2; // 8
 
   function buildSubtotalTr(dateKey) {
     const tr = document.createElement("tr");
     tr.className = "era-row era-subtotal";
 
     // Label spans the columns that are ALWAYS visible before Price on mobile:
-    // (Num, Product, Renew, Customer, Email, Purchased, Expired) = 7 cols
+    // (Num, Product, Customer, Email, Purchased, Expired) = 6 cols
     const tdLabel = document.createElement("td");
-    tdLabel.colSpan = 7;
+    tdLabel.colSpan = 6;
     tdLabel.textContent = `Total for ${formatDate(dateKey)}`;
     tr.appendChild(tdLabel);
 
     // Add filler cells for the columns that are hidden on mobile
     // but visible on desktop BEFORE the Price column:
-    // Duration (idx 2), Manager (idx 8), Note (idx 9) → 3 fillers.
+    // Manager (idx 7), Note (idx 8) → 2 fillers.
     // Give them the same "column-hide" class so they disappear on narrow view.
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       const tdFill = document.createElement("td");
       tdFill.className = "column-hide";
       tr.appendChild(tdFill);
