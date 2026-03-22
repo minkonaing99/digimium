@@ -1,0 +1,6 @@
+# Admin environment file
+admin.digimium.store/.env
+
+
+# Telegram bot credentials
+telegram-bot/creds.py
