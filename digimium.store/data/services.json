@@ -1,515 +1,515 @@
 [
-  {
-    "popular": [
-      {
-        "name": "Spotify Individual",
-        "badges": [
-          "Spotify",
-          "Individual"
+    {
+        "popular": [
+            {
+                "name": "Spotify Individual",
+                "badges": [
+                    "Spotify",
+                    "Individual"
+                ],
+                "price": {
+                    "1_month": "Ks 15,500",
+                    "3_months": "Ks 39,500",
+                    "6_months": "Ks 75,000",
+                    "12_months": "Ks 150,000"
+                },
+                "features": [
+                    "Official individual plan",
+                    "Private personal access",
+                    "Ad-free listening",
+                    "Offline downloads"
+                ],
+                "description": "Spotify individual plan for one-user listening with full month-to-year options.",
+                "photo_url": "images/services/spotify.jpg"
+            },
+            {
+                "name": "Spotify Family",
+                "badges": [
+                    "Spotify",
+                    "Family"
+                ],
+                "price": {
+                    "1_month": "Ks 8,500"
+                },
+                "features": [
+                    "Official family plan",
+                    "Shared family access",
+                    "Ad-free listening",
+                    "Offline downloads"
+                ],
+                "description": "Spotify family subscription for customers who want the lowest-entry official family plan.",
+                "photo_url": "images/services/spotify.jpg"
+            },
+            {
+                "name": "ChatGPT Plus Individual",
+                "badges": [
+                    "ChatGPT",
+                    "Individual"
+                ],
+                "price": {
+                    "1_month": "MMK 70,000"
+                },
+                "features": [
+                    "ChatGPT Plus access",
+                    "Individual personal plan",
+                    "Private usage",
+                    "Fast access to premium models"
+                ],
+                "description": "Individual ChatGPT Plus plan for personal use.",
+                "photo_url": "images/services/chatgpt.jpg"
+            },
+            {
+                "name": "Telegram Premium",
+                "badges": [
+                    "Telegram",
+                    "Updated Price"
+                ],
+                "price": {
+                    "3_months": "MMK 64,000",
+                    "6_months": "MMK 99,000",
+                    "12_months": "MMK 159,000"
+                },
+                "features": [
+                    "Premium Telegram features",
+                    "Faster downloads",
+                    "Extra upload limits",
+                    "Premium reactions and stickers"
+                ],
+                "description": "Updated Telegram Premium pricing for medium and long-term subscriptions.",
+                "photo_url": "images/services/telegram-premium.jpg"
+            },
+            {
+                "name": "YouTube Premium Family",
+                "badges": [
+                    "YouTube",
+                    "Family"
+                ],
+                "price": {
+                    "3_months": "MMK 40,000",
+                    "6_months": "MMK 75,000",
+                    "12_months": "MMK 145,000"
+                },
+                "features": [
+                    "YouTube Premium and YouTube Music",
+                    "Family plan access",
+                    "Ad-free video and music",
+                    "Offline playback support"
+                ],
+                "description": "Family plan for YouTube Premium and YouTube Music bundled together.",
+                "photo_url": "images/services/youtube.jpg"
+            },
+            {
+                "name": "Netflix Premium 4K",
+                "badges": [
+                    "Netflix",
+                    "Myanmar Region"
+                ],
+                "price": {
+                    "1_month": "MMK 16,000",
+                    "3_months": "MMK 45,500",
+                    "6_months": "MMK 89,500",
+                    "12_months": "MMK 155,000"
+                },
+                "features": [
+                    "Netflix Premium account",
+                    "4K streaming support",
+                    "Myanmar region pricing",
+                    "Add TV support for MMK 3,000 per month"
+                ],
+                "description": "Main Netflix Premium plan for Myanmar region customers who want full-duration pricing up to 12 months.",
+                "photo_url": "images/services/netflix.jpg"
+            }
         ],
-        "price": {
-          "1_month": "Ks 15,500",
-          "3_months": "Ks 39,500",
-          "6_months": "Ks 75,000",
-          "12_months": "Ks 150,000"
-        },
-        "features": [
-          "Official individual plan",
-          "Private personal access",
-          "Ad-free listening",
-          "Offline downloads"
-        ],
-        "description": "Spotify individual plan for one-user listening with full month-to-year options.",
-        "photo_url": "images/services/spotify.jpg"
-      },
-      {
-        "name": "Spotify Family",
-        "badges": [
-          "Spotify",
-          "Family"
-        ],
-        "price": {
-          "1_month": "Ks 8,500"
-        },
-        "features": [
-          "Official family plan",
-          "Shared family access",
-          "Ad-free listening",
-          "Offline downloads"
-        ],
-        "description": "Spotify family subscription for customers who want the lowest-entry official family plan.",
-        "photo_url": "images/services/spotify.jpg"
-      },
-      {
-        "name": "ChatGPT Plus Individual",
-        "badges": [
-          "ChatGPT",
-          "Individual"
-        ],
-        "price": {
-          "1_month": "MMK 70,000"
-        },
-        "features": [
-          "ChatGPT Plus access",
-          "Individual personal plan",
-          "Private usage",
-          "Fast access to premium models"
-        ],
-        "description": "Individual ChatGPT Plus plan for personal use.",
-        "photo_url": "images/services/chatgpt.jpg"
-      },
-      {
-        "name": "Telegram Premium",
-        "badges": [
-          "Telegram",
-          "Updated Price"
-        ],
-        "price": {
-          "3_months": "MMK 64,000",
-          "6_months": "MMK 99,000",
-          "12_months": "MMK 159,000"
-        },
-        "features": [
-          "Premium Telegram features",
-          "Faster downloads",
-          "Extra upload limits",
-          "Premium reactions and stickers"
-        ],
-        "description": "Updated Telegram Premium pricing for medium and long-term subscriptions.",
-        "photo_url": "images/services/telegram-premium.jpg"
-      },
-      {
-        "name": "YouTube Premium Family",
-        "badges": [
-          "YouTube",
-          "Family"
-        ],
-        "price": {
-          "3_months": "MMK 40,000",
-          "6_months": "MMK 75,000",
-          "12_months": "MMK 145,000"
-        },
-        "features": [
-          "YouTube Premium and YouTube Music",
-          "Family plan access",
-          "Ad-free video and music",
-          "Offline playback support"
-        ],
-        "description": "Family plan for YouTube Premium and YouTube Music bundled together.",
-        "photo_url": "images/services/youtube.jpg"
-      },
-      {
-        "name": "Netflix Premium 4K",
-        "badges": [
-          "Netflix",
-          "Myanmar Region"
-        ],
-        "price": {
-          "1_month": "MMK 16,000",
-          "3_months": "MMK 45,500",
-          "6_months": "MMK 89,500",
-          "12_months": "MMK 155,000"
-        },
-        "features": [
-          "Netflix Premium account",
-          "4K streaming support",
-          "Myanmar region pricing",
-          "Add TV support for MMK 3,000 per month"
-        ],
-        "description": "Main Netflix Premium plan for Myanmar region customers who want full-duration pricing up to 12 months.",
-        "photo_url": "images/services/netflix.jpg"
-      }
-    ],
-    "other": [
-      {
-        "name": "CapCut Pro Budget",
-        "badges": [
-          "CapCut",
-          "Budget"
-        ],
-        "price": {
-          "1_month": "Ks 15,000",
-          "12_months": "Ks 140,000"
-        },
-        "features": [
-          "Budget plan",
-          "Private plan",
-          "Up to 3 devices"
-        ],
-        "description": "Budget-friendly CapCut Pro setup with private access and support for up to three devices.",
-        "photo_url": "images/services/capcut.jpg"
-      },
-      {
-        "name": "CapCut Pro Official",
-        "badges": [
-          "CapCut",
-          "Official"
-        ],
-        "price": {
-          "1_month": "Ks 45,000",
-          "12_months": "Ks 360,000"
-        },
-        "features": [
-          "Owned mail included",
-          "Individual private plan",
-          "Up to 3 devices"
-        ],
-        "description": "Official individual CapCut Pro plan with owned mail and private access.",
-        "photo_url": "images/services/capcut.jpg"
-      },
-      {
-        "name": "Netflix Premium Thailand",
-        "badges": [
-          "Netflix",
-          "Thai Region"
-        ],
-        "price": {
-          "1_month": "MMK 18,000"
-        },
-        "features": [
-          "Netflix Premium account",
-          "Thai region pricing",
-          "3, 6, and 12 month terms available on request",
-          "Add TV support for MMK 2,500 per month"
-        ],
-        "description": "Thailand region Netflix Premium pricing with extra TV support available.",
-        "photo_url": "images/services/netflix.jpg"
-      },
-      {
-        "name": "Netflix Premium Other Regions",
-        "badges": [
-          "Netflix",
-          "Other Regions"
-        ],
-        "price": {
-          "1_month": "MMK 19,500"
-        },
-        "features": [
-          "Netflix Premium account",
-          "Other region pricing",
-          "3, 6, and 12 month terms available on request",
-          "Add TV support for MMK 2,500 per month"
-        ],
-        "description": "Netflix Premium pricing for non-Myanmar and non-Thai regions.",
-        "photo_url": "images/services/netflix.jpg"
-      },
-      {
-        "name": "Spotify Duo",
-        "badges": [
-          "Spotify",
-          "Duo"
-        ],
-        "price": {
-          "1_month": "Ks 32,000",
-          "3_months": "Ks 66,000",
-          "6_months": "Ks 119,000",
-          "12_months": "Ks 229,000"
-        },
-        "features": [
-          "Spotify Duo plan",
-          "Two-user setup",
-          "Ad-free listening",
-          "Offline downloads"
-        ],
-        "description": "Spotify Duo plan designed for two people on one premium setup.",
-        "photo_url": "images/services/spotify.png"
-      },
-      {
-        "name": "Spotify Platinum Premium",
-        "badges": [
-          "Spotify",
-          "Platinum"
-        ],
-        "price": {
-          "1_month": "Ks 35,000"
-        },
-        "features": [
-          "Premium Spotify access",
-          "Private plan",
-          "Higher-tier Spotify option"
-        ],
-        "description": "Single-month Spotify Platinum option for customers who want the premium tier.",
-        "photo_url": "images/services/spotify.jpg"
-      },
-      {
-        "name": "ChatGPT Pro Private",
-        "badges": [
-          "ChatGPT",
-          "Private"
-        ],
-        "price": {
-          "1_month": "MMK 29,000",
-          "2_months": "MMK 58,000"
-        },
-        "features": [
-          "Private plan",
-          "Owned mail included",
-          "Personal access"
-        ],
-        "description": "Private ChatGPT Pro plan with owned mail for personal use.",
-        "photo_url": "images/services/chatgpt.jpg"
-      },
-      {
-        "name": "ChatGPT Pro Share 1 Device",
-        "badges": [
-          "ChatGPT",
-          "Shared"
-        ],
-        "price": {
-          "1_month": "MMK 12,000",
-          "2_months": "MMK 24,000"
-        },
-        "features": [
-          "Shared plan",
-          "1 device access",
-          "Budget-friendly pro access"
-        ],
-        "description": "Shared ChatGPT Pro plan for one device.",
-        "photo_url": "images/services/chatgpt.jpg"
-      },
-      {
-        "name": "ChatGPT Pro Share 2 Devices",
-        "badges": [
-          "ChatGPT",
-          "Shared"
-        ],
-        "price": {
-          "1_month": "MMK 18,000",
-          "2_months": "MMK 36,000"
-        },
-        "features": [
-          "Shared plan",
-          "2 device access",
-          "Budget-friendly pro access"
-        ],
-        "description": "Shared ChatGPT Pro plan for two devices.",
-        "photo_url": "images/services/chatgpt.jpg"
-      },
-      {
-        "name": "Duolingo Super",
-        "badges": [
-          "Duolingo",
-          "Super"
-        ],
-        "price": {
-          "1_month": "MMK 6,000",
-          "3_months": "MMK 18,000",
-          "6_months": "MMK 35,000",
-          "12_months": "MMK 70,000"
-        },
-        "features": [
-          "Ad-free learning",
-          "Unlimited hearts",
-          "Practice support",
-          "Long-term subscription options"
-        ],
-        "description": "Duolingo Super pricing for standard premium language learning access.",
-        "photo_url": "images/services/duolingo.jpg"
-      },
-      {
-        "name": "Duolingo Max",
-        "badges": [
-          "Duolingo",
-          "Max"
-        ],
-        "price": {
-          "1_month": "MMK 12,000",
-          "3_months": "MMK 35,000",
-          "6_months": "MMK 65,000",
-          "12_months": "MMK 125,000"
-        },
-        "features": [
-          "Max tier plan",
-          "AI-assisted language learning",
-          "Long-term subscription options",
-          "Enhanced learning tools"
-        ],
-        "description": "Duolingo Max pricing for customers who want the higher premium tier.",
-        "photo_url": "images/services/duolingo.jpg"
-      },
-      {
-        "name": "Zoom Pro",
-        "badges": [
-          "Zoom",
-          "Pro"
-        ],
-        "price": {
-          "1_month": "MMK 20,000",
-          "3_months": "MMK 60,000",
-          "6_months": "MMK 120,000",
-          "12_months": "MMK 240,000"
-        },
-        "features": [
-          "14 days gift on 3 month plan",
-          "1 month gift on 6 month plan",
-          "2 months gift on 12 month plan",
-          "Private Zoom Pro setup"
-        ],
-        "description": "Main Zoom Pro offering with bundled gift periods on longer plans.",
-        "photo_url": "images/services/default.jpg"
-      },
-      {
-        "name": "Zoom Family Plan",
-        "badges": [
-          "Zoom",
-          "Family"
-        ],
-        "price": {
-          "1_month": "MMK 8,500",
-          "2_months": "MMK 11,500",
-          "3_months": "MMK 16,500",
-          "6_months": "MMK 31,000"
-        },
-        "features": [
-          "Family plan setup",
-          "Lower-cost Zoom access",
-          "Multiple-term options"
-        ],
-        "description": "Family-plan Zoom pricing for shorter and medium-term usage.",
-        "photo_url": "images/services/default.jpg"
-      },
-      {
-        "name": "Gemini Pro",
-        "badges": [
-          "Gemini",
-          "Pro"
-        ],
-        "price": {
-          "3_months": "MMK 35,000",
-          "6_months": "MMK 75,000",
-          "12_months": "MMK 130,000"
-        },
-        "features": [
-          "3 months full warranty",
-          "6 months full warranty",
-          "12 months full warranty",
-          "Alternative 12-month plan with 6-month warranty",
-          "Another 12-month reduced option available for MMK 45,000 with 2-month warranty"
-        ],
-        "description": "Gemini Pro plans with different warranty levels depending on the package selected.",
-        "photo_url": "images/services/geminipro.jpg"
-      },
-      {
-        "name": "Gemini Ultra",
-        "badges": [
-          "Gemini",
-          "Ultra"
-        ],
-        "price": [],
-        "features": [
-          "1 month available",
-          "12 months available",
-          "DM for price"
-        ],
-        "description": "Gemini Ultra is available by inquiry for both short and long durations.",
-        "photo_url": "images/services/gemini.jpg"
-      },
-      {
-        "name": "Canva Edu Pro",
-        "badges": [
-          "Canva",
-          "Edu"
-        ],
-        "price": {
-          "12_months": "MMK 15,000"
-        },
-        "features": [
-          "Education-focused Canva Pro access",
-          "1 year plan"
-        ],
-        "description": "Annual Canva Edu Pro plan at education pricing.",
-        "photo_url": "images/services/canva.jpg"
-      },
-      {
-        "name": "Canva Pro",
-        "badges": [
-          "Canva",
-          "Pro"
-        ],
-        "price": {
-          "1_month": "MMK 15,000",
-          "12_months": "MMK 125,000"
-        },
-        "features": [
-          "Standard Canva Pro",
-          "Monthly and annual pricing",
-          "Premium design tools"
-        ],
-        "description": "Standard Canva Pro subscription with both monthly and yearly options.",
-        "photo_url": "images/services/canva.jpg"
-      },
-      {
-        "name": "Canva Business Pro",
-        "badges": [
-          "Canva",
-          "Business"
-        ],
-        "price": {
-          "3_months": "MMK 75,000"
-        },
-        "features": [
-          "Business-oriented Canva plan",
-          "3 month package",
-          "Team-ready design workflow"
-        ],
-        "description": "Business Canva package for teams that need a short-term premium plan.",
-        "photo_url": "images/services/canva.jpg"
-      },
-      {
-        "name": "Express VPN",
-        "badges": [
-          "VPN",
-          "1 Device"
-        ],
-        "price": {
-          "1_month": "MMK 6,000",
-          "3_months": "MMK 15,000"
-        },
-        "features": [
-          "Express VPN access",
-          "1 device plan",
-          "Private browsing support"
-        ],
-        "description": "Express VPN pricing for a single-device setup.",
-        "photo_url": "images/services/express.jpg"
-      },
-      {
-        "name": "Outline VPN Taiwan",
-        "badges": [
-          "VPN",
-          "Taiwan Region"
-        ],
-        "price": {
-          "1 M (150Gb)": "MMK 7,500"
-        },
-        "features": [
-          "Outline VPN",
-          "Taiwan region server",
-          "150 GB quota",
-          "1 device plan"
-        ],
-        "description": "Outline VPN package for Taiwan region access with a 150 GB monthly quota.",
-        "photo_url": "images/services/default.jpg"
-      },
-      {
-        "name": "V2Box Singapore",
-        "badges": [
-          "VPN",
-          "Singapore Region"
-        ],
-        "price": {
-          "1 M (100Gb)": "MMK 9,000",
-          "1 M (200Gb)": "MMK 16,500"
-        },
-        "features": [
-          "V2Box VPN",
-          "Singapore region server",
-          "100 GB for 1 device",
-          "200 GB for 2 devices"
-        ],
-        "description": "Singapore-region V2Box options for customers who need flexible monthly data allocations.",
-        "photo_url": "images/services/default.jpg"
-      }
-    ]
-  }
+        "other": [
+            {
+                "name": "CapCut Pro Budget",
+                "badges": [
+                    "CapCut",
+                    "Budget"
+                ],
+                "price": {
+                    "1_month": "Ks 15,000",
+                    "12_months": "Ks 140,000"
+                },
+                "features": [
+                    "Budget plan",
+                    "Private plan",
+                    "Up to 3 devices"
+                ],
+                "description": "Budget-friendly CapCut Pro setup with private access and support for up to three devices.",
+                "photo_url": "images/services/capcut.jpg"
+            },
+            {
+                "name": "CapCut Pro Official",
+                "badges": [
+                    "CapCut",
+                    "Official"
+                ],
+                "price": {
+                    "1_month": "Ks 45,000",
+                    "12_months": "Ks 360,000"
+                },
+                "features": [
+                    "Owned mail included",
+                    "Individual private plan",
+                    "Up to 3 devices"
+                ],
+                "description": "Official individual CapCut Pro plan with owned mail and private access.",
+                "photo_url": "images/services/capcut.jpg"
+            },
+            {
+                "name": "Netflix Premium Thailand",
+                "badges": [
+                    "Netflix",
+                    "Thai Region"
+                ],
+                "price": {
+                    "1_month": "MMK 18,000"
+                },
+                "features": [
+                    "Netflix Premium account",
+                    "Thai region pricing",
+                    "3, 6, and 12 month terms available on request",
+                    "Add TV support for MMK 2,500 per month"
+                ],
+                "description": "Thailand region Netflix Premium pricing with extra TV support available.",
+                "photo_url": "images/services/netflix.jpg"
+            },
+            {
+                "name": "Netflix Premium Other Regions",
+                "badges": [
+                    "Netflix",
+                    "Other Regions"
+                ],
+                "price": {
+                    "1_month": "MMK 19,500"
+                },
+                "features": [
+                    "Netflix Premium account",
+                    "Other region pricing",
+                    "3, 6, and 12 month terms available on request",
+                    "Add TV support for MMK 2,500 per month"
+                ],
+                "description": "Netflix Premium pricing for non-Myanmar and non-Thai regions.",
+                "photo_url": "images/services/netflix.jpg"
+            },
+            {
+                "name": "Spotify Duo",
+                "badges": [
+                    "Spotify",
+                    "Duo"
+                ],
+                "price": {
+                    "1_month": "Ks 32,000",
+                    "3_months": "Ks 66,000",
+                    "6_months": "Ks 119,000",
+                    "12_months": "Ks 229,000"
+                },
+                "features": [
+                    "Spotify Duo plan",
+                    "Two-user setup",
+                    "Ad-free listening",
+                    "Offline downloads"
+                ],
+                "description": "Spotify Duo plan designed for two people on one premium setup.",
+                "photo_url": "images/services/spotify.jpg"
+            },
+            {
+                "name": "Spotify Platinum Premium",
+                "badges": [
+                    "Spotify",
+                    "Platinum"
+                ],
+                "price": {
+                    "1_month": "Ks 35,000"
+                },
+                "features": [
+                    "Premium Spotify access",
+                    "Private plan",
+                    "Higher-tier Spotify option"
+                ],
+                "description": "Single-month Spotify Platinum option for customers who want the premium tier.",
+                "photo_url": "images/services/spotify.jpg"
+            },
+            {
+                "name": "ChatGPT Pro Private",
+                "badges": [
+                    "ChatGPT",
+                    "Private"
+                ],
+                "price": {
+                    "1_month": "MMK 29,000",
+                    "2_months": "MMK 58,000"
+                },
+                "features": [
+                    "Private plan",
+                    "Owned mail included",
+                    "Personal access"
+                ],
+                "description": "Private ChatGPT Pro plan with owned mail for personal use.",
+                "photo_url": "images/services/chatgpt.jpg"
+            },
+            {
+                "name": "ChatGPT Pro Share 1 Device",
+                "badges": [
+                    "ChatGPT",
+                    "Shared"
+                ],
+                "price": {
+                    "1_month": "MMK 12,000",
+                    "2_months": "MMK 24,000"
+                },
+                "features": [
+                    "Shared plan",
+                    "1 device access",
+                    "Budget-friendly pro access"
+                ],
+                "description": "Shared ChatGPT Pro plan for one device.",
+                "photo_url": "images/services/chatgpt.jpg"
+            },
+            {
+                "name": "ChatGPT Pro Share 2 Devices",
+                "badges": [
+                    "ChatGPT",
+                    "Shared"
+                ],
+                "price": {
+                    "1_month": "MMK 18,000",
+                    "2_months": "MMK 36,000"
+                },
+                "features": [
+                    "Shared plan",
+                    "2 device access",
+                    "Budget-friendly pro access"
+                ],
+                "description": "Shared ChatGPT Pro plan for two devices.",
+                "photo_url": "images/services/chatgpt.jpg"
+            },
+            {
+                "name": "Duolingo Super",
+                "badges": [
+                    "Duolingo",
+                    "Super"
+                ],
+                "price": {
+                    "1_month": "MMK 6,000",
+                    "3_months": "MMK 18,000",
+                    "6_months": "MMK 35,000",
+                    "12_months": "MMK 70,000"
+                },
+                "features": [
+                    "Ad-free learning",
+                    "Unlimited hearts",
+                    "Practice support",
+                    "Long-term subscription options"
+                ],
+                "description": "Duolingo Super pricing for standard premium language learning access.",
+                "photo_url": "images/services/duolingo.jpg"
+            },
+            {
+                "name": "Duolingo Max",
+                "badges": [
+                    "Duolingo",
+                    "Max"
+                ],
+                "price": {
+                    "1_month": "MMK 12,000",
+                    "3_months": "MMK 35,000",
+                    "6_months": "MMK 65,000",
+                    "12_months": "MMK 125,000"
+                },
+                "features": [
+                    "Max tier plan",
+                    "AI-assisted language learning",
+                    "Long-term subscription options",
+                    "Enhanced learning tools"
+                ],
+                "description": "Duolingo Max pricing for customers who want the higher premium tier.",
+                "photo_url": "images/services/duolingo.jpg"
+            },
+            {
+                "name": "Zoom Pro",
+                "price": {
+                    "1_month": "Ks 2*,***",
+                    "3_months": "Ks 6*,***",
+                    "6_months": "Ks 12*,***",
+                    "12_months": "Ks 24*,***"
+                },
+                "features": [
+                    "14 days gift on 3 month plan",
+                    "1 month gift on 6 month plan",
+                    "2 months gift on 12 month plan",
+                    "Private Zoom Pro setup"
+                ],
+                "description": "Main Zoom Pro offering with bundled gift periods on longer plans.",
+                "photo_url": "images/services/zoompro.jpg",
+                "badges": [
+                    "Zoom",
+                    "Pro"
+                ]
+            },
+            {
+                "name": "Zoom Family Plan",
+                "badges": [
+                    "Zoom",
+                    "Family"
+                ],
+                "price": {
+                    "1_month": "MMK 8,500",
+                    "2_months": "MMK 11,500",
+                    "3_months": "MMK 16,500",
+                    "6_months": "MMK 31,000"
+                },
+                "features": [
+                    "Family plan setup",
+                    "Lower-cost Zoom access",
+                    "Multiple-term options"
+                ],
+                "description": "Family-plan Zoom pricing for shorter and medium-term usage.",
+                "photo_url": "images/services/zoompro.jpg"
+            },
+            {
+                "name": "Gemini Pro",
+                "badges": [
+                    "Gemini",
+                    "Pro"
+                ],
+                "price": {
+                    "3_months": "MMK 35,000",
+                    "6_months": "MMK 75,000",
+                    "12_months": "MMK 130,000"
+                },
+                "features": [
+                    "3 months full warranty",
+                    "6 months full warranty",
+                    "12 months full warranty",
+                    "Alternative 12-month plan with 6-month warranty",
+                    "Another 12-month reduced option available for MMK 45,000 with 2-month warranty"
+                ],
+                "description": "Gemini Pro plans with different warranty levels depending on the package selected.",
+                "photo_url": "images/services/geminipro.jpg"
+            },
+            {
+                "name": "Gemini Ultra",
+                "badges": [
+                    "Gemini",
+                    "Ultra"
+                ],
+                "price": [],
+                "features": [
+                    "1 month available",
+                    "12 months available",
+                    "DM for price"
+                ],
+                "description": "Gemini Ultra is available by inquiry for both short and long durations.",
+                "photo_url": "images/services/gemini.jpg"
+            },
+            {
+                "name": "Canva Edu Pro",
+                "badges": [
+                    "Canva",
+                    "Edu"
+                ],
+                "price": {
+                    "12_months": "MMK 15,000"
+                },
+                "features": [
+                    "Education-focused Canva Pro access",
+                    "1 year plan"
+                ],
+                "description": "Annual Canva Edu Pro plan at education pricing.",
+                "photo_url": "images/services/canva.jpg"
+            },
+            {
+                "name": "Canva Pro",
+                "badges": [
+                    "Canva",
+                    "Pro"
+                ],
+                "price": {
+                    "1_month": "MMK 15,000",
+                    "12_months": "MMK 125,000"
+                },
+                "features": [
+                    "Standard Canva Pro",
+                    "Monthly and annual pricing",
+                    "Premium design tools"
+                ],
+                "description": "Standard Canva Pro subscription with both monthly and yearly options.",
+                "photo_url": "images/services/canva.jpg"
+            },
+            {
+                "name": "Canva Business Pro",
+                "badges": [
+                    "Canva",
+                    "Business"
+                ],
+                "price": {
+                    "3_months": "MMK 75,000"
+                },
+                "features": [
+                    "Business-oriented Canva plan",
+                    "3 month package",
+                    "Team-ready design workflow"
+                ],
+                "description": "Business Canva package for teams that need a short-term premium plan.",
+                "photo_url": "images/services/canva.jpg"
+            },
+            {
+                "name": "Express VPN",
+                "badges": [
+                    "VPN",
+                    "1 Device"
+                ],
+                "price": {
+                    "1_month": "MMK 6,000",
+                    "3_months": "MMK 15,000"
+                },
+                "features": [
+                    "Express VPN access",
+                    "1 device plan",
+                    "Private browsing support"
+                ],
+                "description": "Express VPN pricing for a single-device setup.",
+                "photo_url": "images/services/vpn.jpg"
+            },
+            {
+                "name": "Outline VPN Taiwan",
+                "badges": [
+                    "VPN",
+                    "Taiwan Region"
+                ],
+                "price": {
+                    "1 M (150Gb)": "MMK 7,500"
+                },
+                "features": [
+                    "Outline VPN",
+                    "Taiwan region server",
+                    "150 GB quota",
+                    "1 device plan"
+                ],
+                "description": "Outline VPN package for Taiwan region access with a 150 GB monthly quota.",
+                "photo_url": "images/services/vpn.jpg"
+            },
+            {
+                "name": "V2Box Singapore",
+                "badges": [
+                    "VPN",
+                    "Singapore Region"
+                ],
+                "price": {
+                    "1 M (100Gb)": "MMK 9,000",
+                    "1 M (200Gb)": "MMK 16,500"
+                },
+                "features": [
+                    "V2Box VPN",
+                    "Singapore region server",
+                    "100 GB for 1 device",
+                    "200 GB for 2 devices"
+                ],
+                "description": "Singapore-region V2Box options for customers who need flexible monthly data allocations.",
+                "photo_url": "images/services/vpn.jpg"
+            }
+        ]
+    }
 ]
