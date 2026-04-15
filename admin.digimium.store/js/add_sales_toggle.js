@@ -106,7 +106,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (wholesaleBtn) {
-    wholesaleBtn.addEventListener("click", () => showPage("wholesale"));
+    wholesaleBtn.addEventListener("click", () => {
+      showPage("wholesale");
+      // Lazy-load wholesale data on first tab click only
+      if (typeof window.initWholesaleSales === "function") {
+        window.initWholesaleSales();
+        window.initWholesaleSales = null;
+      }
+    });
+  }
+
+  // Consolidated refresh button — calls the active tab's refresh function.
+  // Kept here (not in the individual controllers) so it is bound exactly once.
+  const refreshBtn = document.getElementById("refreshBtn");
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", async function () {
+      this.style.setProperty("display", "none", "important");
+      this.disabled = true;
+      try {
+        const isRetailActive = retailBtn?.classList.contains("btn-active");
+        await (isRetailActive
+          ? (window.refreshSalesTable?.()   ?? Promise.resolve())
+          : (window.refreshWsSalesTable?.() ?? Promise.resolve()));
+      } finally {
+        setTimeout(() => {
+          this.disabled = false;
+          this.style.setProperty("display", "inline-block", "important");
+        }, 5000);
+      }
+    });
   }
 
   window.hideRetailForm = () => {

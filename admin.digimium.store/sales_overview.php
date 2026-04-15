@@ -285,6 +285,7 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
     </script>
     <script src="./js/loading.js"></script>
     <script src="./js/nav.js"></script>
+    <script src="./js/sales_controller.js"></script>
     <script src="./js/add_sales_toggle.js"></script>
     <script src="./js/sales_overview.js"></script>
     <script src="./js/sales_add_form.js"></script>
