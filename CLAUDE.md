@@ -100,6 +100,34 @@ mysql -h <HOST> -u <USER> -p <DB_NAME> < "deploy/new database.sql"
 
 ---
 
+## JS Architecture (`admin.digimium.store/js/`)
+
+- **`sales_controller.js`** — shared factory `createSalesController(cfg)` used by both retail and wholesale. Contains all table/card rendering, inline editing, search, caching, and delete logic.
+- **`sales_overview.js`** — thin retail config wrapper (~69 lines). Loads on DOMContentLoaded.
+- **`ws_sales_overview.js`** — thin wholesale config wrapper (~27 lines). **Lazy-loaded** — exposes `window.initWholesaleSales` which `add_sales_toggle.js` calls on the first wholesale tab click.
+- **`add_sales_toggle.js`** — tab switching, lazy wholesale init, and the single `refreshBtn` handler.
+
+Load order in `sales_overview.php`: `loading.js` → `nav.js` → `sales_controller.js` → `add_sales_toggle.js` → `sales_overview.js` → `sales_add_form.js` → `ws_sales_overview.js` → `ws_sales_add_form.js`
+
+---
+
+## Documentation
+
+Full docs are in `docs/`:
+
+| File | Contents |
+|---|---|
+| `docs/ARCHITECTURE.md` | System overview, folder structure, request lifecycle |
+| `docs/API.md` | All endpoints, request/response shapes, auth |
+| `docs/DATABASE.md` | Tables, columns, relationships, migrations |
+| `docs/DECISIONS.md` | Architectural Decision Records (ADRs) |
+| `docs/TASKS.md` | In progress / backlog / done |
+| `docs/VERSION.md` | Changelog (current: v2.0.0) |
+| `docs/SETUP.md` | Local setup, env vars, common errors |
+| `docs/STYLEGUIDE.md` | Naming, file length, formatting rules |
+
+---
+
 ## Deployment
 
 See `deploy/DEPLOY_EC2_RDS_APACHE.md` for full AWS EC2 + RDS setup. Apache vhost configs are in `deploy/apache/`. `.htaccess` rules are in `deploy/htaccess/`.

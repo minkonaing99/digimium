@@ -2,7 +2,7 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-Current version: **0.2.0**
+Current version: **2.0.0**
 
 ---
 
@@ -10,7 +10,7 @@ Current version: **0.2.0**
 
 ---
 
-## [0.2.0] — 2026-04-15
+## [2.0.0] — 2026-04-15
 
 ### Added
 - `js/sales_controller.js` — shared factory replacing two near-identical 700-line files
