@@ -611,6 +611,9 @@ document
     let raw = q.trim().toLowerCase();
     if (!raw) return rows;
 
+    // Build search keys on demand — not upfront on every load
+    rows.forEach((r) => { if (!r._qAll) buildSearchKey(r); });
+
     let mode = "all"; // "pd" | "ed" | "all"
     if (raw.startsWith("pd:")) {
       mode = "pd";
@@ -863,8 +866,10 @@ document
   }
 
   // ---------------- data ----------------
-  /** Fetches latest retail sales rows from API. */
-  async function fetchSalesFromNetwork(etag = null) {
+  /** Fetches latest retail sales rows from API.
+   *  onFirstPage(rows) fires after the first page resolves so callers can
+   *  render immediately while remaining pages load in the background. */
+  async function fetchSalesFromNetwork(etag = null, onFirstPage = null) {
     let cursor = null;
     let firstEtag = etag || null;
     let isFirst = true;
@@ -887,7 +892,10 @@ document
 
       const pageRows = Array.isArray(json.data) ? json.data : [];
       all.push(...pageRows);
-      if (isFirst) firstEtag = r.headers.get("ETag");
+      if (isFirst) {
+        firstEtag = r.headers.get("ETag");
+        if (onFirstPage) onFirstPage(pageRows.slice());
+      }
 
       const meta = json.meta || {};
       const hasMore = !!meta.has_more;
@@ -903,16 +911,7 @@ document
 
   /** Loads rows from cache/network and renders active viewport. */
   async function loadSales() {
-    // Start loading with minimum 1 second display
-    const loadingStartTime = Date.now();
-    const minLoadingTime = 1000; // 1 second minimum
-
-    // Show global loading overlay
-    if (window.LoadingSystem) {
-      window.LoadingSystem.showGlobalLoading("Loading sales data...");
-    }
-
-    // Show placeholder in whichever view is active
+    window.LoadingSystem?.showGlobalLoading("Loading sales data...");
     showLoader();
 
     if (!MQ_MOBILE.matches && tbody) {
@@ -922,68 +921,55 @@ document
       subsList.innerHTML = `<article class="subs-card"><div class="subs-row">Loading…</div></article>`;
     }
 
+    // --- cache-first path: render immediately, then background-refresh ---
     const cachePacket = readCachePacket();
     if (cachePacket.data) {
       try {
-        const data = cachePacket.data;
-        allRows = Array.isArray(data) ? data : [];
-        allRows.forEach(buildSearchKey);
+        allRows = Array.isArray(cachePacket.data) ? cachePacket.data : [];
         renderViewport(filterRowsByQuery(allRows, currentQuery));
+        window.LoadingSystem?.hideGlobalLoading();
+        hideLoader();
 
-        // background refresh
         fetchSalesFromNetwork(cachePacket.etag)
           .then((freshResult) => {
             if (freshResult.notModified) return;
             const fresh = freshResult.data || [];
             writeCachePacket(fresh, freshResult.etag || null);
             allRows = Array.isArray(fresh) ? fresh : [];
-            allRows.forEach(buildSearchKey);
             renderViewport(filterRowsByQuery(allRows, currentQuery));
           })
           .catch(() => {});
 
-        // Ensure minimum loading time for cached data
-        const elapsed = Date.now() - loadingStartTime;
-        if (elapsed < minLoadingTime) {
-          setTimeout(() => {
-            if (window.LoadingSystem) {
-              window.LoadingSystem.hideGlobalLoading();
-            }
-            hideLoader();
-          }, minLoadingTime - elapsed);
-        } else {
-          if (window.LoadingSystem) {
-            window.LoadingSystem.hideGlobalLoading();
-          }
-          hideLoader();
-        }
         return;
       } catch {
         sessionStorage.removeItem(CACHE_KEY);
       }
     }
 
+    // --- fresh-fetch path: render first page immediately, load rest in background ---
     try {
-      const freshResult = await fetchSalesFromNetwork();
+      let firstPageLen = 0;
+      let firstPageRendered = false;
+
+      const freshResult = await fetchSalesFromNetwork(null, (firstPage) => {
+        firstPageLen = firstPage.length;
+        allRows = firstPage;
+        renderViewport(allRows);
+        window.LoadingSystem?.hideGlobalLoading();
+        hideLoader();
+        firstPageRendered = true;
+      });
+
       const fresh = freshResult.data || [];
       writeCachePacket(fresh, freshResult.etag || null);
       allRows = Array.isArray(fresh) ? fresh : [];
-      allRows.forEach(buildSearchKey);
-      renderViewport(filterRowsByQuery(allRows, currentQuery));
 
-      // Ensure minimum loading time for fresh data
-      const elapsed = Date.now() - loadingStartTime;
-      if (elapsed < minLoadingTime) {
-        setTimeout(() => {
-          if (window.LoadingSystem) {
-            window.LoadingSystem.hideGlobalLoading();
-          }
-          hideLoader();
-        }, minLoadingTime - elapsed);
-      } else {
-        if (window.LoadingSystem) {
-          window.LoadingSystem.hideGlobalLoading();
-        }
+      // only re-render if more pages arrived beyond the first (complete subtotals)
+      if (!firstPageRendered || fresh.length > firstPageLen) {
+        renderViewport(filterRowsByQuery(allRows, currentQuery));
+      }
+      if (!firstPageRendered) {
+        window.LoadingSystem?.hideGlobalLoading();
         hideLoader();
       }
     } catch (err) {
@@ -996,11 +982,7 @@ document
           err.message,
         )}</div></article>`;
       }
-
-      // Hide loading on error
-      if (window.LoadingSystem) {
-        window.LoadingSystem.hideGlobalLoading();
-      }
+      window.LoadingSystem?.hideGlobalLoading();
       hideLoader();
     }
   }

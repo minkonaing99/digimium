@@ -11,7 +11,12 @@ const REMEMBER_DAYS = 7;
 
 function remember_secret(): string
 {
-    return Config::get('DIGIMIUM_REMEMBER_SECRET', 'change-me-please-32bytes-min') ?: 'change-me-please-32bytes-min';
+    return Config::require('DIGIMIUM_REMEMBER_SECRET');
+}
+
+function is_https(): bool
+{
+    return !empty($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
 }
 
 function b64u(string $bin): string
@@ -33,7 +38,7 @@ function remember_cookie_opts(): array
     return [
         'expires' => time() + REMEMBER_DAYS * 86400,
         'path' => '/',
-        'secure' => !empty($_SERVER['HTTPS']),
+        'secure' => is_https(),
         'httponly' => true,
         'samesite' => 'Lax',
     ];
@@ -145,7 +150,7 @@ function remember_forget_cookie(): void
     setcookie(REMEMBER_COOKIE, '', [
         'expires' => time() - 3600,
         'path' => '/',
-        'secure' => !empty($_SERVER['HTTPS']),
+        'secure' => is_https(),
         'httponly' => true,
         'samesite' => 'Lax',
     ]);

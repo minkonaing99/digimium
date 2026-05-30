@@ -35,23 +35,17 @@ try {
         $q = substr($q, 0, 100);
     }
 
-    // Lightweight invalidation fingerprint
-    $fpStmt = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id, COUNT(*) AS cnt FROM sale_overview');
-    $fp = $fpStmt->fetch();
-    $fingerprint = ((int)($fp['max_id'] ?? 0)) . ':' . ((int)($fp['cnt'] ?? 0));
-
-    $cacheKey = 'sales_table:v3:' . $fingerprint . ':l' . $limit . ':o' . $offset . ':c' . $cursor . ':q' . strtolower($q);
-    $etag = '"' . sha1($cacheKey) . '"';
-    header('ETag: ' . $etag);
-
-    $ifNoneMatch = trim((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''));
-    if ($ifNoneMatch !== '' && $ifNoneMatch === $etag) {
-        http_response_code(304);
-        exit;
-    }
-
+    // Check cache before touching the DB — content-based ETag on hit
+    $cacheKey = 'sales_table:v3:l' . $limit . ':o' . $offset . ':c' . $cursor . ':q' . strtolower($q);
     $cached = ResponseCache::get($cacheKey, 30);
     if (is_string($cached)) {
+        $etag = '"' . sha1($cached) . '"';
+        header('ETag: ' . $etag);
+        $ifNoneMatch = trim((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''));
+        if ($ifNoneMatch !== '' && $ifNoneMatch === $etag) {
+            http_response_code(304);
+            exit;
+        }
         echo $cached;
         exit;
     }
@@ -169,7 +163,14 @@ try {
         throw new RuntimeException('Failed to encode JSON payload.');
     }
 
+    $etag = '"' . sha1($payload) . '"';
+    header('ETag: ' . $etag);
     ResponseCache::put($cacheKey, $payload);
+    $ifNoneMatch = trim((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''));
+    if ($ifNoneMatch !== '' && $ifNoneMatch === $etag) {
+        http_response_code(304);
+        exit;
+    }
     echo $payload;
 } catch (Throwable $e) {
     http_response_code(500);

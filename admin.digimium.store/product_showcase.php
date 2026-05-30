@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+// Hidden: DIGIMIUM_STOREFRONT_PATH feature is disabled. Re-enable by removing the next two lines.
+http_response_code(404); exit;
 // Product Showcase CMS page (admin/owner):
 // - "Visual Editor" list is loaded from JSON in the storefront project
 // - "Add Service" form submits to `api_json/*` endpoints

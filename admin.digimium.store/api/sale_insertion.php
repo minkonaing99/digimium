@@ -179,6 +179,7 @@ try {
     ]);
 
     $id = (int)$pdo->lastInsertId();
+    \Digimium\Core\ResponseCache::bustAll();
     http_response_code(201);
     echo json_encode(['success' => true, 'id' => $id]);
 } catch (Throwable $e) {

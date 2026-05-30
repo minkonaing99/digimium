@@ -50,6 +50,7 @@ try {
         exit;
     }
 
+    \Digimium\Core\ResponseCache::bustAll();
     echo json_encode(['success' => true, 'deleted' => $id]);
 } catch (Throwable $e) {
     http_response_code(500);

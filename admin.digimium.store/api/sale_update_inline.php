@@ -137,6 +137,7 @@ try {
         // unchanged → still OK
     }
 
+    \Digimium\Core\ResponseCache::bustAll();
     json_ok([
         'id'    => $id,
         'field' => $field,

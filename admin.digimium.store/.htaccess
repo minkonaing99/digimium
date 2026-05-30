@@ -41,9 +41,10 @@ AddDefaultCharset UTF-8
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Enable on production if TLS termination happens at Apache.
-    # RewriteCond %{HTTPS} off
-    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    # HTTPS enforcement — works for both direct Apache TLS and Hostinger's reverse proxy.
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.+)/$ /$1 [L,R=301]
