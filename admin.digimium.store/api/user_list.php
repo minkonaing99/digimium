@@ -6,6 +6,7 @@ require __DIR__ . '/session_bootstrap.php';
 require __DIR__ . '/auth.php';
 
 auth_require_login(['admin', 'owner']);
+session_write_close();
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');

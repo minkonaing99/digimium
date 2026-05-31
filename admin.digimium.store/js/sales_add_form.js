@@ -280,9 +280,22 @@ async function initRetailAddForm() {
         if (window.hideRetailForm) window.hideRetailForm();
       }, 800);
 
-      // refresh table/cards (cache invalidation inside)
-      if (typeof window.refreshSalesTable === "function") {
-        await window.refreshSalesTable();
+      if (typeof window.prependSaleRow === "function") {
+        window.prependSaleRow({
+          sale_id:        json.id,
+          sale_product:   saleName,
+          duration:       Number.isFinite(duration) ? duration : null,
+          renew:          finalRenew,
+          customer:       (elCustomer?.value || "").trim(),
+          email:          (elEmail?.value || "").trim() || null,
+          purchased_date: elPurchase?.value || null,
+          expired_date:   elEndDate?.value || null,
+          manager:        (elSeller?.value || "").trim() || null,
+          note:           (elNotes?.value || "").trim() || null,
+          price,
+          profit,
+          store:          toInt(elStore.value),
+        });
       }
 
       // Reset fields

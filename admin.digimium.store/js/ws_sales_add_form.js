@@ -277,9 +277,22 @@ async function initWholesaleAddForm() {
         if (window.hideWholesaleForm) window.hideWholesaleForm();
       }, 800);
 
-      // refresh table/cards (cache invalidation inside)
-      if (typeof window.refreshWsSalesTable === "function") {
-        await window.refreshWsSalesTable();
+      if (typeof window.prependWsSaleRow === "function") {
+        window.prependWsSaleRow({
+          sale_id:        json.id,
+          sale_product:   saleName,
+          duration:       Number.isFinite(duration) ? duration : null,
+          quantity:       quantity,
+          renew:          finalRenew,
+          customer:       (elCustomer?.value || "").trim(),
+          email:          (elEmail?.value || "").trim() || null,
+          purchased_date: elPurchase?.value || null,
+          expired_date:   elEndDate?.value || null,
+          manager:        (elSeller?.value || "").trim() || null,
+          note:           (elNotes?.value || "").trim() || null,
+          price,
+          profit,
+        });
       }
 
       // Reset fields

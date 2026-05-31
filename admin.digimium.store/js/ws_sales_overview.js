@@ -10,5 +10,6 @@ createSalesModule({
   isWholesale: true,
   deferred:    true,
   refreshKey:  "refreshWsSalesTable",
+  prependKey:  "prependWsSaleRow",
   loadKey:     "loadWsSalesIfNeeded",
 });

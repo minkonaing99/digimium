@@ -846,6 +846,20 @@ window.createSalesModule = function createSalesModule(cfg) {
     return loadSales();
   }
 
+  function prependRow(newRow) {
+    buildSearchKey(newRow);
+    allRows = [newRow, ...allRows];
+    writeCachePacket(allRows, null);
+    renderViewport(filterRowsByQuery(allRows, currentQuery));
+  }
+
+  function removeRow(id) {
+    const idStr = String(id);
+    allRows = allRows.filter((r) => String(r.sale_id) !== idStr);
+    writeCachePacket(allRows, null);
+    renderViewport(filterRowsByQuery(allRows, currentQuery));
+  }
+
   // ---------------- delete (delegated) ----------------
   tbody?.addEventListener("click", async (e) => {
     const btn = e.target.closest('button.era-icon-btn[data-action="delete"]');
@@ -872,7 +886,7 @@ window.createSalesModule = function createSalesModule(cfg) {
       const json = await resp.json().catch(() => ({}));
       if (!resp.ok || !json.success)
         throw new Error(json.error || `HTTP ${resp.status}`);
-      await refreshCacheAndReload();
+      removeRow(id);
     } catch (err) {
       console.error("Delete failed:", err);
       await showAlert(`Delete failed: ${err.message}`);
@@ -902,7 +916,7 @@ window.createSalesModule = function createSalesModule(cfg) {
       const json = await resp.json().catch(() => ({}));
       if (!resp.ok || !json.success)
         throw new Error(json.error || `HTTP ${resp.status}`);
-      await refreshCacheAndReload();
+      removeRow(id);
     } catch (err) {
       await showAlert(`Delete failed: ${err.message}`);
     } finally {
@@ -919,6 +933,7 @@ window.createSalesModule = function createSalesModule(cfg) {
   setupCustomerSearch();
   initInlineEditing();
   window[cfg.refreshKey] = refreshCacheAndReload;
+  if (cfg.prependKey) window[cfg.prependKey] = prependRow;
 
   if (cfg.deferred) {
     let loaded = false;

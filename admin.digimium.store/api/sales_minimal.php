@@ -9,6 +9,7 @@ require_once dirname(__DIR__) . '/app/bootstrap.php';
 use Digimium\Core\ResponseCache;
 
 auth_require_login(['admin', 'owner', 'staff']);
+session_write_close();
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -32,11 +33,11 @@ try {
     $from    = ($rawFrom !== '' && $isYmd($rawFrom)) ? $rawFrom : null;
     $to      = ($rawTo   !== '' && $isYmd($rawTo))   ? $rawTo   : null;
 
-    $fpRetail = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id, COUNT(*) AS cnt FROM sale_overview')->fetch();
-    $fpWs     = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id, COUNT(*) AS cnt FROM ws_sale_overview')->fetch();
+    $fpRetail = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id FROM sale_overview')->fetch();
+    $fpWs     = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id FROM ws_sale_overview')->fetch();
     $fingerprint =
-        ((int)($fpRetail['max_id'] ?? 0)) . ':' . ((int)($fpRetail['cnt'] ?? 0)) . '|' .
-        ((int)($fpWs['max_id']    ?? 0)) . ':' . ((int)($fpWs['cnt']    ?? 0));
+        ((int)($fpRetail['max_id'] ?? 0)) . '|' .
+        ((int)($fpWs['max_id']    ?? 0));
 
     $cacheKey = 'sales_minimal:v3:' . $fingerprint . ':f' . ($from ?? '') . ':t' . ($to ?? '');
     $etag = '"' . sha1($cacheKey) . '"';

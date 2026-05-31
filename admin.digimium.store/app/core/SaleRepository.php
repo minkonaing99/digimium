@@ -28,9 +28,9 @@ final class SaleRepository
     public function fingerprint(): string
     {
         $fp = $this->pdo->query(
-            "SELECT COALESCE(MAX(sale_id),0) AS max_id, COUNT(*) AS cnt FROM {$this->table}"
+            "SELECT COALESCE(MAX(sale_id),0) AS max_id FROM {$this->table}"
         )->fetch();
-        return ((int)($fp['max_id'] ?? 0)) . ':' . ((int)($fp['cnt'] ?? 0));
+        return (string)((int)($fp['max_id'] ?? 0));
     }
 
     private function selectCols(): string

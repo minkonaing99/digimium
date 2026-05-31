@@ -72,5 +72,6 @@ createSalesModule({
   isWholesale: false,
   deferred:    false,
   refreshKey:  "refreshSalesTable",
+  prependKey:  "prependSaleRow",
   loadKey:     null,
 });
