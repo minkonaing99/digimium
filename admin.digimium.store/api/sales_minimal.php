@@ -20,22 +20,25 @@ try {
     ini_set('display_errors', '0');
     error_reporting(E_ALL);
 
-    require_once __DIR__ . '/dbinfo.php';
+    $pdo = \Digimium\Core\Database::connection();
 
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        throw new RuntimeException('DB connection ($pdo) not initialized.');
-    }
+    // Optional date-range filter — push filtering into SQL instead of loading all rows
+    $isYmd = static fn(string $s): bool =>
+        (bool)preg_match('/^\d{4}-\d{2}-\d{2}$/', $s)
+        && (bool)DateTime::createFromFormat('Y-m-d', $s);
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $rawFrom = trim((string)($_GET['from'] ?? ''));
+    $rawTo   = trim((string)($_GET['to']   ?? ''));
+    $from    = ($rawFrom !== '' && $isYmd($rawFrom)) ? $rawFrom : null;
+    $to      = ($rawTo   !== '' && $isYmd($rawTo))   ? $rawTo   : null;
 
     $fpRetail = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id, COUNT(*) AS cnt FROM sale_overview')->fetch();
-    $fpWs = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id, COUNT(*) AS cnt FROM ws_sale_overview')->fetch();
+    $fpWs     = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id, COUNT(*) AS cnt FROM ws_sale_overview')->fetch();
     $fingerprint =
         ((int)($fpRetail['max_id'] ?? 0)) . ':' . ((int)($fpRetail['cnt'] ?? 0)) . '|' .
-        ((int)($fpWs['max_id'] ?? 0)) . ':' . ((int)($fpWs['cnt'] ?? 0));
+        ((int)($fpWs['max_id']    ?? 0)) . ':' . ((int)($fpWs['cnt']    ?? 0));
 
-    $cacheKey = 'sales_minimal:v2:' . $fingerprint;
+    $cacheKey = 'sales_minimal:v3:' . $fingerprint . ':f' . ($from ?? '') . ':t' . ($to ?? '');
     $etag = '"' . sha1($cacheKey) . '"';
     header('ETag: ' . $etag);
 
@@ -53,16 +56,28 @@ try {
         exit;
     }
 
-    $hasRetailStoreCol = (bool)$pdo
-        ->query("SHOW COLUMNS FROM sale_overview LIKE 'store'")
-        ->fetchColumn();
+    // Named params must be unique across both UNION halves (EMULATE_PREPARES=false)
+    $retailWhere    = '';
+    $wholesaleWhere = '';
+    $dateParams     = [];
+    if ($from !== null && $to !== null) {
+        $retailWhere    = 'WHERE purchased_date BETWEEN :r_from AND :r_to';
+        $wholesaleWhere = 'WHERE purchased_date BETWEEN :w_from AND :w_to';
+        $dateParams     = [':r_from' => $from, ':r_to' => $to, ':w_from' => $from, ':w_to' => $to];
+    } elseif ($from !== null) {
+        $retailWhere    = 'WHERE purchased_date >= :r_from';
+        $wholesaleWhere = 'WHERE purchased_date >= :w_from';
+        $dateParams     = [':r_from' => $from, ':w_from' => $from];
+    } elseif ($to !== null) {
+        $retailWhere    = 'WHERE purchased_date <= :r_to';
+        $wholesaleWhere = 'WHERE purchased_date <= :w_to';
+        $dateParams     = [':r_to' => $to, ':w_to' => $to];
+    }
 
-    $retailStoreSelect = $hasRetailStoreCol ? 'store' : '0 AS store';
-
-    $stmt = $pdo->query("
+    $sql = "
         SELECT
             sale_id,
-            CONCAT('Retail - ', sale_product) as sale_product,
+            CONCAT('Retail - ', sale_product) AS sale_product,
             price,
             profit,
             purchased_date,
@@ -71,15 +86,16 @@ try {
             email,
             renew,
             duration,
-            {$retailStoreSelect},
-            'retail' as sale_type
+            store,
+            'retail' AS sale_type
         FROM sale_overview
+        {$retailWhere}
 
         UNION ALL
 
         SELECT
             sale_id,
-            CONCAT('Wholesale - ', sale_product) as sale_product,
+            CONCAT('Wholesale - ', sale_product) AS sale_product,
             price,
             profit,
             purchased_date,
@@ -88,28 +104,31 @@ try {
             email,
             renew,
             duration,
-            2 as store,
-            'wholesale' as sale_type
+            2 AS store,
+            'wholesale' AS sale_type
         FROM ws_sale_overview
+        {$wholesaleWhere}
 
         ORDER BY purchased_date DESC, sale_id DESC
-    ");
+    ";
 
-    $rows = $stmt->fetchAll();
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($dateParams);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($rows as &$r) {
-        $r['sale_id'] = isset($r['sale_id']) ? (int)$r['sale_id'] : null;
-        $r['sale_product'] = $r['sale_product'] ?? null;
-        $r['price'] = isset($r['price']) ? (float)$r['price'] : 0.0;
-        $r['profit'] = isset($r['profit']) ? (float)$r['profit'] : 0.0;
-        $r['purchased_date'] = $r['purchased_date'] ?? null;
-        $r['expired_date'] = $r['expired_date'] ?? null;
-        $r['customer'] = $r['customer'] ?? null;
-        $r['email'] = $r['email'] ?? null;
-        $r['renew'] = isset($r['renew']) ? (int)$r['renew'] : 0;
-        $r['duration'] = isset($r['duration']) ? (int)$r['duration'] : null;
-        $r['store'] = isset($r['store']) ? (int)$r['store'] : 0;
-        $r['sale_type'] = $r['sale_type'] ?? 'retail';
+        $r['sale_id']        = isset($r['sale_id'])        ? (int)$r['sale_id']    : null;
+        $r['sale_product']   = $r['sale_product']          ?? null;
+        $r['price']          = isset($r['price'])          ? (float)$r['price']    : 0.0;
+        $r['profit']         = isset($r['profit'])         ? (float)$r['profit']   : 0.0;
+        $r['purchased_date'] = $r['purchased_date']        ?? null;
+        $r['expired_date']   = $r['expired_date']          ?? null;
+        $r['customer']       = $r['customer']              ?? null;
+        $r['email']          = $r['email']                 ?? null;
+        $r['renew']          = isset($r['renew'])          ? (int)$r['renew']      : 0;
+        $r['duration']       = isset($r['duration'])       ? (int)$r['duration']   : null;
+        $r['store']          = isset($r['store'])          ? (int)$r['store']      : 0;
+        $r['sale_type']      = $r['sale_type']             ?? 'retail';
     }
     unset($r);
 
@@ -126,10 +145,10 @@ try {
     echo $payload;
 } catch (Throwable $e) {
     ob_end_clean();
-    http_response_code(500);
     error_log('sales_minimal.php error: ' . $e->getMessage());
+    http_response_code(500);
     echo json_encode(
-        ['success' => false, 'error' => $e->getMessage()],
+        ['success' => false, 'error' => 'Server error'],
         JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     );
 }

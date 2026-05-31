@@ -28,14 +28,13 @@ if (!empty($_SESSION['auth']) || remember_try_login_from_cookie()) {
 <body class="auth-page">
     <main class="auth-wrapper">
         <section class="auth-card" role="dialog" aria-labelledby="title">
-            <p class="auth-brand">DIGIMIUM ADMIN</p>
-            <h1 id="title" class="auth-title">Sign in to Digimium</h1>
-            <p class="auth-subtitle">Use your account credentials to continue</p>
+            <p class="auth-signin-label">Sign in to</p>
+            <img src="./assets/logo_digimium.png" alt="Digimium" class="auth-brand-logo">
 
             <form id="loginForm" novalidate>
                 <div class="field">
                     <label for="username" class="label">Username</label>
-                    <input class="input" id="username" name="username" type="text" placeholder="username"
+                    <input class="input" id="username" name="username" type="text"
                         autocomplete="off" required />
                 </div>
 
@@ -43,7 +42,7 @@ if (!empty($_SESSION['auth']) || remember_try_login_from_cookie()) {
                     <label for="password" class="label">Password</label>
                     <div class="row">
                         <input class="input" id="password" name="password" type="password"
-                            placeholder="*****************" autocomplete="off" required />
+                            autocomplete="off" required />
                         <button type="button" class="icon-btn" id="togglePass" aria-label="Show password">
                             <img id="toggleIcon" src="./assets/eye.svg" alt="" />
                         </button>

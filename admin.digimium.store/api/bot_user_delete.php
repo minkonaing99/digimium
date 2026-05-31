@@ -10,8 +10,6 @@ auth_require_login(['admin', 'owner']);
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-require __DIR__ . '/dbinfo.php';
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE);
@@ -28,6 +26,7 @@ if (!$bot_user_id) {
 }
 
 try {
+    $pdo = \Digimium\Core\Database::connection();
     // Check if bot user exists
     $checkStmt = $pdo->prepare("SELECT id, username FROM bot_users WHERE id = ?");
     $checkStmt->execute([$bot_user_id]);

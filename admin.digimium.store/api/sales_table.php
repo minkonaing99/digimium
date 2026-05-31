@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require __DIR__ . '/session_bootstrap.php';
 require __DIR__ . '/auth.php';
-require_once dirname(__DIR__) . '/app/bootstrap.php';
 
 use Digimium\Core\ResponseCache;
+use Digimium\Core\SaleRepository;
 
 auth_require_login(['admin', 'owner', 'staff']);
 
@@ -14,168 +14,46 @@ header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, max-age=30, must-revalidate');
 
-require __DIR__ . '/dbinfo.php';
-
 try {
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        throw new RuntimeException('PDO connection not initialized. Check dbinfo.php');
-    }
+    $pdo  = \Digimium\Core\Database::connection();
+    $repo = SaleRepository::retail($pdo);
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-    $limit = isset($_GET['limit']) ? max(1, (int)$_GET['limit']) : 500;
-    if ($limit > 2000) {
-        $limit = 2000;
-    }
-    $offset = isset($_GET['offset']) ? max(0, (int)$_GET['offset']) : 0; // legacy support
+    $limit  = isset($_GET['limit'])  ? max(1, min(2000, (int)$_GET['limit'])) : 500;
+    $offset = isset($_GET['offset']) ? max(0, (int)$_GET['offset'])           : 0;
     $cursor = trim((string)($_GET['cursor'] ?? ''));
-    $q = trim((string)($_GET['q'] ?? ''));
-    if (strlen($q) > 100) {
-        $q = substr($q, 0, 100);
-    }
 
-    // Check cache before touching the DB — content-based ETag on hit
-    $cacheKey = 'sales_table:v3:l' . $limit . ':o' . $offset . ':c' . $cursor . ':q' . strtolower($q);
-    $cached = ResponseCache::get($cacheKey, 30);
-    if (is_string($cached)) {
-        $etag = '"' . sha1($cached) . '"';
-        header('ETag: ' . $etag);
-        $ifNoneMatch = trim((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''));
-        if ($ifNoneMatch !== '' && $ifNoneMatch === $etag) {
-            http_response_code(304);
-            exit;
-        }
-        echo $cached;
-        exit;
-    }
-
-    $cursorDate = null;
-    $cursorId = null;
-    if ($cursor !== '') {
-        $decoded = base64_decode(strtr($cursor, '-_', '+/'), true);
-        if (is_string($decoded) && strpos($decoded, '|') !== false) {
-            [$cd, $ci] = explode('|', $decoded, 2);
-            $cd = trim((string)$cd);
-            $ci = trim((string)$ci);
-            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $cd) && ctype_digit($ci)) {
-                $cursorDate = $cd;
-                $cursorId = (int)$ci;
-            }
-        }
-    }
-
-    $sql = "
-        SELECT
-            sale_id,
-            sale_product,
-            duration,
-            renew,
-            customer,
-            email,
-            purchased_date,
-            expired_date,
-            manager,
-            note,
-            price,
-            store
-        FROM sale_overview
-    ";
-
-    $where = [];
-    $params = [];
-    if ($q !== '') {
-        $where[] = '(sale_product LIKE ? OR customer LIKE ? OR email LIKE ? OR manager LIKE ? OR purchased_date LIKE ? OR expired_date LIKE ?)';
-        $qLike = '%' . $q . '%';
-        $params[] = $qLike;
-        $params[] = $qLike;
-        $params[] = $qLike;
-        $params[] = $qLike;
-        $params[] = $qLike;
-        $params[] = $qLike;
-    }
-    if ($cursorDate !== null && $cursorId !== null) {
-        $where[] = '(purchased_date < ? OR (purchased_date = ? AND sale_id < ?))';
-        $params[] = $cursorDate;
-        $params[] = $cursorDate;
-        $params[] = $cursorId;
-    }
-    if ($where) {
-        $sql .= ' WHERE ' . implode(' AND ', $where);
-    }
-
-    $sql .= ' ORDER BY purchased_date DESC, sale_id DESC';
-
-    if ($cursor === '' && $offset > 0) {
-        $sql .= ' LIMIT ' . (int)$limit . ' OFFSET ' . (int)$offset;
-    } else {
-        $sql .= ' LIMIT ' . (int)($limit + 1);
-    }
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-
-    $rows = $stmt->fetchAll();
-    $hasMore = false;
-    if ($cursor !== '' || $offset === 0) {
-        if (count($rows) > $limit) {
-            $hasMore = true;
-            array_pop($rows);
-        }
-    }
-
-    foreach ($rows as &$r) {
-        $r['sale_id'] = isset($r['sale_id']) ? (int)$r['sale_id'] : null;
-        $r['duration'] = isset($r['duration']) ? (int)$r['duration'] : null;
-        $r['renew'] = isset($r['renew']) ? (int)$r['renew'] : 0;
-        $r['store'] = isset($r['store']) ? (int)$r['store'] : 0;
-        $r['price'] = isset($r['price']) ? (float)$r['price'] : 0.0;
-        $r['sale_product'] = $r['sale_product'] ?? null;
-        $r['customer'] = $r['customer'] ?? null;
-        $r['email'] = $r['email'] ?? null;
-        $r['purchased_date'] = $r['purchased_date'] ?? null;
-        $r['expired_date'] = $r['expired_date'] ?? null;
-        $r['manager'] = $r['manager'] ?? null;
-        $r['note'] = $r['note'] ?? null;
-    }
-    unset($r);
-
-    $nextCursor = null;
-    if ($hasMore && !empty($rows)) {
-        $last = $rows[count($rows) - 1];
-        $token = ($last['purchased_date'] ?? '') . '|' . (string)($last['sale_id'] ?? '');
-        $nextCursor = rtrim(strtr(base64_encode($token), '+/', '-_'), '=');
-    }
-
-    $payload = json_encode(
-        [
-            'success' => true,
-            'data' => $rows,
-            'meta' => [
-                'limit' => $limit,
-                'has_more' => $hasMore,
-                'next_cursor' => $nextCursor,
-            ],
-        ],
-        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION
-    );
-    if (!is_string($payload)) {
-        throw new RuntimeException('Failed to encode JSON payload.');
-    }
-
-    $etag = '"' . sha1($payload) . '"';
+    $fingerprint = $repo->fingerprint();
+    $cacheKey    = 'sales_table:v3:' . $fingerprint . ':l' . $limit . ':o' . $offset . ':c' . $cursor;
+    $etag        = '"' . sha1($cacheKey) . '"';
     header('ETag: ' . $etag);
-    ResponseCache::put($cacheKey, $payload);
+
     $ifNoneMatch = trim((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''));
     if ($ifNoneMatch !== '' && $ifNoneMatch === $etag) {
         http_response_code(304);
         exit;
     }
+
+    $cached = ResponseCache::get($cacheKey, 30);
+    if (is_string($cached)) {
+        echo $cached;
+        exit;
+    }
+
+    $page    = $repo->getPage($limit, $offset, $cursor);
+    $payload = json_encode([
+        'success' => true,
+        'data'    => $page['rows'],
+        'meta'    => ['limit' => $limit, 'has_more' => $page['hasMore'], 'next_cursor' => $page['nextCursor']],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
+
+    if (!is_string($payload)) {
+        throw new \RuntimeException('Failed to encode JSON payload.');
+    }
+
+    ResponseCache::put($cacheKey, $payload);
     echo $payload;
-} catch (Throwable $e) {
+} catch (\Throwable $e) {
+    error_log('sales_table.php error: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(
-        ['success' => false, 'error' => $e->getMessage()],
-        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    );
+    echo json_encode(['success' => false, 'error' => 'Server error'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }

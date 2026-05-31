@@ -348,7 +348,7 @@
     tbody.innerHTML = "";
     tbody.appendChild(placeholderRow("Loading…"));
     try {
-      const r = await fetch(api.list, {
+      const r = await csrfFetch(api.list, {
         headers: { Accept: "application/json" },
       });
       const json = await r.json().catch(() => ({}));
@@ -384,18 +384,19 @@
         const tr = btn.closest("tr.era-row");
         if (!tr) return;
         const id = Number(tr.dataset.id);
-        if (!id) return alert("Missing product_id for this row.");
+        if (!id) return await showAlert("Missing product_id for this row.");
 
         const name =
           tr.querySelector(".era-product")?.textContent?.trim() || `#${id}`;
-        if (!confirm(`Delete "${name}"?\nThis cannot be undone.`)) return;
+        if (!await showConfirm(`Delete ""?
+This cannot be undone.`)) return;
 
         const { api } = getCurrentTable();
 
         btn.disabled = true;
         btn.classList.add("disableBtn");
         try {
-          const resp = await fetch(api.delete, {
+          const resp = await csrfFetch(api.delete, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -415,7 +416,7 @@
           }
         } catch (err) {
           console.error("Delete failed:", err);
-          alert(`Delete failed: ${err.message}`);
+          await showAlert(`Delete failed: `);
           btn.disabled = false;
           btn.classList.remove("disableBtn");
         }
@@ -443,9 +444,8 @@
         }
         addEls.saveBtn.disabled = true;
         addEls.saveBtn.classList.add("disableBtn");
-        console.log("FINAL PAYLOAD", payload);
 
-        const resp = await fetch(api.insert, {
+        const resp = await csrfFetch(api.insert, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -540,7 +540,7 @@
         editEls.saveBtn.disabled = true;
         editEls.saveBtn.classList.add("disableBtn");
 
-        const res = await fetch(api.update, {
+        const res = await csrfFetch(api.update, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -10,53 +10,41 @@ auth_require_login(['admin', 'owner', 'staff']);
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-require __DIR__ . '/dbinfo.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    echo json_encode(['success' => false, 'error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
 
 try {
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        throw new RuntimeException('PDO connection not initialized. Check dbinfo.php');
-    }
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Get JSON input
     $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
+    $data  = json_decode($input, true);
 
-    if (!$data) {
-        throw new RuntimeException('Invalid JSON input');
+    if (!is_array($data)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Invalid JSON payload.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    // Validate required fields
-    if (!isset($data['id']) || !is_numeric($data['id'])) {
-        throw new RuntimeException('Valid sale ID is required');
+    if (!isset($data['id']) || !is_numeric($data['id']) || (int)$data['id'] < 1) {
+        http_response_code(422);
+        echo json_encode(['success' => false, 'error' => 'Valid sale ID is required.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    $sale_id = (int)$data['id'];
-
-    // Check if sale exists
-    $checkStmt = $pdo->prepare("SELECT sale_id FROM ws_sale_overview WHERE sale_id = ?");
-    $checkStmt->execute([$sale_id]);
-
-    if (!$checkStmt->fetch()) {
-        throw new RuntimeException('Sale not found');
+    $id = (int)$data['id'];
+    try {
+        \Digimium\Core\SaleRepository::wholesale(\Digimium\Core\Database::connection())->delete($id);
+    } catch (\Digimium\Core\NotFoundException) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'error' => 'Sale not found.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    // Delete the sale
-    $deleteStmt = $pdo->prepare("DELETE FROM ws_sale_overview WHERE sale_id = ?");
-    $deleteStmt->execute([$sale_id]);
-
-    if ($deleteStmt->rowCount() === 0) {
-        throw new RuntimeException('Failed to delete sale');
-    }
-
-    echo json_encode([
-        'success' => true,
-        'message' => 'Wholesale sale deleted successfully'
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-} catch (Throwable $e) {
+    echo json_encode(['success' => true], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+} catch (\Throwable $e) {
+    error_log('ws_sale_delete.php error: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    echo json_encode(['success' => false, 'error' => 'Server error'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }

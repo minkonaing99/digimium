@@ -1,8 +1,19 @@
-# Credentials file (contains sensitive data)
-python-bot/creds.py
+# Claude Code guidance (local only)
+CLAUDE.md
 
-# Environment file (contains sensitive data)
+# Project secrets
 .env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.env copy
+
+# Runtime cache
+app/cache/response/
+
+# Legacy credentials file
+python-bot/creds.py
 
 # Python cache directories
 __pycache__/

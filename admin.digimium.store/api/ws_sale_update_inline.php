@@ -10,76 +10,64 @@ auth_require_login(['admin', 'owner', 'staff']);
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-require __DIR__ . '/dbinfo.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    echo json_encode(['success' => false, 'error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
 
 try {
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        throw new RuntimeException('PDO connection not initialized. Check dbinfo.php');
-    }
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Get JSON input
     $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
+    $data  = json_decode($input, true);
 
-    if (!$data) {
-        throw new RuntimeException('Invalid JSON input');
+    if (!is_array($data)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Invalid JSON payload.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    // Validate required fields
-    if (!isset($data['id']) || !is_numeric($data['id'])) {
-        throw new RuntimeException('Valid sale ID is required');
+    if (!isset($data['id']) || !is_numeric($data['id']) || (int)$data['id'] < 1) {
+        http_response_code(422);
+        echo json_encode(['success' => false, 'error' => 'Valid sale ID is required.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    $sale_id = (int)$data['id'];
+    $sale_id       = (int)$data['id'];
     $allowedFields = ['customer', 'email', 'manager', 'note'];
-    $updateFields = [];
-    $updateValues = [];
+    $updates       = [];
 
-    // Build update query dynamically based on provided fields
     foreach ($allowedFields as $field) {
-        if (isset($data[$field])) {
-            $updateFields[] = "$field = ?";
-            $updateValues[] = $data[$field] === '' ? null : trim($data[$field]);
+        if (array_key_exists($field, $data)) {
+            $updates[$field] = ($data[$field] === '' || $data[$field] === null)
+                ? null : trim((string)$data[$field]);
         }
     }
 
-    if (empty($updateFields)) {
-        throw new RuntimeException('No valid fields to update');
+    if (empty($updates)) {
+        http_response_code(422);
+        echo json_encode(['success' => false, 'error' => 'No valid fields to update.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    // Validate email format if provided
-    if (isset($data['email']) && $data['email'] !== '' && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-        throw new RuntimeException('Invalid email format');
+    if (array_key_exists('email', $updates) && $updates['email'] !== null
+        && !filter_var($updates['email'], FILTER_VALIDATE_EMAIL)
+    ) {
+        http_response_code(422);
+        echo json_encode(['success' => false, 'error' => 'Invalid email format.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    // Check if sale exists
-    $checkStmt = $pdo->prepare("SELECT sale_id FROM ws_sale_overview WHERE sale_id = ?");
-    $checkStmt->execute([$sale_id]);
-
-    if (!$checkStmt->fetch()) {
-        throw new RuntimeException('Sale not found');
+    $repo = \Digimium\Core\SaleRepository::wholesale(\Digimium\Core\Database::connection());
+    if (!$repo->updateInlineFields($sale_id, $updates)) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'error' => 'Sale not found.'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
 
-    // Update the sale
-    $sql = "UPDATE ws_sale_overview SET " . implode(', ', $updateFields) . " WHERE sale_id = ?";
-    $updateValues[] = $sale_id;
-
-    $updateStmt = $pdo->prepare($sql);
-    $updateStmt->execute($updateValues);
-
-    if ($updateStmt->rowCount() === 0) {
-        throw new RuntimeException('No changes made to sale');
-    }
-
-    echo json_encode([
-        'success' => true,
-        'message' => 'Wholesale sale updated successfully'
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-} catch (Throwable $e) {
+    echo json_encode(['success' => true], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+} catch (\Throwable $e) {
+    error_log('ws_sale_update_inline.php error: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    echo json_encode(['success' => false, 'error' => 'Server error'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }

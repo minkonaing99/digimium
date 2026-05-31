@@ -6,8 +6,7 @@ require_once dirname(__DIR__) . '/app/bootstrap.php';
 
 use Digimium\Core\Config;
 
-$isHttps = !empty($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
-$secureCookie = Config::bool('DIGIMIUM_SESSION_SECURE', $isHttps);
+$secureCookie = Config::bool('DIGIMIUM_SESSION_SECURE', !empty($_SERVER['HTTPS']));
 $sameSite = Config::get('DIGIMIUM_SESSION_SAMESITE', 'Lax') ?: 'Lax';
 $sessionName = Config::get('DIGIMIUM_SESSION_NAME', 'ERASESSID') ?: 'ERASESSID';
 $gcMaxLife = Config::int('DIGIMIUM_SESSION_MAX_LIFETIME', 28800);

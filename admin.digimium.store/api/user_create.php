@@ -2,10 +2,20 @@
 // api/user_create.php
 declare(strict_types=1);
 
+require __DIR__ . '/session_bootstrap.php';
+require __DIR__ . '/auth.php';
+
+auth_require_login(['owner']);
+
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-require __DIR__ . '/dbinfo.php'; // defines $pdo
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    echo json_encode(['success' => false, 'error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 function json_fail(string $msg, int $code = 400): void
 {
@@ -32,9 +42,8 @@ $roleIn   = trim((string)($body['role'] ?? 'Staff'));
 // ---- Validate username ----
 if ($username === '') json_fail('Username is required.', 422);
 if (mb_strlen($username) < 3 || mb_strlen($username) > 50) {
-    json_fail('Username must be 3–50 characters.', 422);
+    json_fail('Username must be 3-50 characters.', 422);
 }
-// Optional: restrict characters
 if (!preg_match('/^[A-Za-z0-9._-]+$/', $username)) {
     json_fail('Username can only contain letters, numbers, dot, underscore, and hyphen.', 422);
 }
@@ -63,6 +72,7 @@ if ($hash === false) json_fail('Failed to hash password.', 500);
 // ---- Insert ----
 $sql = "INSERT INTO users (username, pass_hash, role) VALUES (:u, :h, :r)";
 try {
+    $pdo = \Digimium\Core\Database::connection();
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':u' => $username,
@@ -72,11 +82,9 @@ try {
     $id = (int)$pdo->lastInsertId();
     json_ok(['user_id' => $id, 'username' => $username, 'role' => $role], 201);
 } catch (Throwable $e) {
-    // Duplicate username (unique key)
     if ((string)$e->getCode() === '23000') {
         json_fail('Username is already taken.', 409);
     }
-    // Uncomment for quick debugging (remove in prod):
-    // json_fail('Failed to create user: '.$e->getMessage(), 500);
+    error_log('user_create.php error: ' . $e->getMessage());
     json_fail('Failed to create user.', 500);
 }

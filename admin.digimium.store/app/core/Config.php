@@ -65,7 +65,7 @@ final class Config
     public static function storefrontPath(string $relative = ''): string
     {
         $configured = self::get('DIGIMIUM_STOREFRONT_PATH');
-        $base = $configured ?: dirname(DIGIMIUM_ROOT) . DIRECTORY_SEPARATOR . 'digimium.store';
+        $base = $configured ?: dirname(DIGIMIUM_ROOT) . DIRECTORY_SEPARATOR . 'digimium.online';
         if ($relative === '') {
             return $base;
         }
@@ -97,7 +97,11 @@ final class Config
 
             $key = trim($parts[0]);
             $val = trim($parts[1]);
-            $val = trim($val, "\"'");
+            if (preg_match('/^(["\'])(.+)\1\s*(?:#.*)?$/', $val, $qm)) {
+                $val = $qm[2]; // quoted: preserve interior, including '=' chars
+            } else {
+                $val = trim((string)preg_replace('/#.*$/', '', $val)); // strip inline comment
+            }
             $out[$key] = $val;
 
             if (getenv($key) === false) {

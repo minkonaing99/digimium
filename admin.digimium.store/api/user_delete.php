@@ -10,8 +10,6 @@ auth_require_login(['admin', 'owner']);
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-require __DIR__ . '/dbinfo.php';
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE);
@@ -28,10 +26,11 @@ if (!$user_id) {
 }
 
 try {
+    $pdo = \Digimium\Core\Database::connection();
     // Check if user exists and is not the current user
     $current_user_id = $_SESSION['user']['id'] ?? null;
 
-    if ($user_id == $current_user_id) {
+    if ((int)$user_id === (int)$current_user_id) {
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'Cannot delete your own account'], JSON_UNESCAPED_UNICODE);
         exit;

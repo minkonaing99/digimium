@@ -10,9 +10,8 @@ auth_require_login(['admin', 'owner']);
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-require __DIR__ . '/dbinfo.php';
-
 try {
+    $pdo = \Digimium\Core\Database::connection();
     // Fetch web users
     $webStmt = $pdo->prepare(
         "SELECT user_id, username, is_active, role, last_login_at, created_at

@@ -79,7 +79,7 @@ async function initRetailAddForm() {
   /** Loads product select options and embeds pricing metadata in option datasets. */
   async function loadProductOptions() {
     try {
-      const r = await fetch(OPTIONS_URL, {
+      const r = await csrfFetch(OPTIONS_URL, {
         headers: { Accept: "application/json" },
         method: "POST",
       });
@@ -255,7 +255,7 @@ async function initRetailAddForm() {
         saveBtn.classList.add("disableBtn");
       }
 
-      const resp = await fetch("api/sale_insertion.php", {
+      const resp = await csrfFetch("api/sale_insertion.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -80,7 +80,7 @@ async function initWholesaleAddForm() {
   /** Loads wholesale product options and embeds pricing metadata in option datasets. */
   async function loadProductOptions() {
     try {
-      const r = await fetch(OPTIONS_URL, {
+      const r = await csrfFetch(OPTIONS_URL, {
         headers: { Accept: "application/json" },
         method: "POST",
       });
@@ -252,7 +252,7 @@ async function initWholesaleAddForm() {
         saveBtn.classList.add("disableBtn");
       }
 
-      const resp = await fetch("api/ws_sale_insertion.php", {
+      const resp = await csrfFetch("api/ws_sale_insertion.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

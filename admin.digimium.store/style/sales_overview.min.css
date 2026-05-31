@@ -58,19 +58,19 @@ body.sales-overview-page {
 
 /* Restrained enterprise row color coding by store */
 td.store-digimium {
-  background-color: rgba(59, 79, 104, 0.34) !important;
+  background-color: rgba(89, 135, 168, 0.28) !important;
 }
 
 td.store-digimium:hover {
-  background-color: rgba(66, 88, 115, 0.38) !important;
+  background-color: rgba(89, 135, 168, 0.36) !important;
 }
 
 td.store-dmarwal {
-  background-color: rgba(51, 66, 84, 0.34) !important;
+  background-color: rgba(75, 100, 141, 0.24) !important;
 }
 
 td.store-dmarwal:hover {
-  background-color: rgba(58, 75, 96, 0.38) !important;
+  background-color: rgba(75, 100, 141, 0.32) !important;
 }
 
 td.store-default {
@@ -82,39 +82,47 @@ td.store-default:hover {
 }
 
 td.store-ember {
-  background-color: rgba(66, 68, 76, 0.34) !important;
+  background-color: rgba(185, 228, 244, 0.24) !important;
 }
 
 td.store-ember:hover {
-  background-color: rgba(76, 79, 88, 0.38) !important;
+  background-color: rgba(185, 228, 244, 0.32) !important;
 }
 
 td.store-violet {
-  background-color: rgba(54, 64, 87, 0.34) !important;
+  background-color: rgba(103, 145, 184, 0.24) !important;
 }
 
 td.store-violet:hover {
-  background-color: rgba(62, 73, 98, 0.38) !important;
+  background-color: rgba(103, 145, 184, 0.32) !important;
 }
 
 td.store-void,
 td.store-cyan {
-  background-color: rgba(45, 71, 82, 0.34) !important;
+  background-color: rgba(231, 251, 249, 0.18) !important;
 }
 
 td.store-void:hover,
 td.store-cyan:hover {
-  background-color: rgba(54, 82, 95, 0.38) !important;
+  background-color: rgba(185, 228, 244, 0.24) !important;
 }
 
 .subs-card.store-digimium {
-  background-color: rgba(59, 79, 104, 0.2);
-  border-left: 3px solid #3d67de;
+  background-color: rgba(89, 135, 168, 0.16);
+  border-left: 3px solid #7cc4e1;
+}
+
+.subs-card.store-digimium:hover {
+  background-color: rgba(89, 135, 168, 0.24);
 }
 
 .subs-card.store-dmarwal {
-  background-color: rgba(51, 66, 84, 0.2);
-  border-left: 3px solid #667f99;
+  background-color: rgba(75, 100, 141, 0.14);
+  border-left: 3px solid #4b648d;
+}
+
+.subs-card.store-dmarwal:hover {
+  background-color: rgba(75, 100, 141, 0.22);
 }
 
 .subs-card.store-default {
@@ -122,18 +130,31 @@ td.store-cyan:hover {
 }
 
 .subs-card.store-ember {
-  background-color: rgba(66, 68, 76, 0.2);
-  border-left: 3px solid #7b808b;
+  background-color: rgba(185, 228, 244, 0.16);
+  border-left: 3px solid #b9e4f4;
+}
+
+.subs-card.store-ember:hover {
+  background-color: rgba(185, 228, 244, 0.26);
 }
 
 .subs-card.store-violet {
-  background-color: rgba(54, 64, 87, 0.2);
-  border-left: 3px solid #6f7f9e;
+  background-color: rgba(103, 145, 184, 0.14);
+  border-left: 3px solid #7aa3c7;
+}
+
+.subs-card.store-violet:hover {
+  background-color: rgba(103, 145, 184, 0.22);
 }
 
 .subs-card.store-void,
 .subs-card.store-cyan {
-  background-color: rgba(45, 71, 82, 0.2);
-  border-left: 3px solid #5f8091;
+  background-color: rgba(231, 251, 249, 0.14);
+  border-left: 3px solid #e7fbf9;
+}
+
+.subs-card.store-void:hover,
+.subs-card.store-cyan:hover {
+  background-color: rgba(185, 228, 244, 0.18);
 }
 

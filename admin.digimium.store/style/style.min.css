@@ -3,7 +3,7 @@
 :root {
     --primary: #111827;
     --secondary: #1f2937;
-    --accent: #4f7dff;
+    --accent: #4fa8cc;
     --dark: #0f172a;
     --white: #e5e7eb;
     --card: #111827;
@@ -20,7 +20,7 @@
 /* Compact scrollbars (global) */
 * {
     scrollbar-width: thin;
-    scrollbar-color: #4f7dff #1f2b3d
+    scrollbar-color: #7cc4e1 #1f2b3d
 }
 
 *::-webkit-scrollbar {
@@ -33,12 +33,12 @@
 }
 
 *::-webkit-scrollbar-thumb {
-    background: #4f7dff;
+    background: #7cc4e1;
     border-radius: 999px
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: #6993ff
+    background: #63b7d6
 }
 
 body,
@@ -322,7 +322,7 @@ main.page {
 }
 
 .era-icon-btn:hover {
-    background: #171c28
+    background: rgba(124, 196, 225, .16)
 }
 
 .era-icon {
@@ -371,21 +371,23 @@ main.page {
 }
 
 .menu-bar .btn-group button:not(.icon-btn) {
-    background: linear-gradient(135deg, #4f7dff, #3d67de);
-    color: #f8fbff;
-    border: 1px solid rgba(114, 145, 255, .7);
+    background: linear-gradient(135deg, #7cc4e1, #63b7d6);
+    color: #000;
+    border: 1px solid rgba(124, 196, 225, .75);
     padding: .5rem 1rem;
     border-radius: 1.5rem;
     cursor: pointer;
     font-weight: 500;
     white-space: nowrap;
-    box-shadow: 0 6px 18px rgba(79, 125, 255, .28);
+    box-shadow: 0 6px 18px rgba(124, 196, 225, .24);
     transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease
 }
 
 .menu-bar .btn-group button:not(.icon-btn):hover {
+    background: linear-gradient(135deg, #9ad8ea, #7cc4e1);
+    border-color: rgba(154, 216, 234, .8);
     transform: translateY(-1px);
-    box-shadow: 0 8px 22px rgba(79, 125, 255, .34)
+    box-shadow: 0 8px 22px rgba(124, 196, 225, .3)
 }
 
 .menu-bar .btn-group .icon-btn {
@@ -409,27 +411,35 @@ main.page {
     height: 1.8rem
 }
 
+.menu-bar .btn-group button:not(.icon-btn) img,
+.iconLabelBtn img,
+.form-btn img {
+    filter: brightness(0);
+}
+
 .iconLabelBtn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: .4rem;
     width: 120px;
-    background: linear-gradient(135deg, #4f7dff, #3d67de);
-    color: #f8fbff;
-    border: 1px solid rgba(114, 145, 255, .7);
+    background: linear-gradient(135deg, #7cc4e1, #63b7d6);
+    color: #000;
+    border: 1px solid rgba(124, 196, 225, .75);
     padding: .5rem 1rem;
     border-radius: 1.5rem;
     font-weight: 600;
     font-size: .95rem;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(79, 125, 255, .28);
+    box-shadow: 0 6px 18px rgba(124, 196, 225, .24);
     transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease
 }
 
 .iconLabelBtn:hover {
+    background: linear-gradient(135deg, #9ad8ea, #7cc4e1);
+    border-color: rgba(154, 216, 234, .8);
     transform: translateY(-1px);
-    box-shadow: 0 8px 22px rgba(79, 125, 255, .34)
+    box-shadow: 0 8px 22px rgba(124, 196, 225, .3)
 }
 
 .iconLabelBtn img {
@@ -490,7 +500,7 @@ input:focus,
 select:focus {
     background: #2a2f3d;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(106, 137, 167, .25)
+    box-shadow: 0 0 0 2px rgba(124, 196, 225, .25)
 }
 
 select {
@@ -521,20 +531,22 @@ select::-ms-expand {
 }
 
 .form-btn {
-    background: linear-gradient(135deg, #4f7dff, #3d67de);
-    border: 1px solid rgba(114, 145, 255, .7);
-    color: #f8fbff;
+    background: linear-gradient(135deg, #7cc4e1, #63b7d6);
+    border: 1px solid rgba(124, 196, 225, .75);
+    color: #000;
     padding: .45rem 1.5rem;
     border-radius: 1.5rem;
     font-weight: 500;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(79, 125, 255, .28);
+    box-shadow: 0 6px 18px rgba(124, 196, 225, .24);
     transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease
 }
 
 .form-btn:hover {
+    background: linear-gradient(135deg, #9ad8ea, #7cc4e1);
+    border-color: rgba(154, 216, 234, .8);
     transform: translateY(-1px);
-    box-shadow: 0 8px 22px rgba(79, 125, 255, .34)
+    box-shadow: 0 8px 22px rgba(124, 196, 225, .3)
 }
 
 .invisible {
@@ -799,16 +811,16 @@ select::-ms-expand {
 }
 
 .store-ember {
-    background: rgba(236, 120, 75, .12);
+    background: rgba(185, 228, 244, .12);
 }
 
 .store-violet {
-    background: rgba(156, 98, 222, .12);
+    background: rgba(103, 145, 184, .12);
 }
 
 .store-void,
 .store-cyan {
-    background: rgba(56, 189, 248, .12);
+    background: rgba(231, 251, 249, .1);
 }
 
 .store-default {
@@ -825,3 +837,84 @@ select::-ms-expand {
 .store-default.era-row:hover {
     background: inherit;
 }
+
+.store-digimium.era-row:hover {
+    background: rgba(89, 135, 168, .22) !important;
+}
+
+.store-dmarwal.era-row:hover {
+    background: rgba(75, 100, 141, .2) !important;
+}
+
+.store-ember.era-row:hover {
+    background: rgba(185, 228, 244, .22) !important;
+}
+
+.store-violet.era-row:hover {
+    background: rgba(103, 145, 184, .2) !important;
+}
+
+.store-void.era-row:hover,
+.store-cyan.era-row:hover {
+    background: rgba(231, 251, 249, .16) !important;
+}
+
+.store-default.era-row:hover {
+    background: rgba(75, 100, 141, .1) !important;
+}
+
+.app-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .55);
+    backdrop-filter: blur(2px);
+}
+.app-modal.active {
+    display: flex;
+}
+.app-modal-box {
+    background: #1f2937;
+    border: 1px solid rgba(100, 116, 139, .35);
+    border-radius: 14px;
+    padding: 24px 24px 20px;
+    width: min(90vw, 380px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .45);
+    animation: authRise .2s ease;
+}
+.app-modal-msg {
+    color: #e5e7eb;
+    font-size: .95rem;
+    line-height: 1.55;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+}
+.app-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+.app-modal-cancel,
+.app-modal-ok {
+    padding: .45rem 1.1rem;
+    border-radius: 8px;
+    font-size: .875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: opacity .15s;
+}
+.app-modal-cancel {
+    background: transparent;
+    border-color: rgba(100, 116, 139, .4);
+    color: #9ca3af;
+}
+.app-modal-cancel:hover { opacity: .75; }
+.app-modal-ok {
+    background: var(--accent);
+    color: #0b1220;
+}
+.app-modal-ok:hover { opacity: .85; }

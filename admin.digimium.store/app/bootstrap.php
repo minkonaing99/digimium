@@ -10,7 +10,10 @@ if (!defined('DIGIMIUM_APP_BOOTSTRAPPED')) {
     require_once __DIR__ . '/core/Database.php';
     require_once __DIR__ . '/core/Http.php';
     require_once __DIR__ . '/core/ResponseCache.php';
-    require_once __DIR__ . '/core/ServiceCatalogStore.php';
+    require_once __DIR__ . '/core/NotFoundException.php';
+    require_once __DIR__ . '/core/ProductRepository.php';
+    require_once __DIR__ . '/core/SaleRepository.php';
 
     Digimium\Core\Config::boot(DIGIMIUM_ROOT . DIRECTORY_SEPARATOR . '.env');
+    Digimium\Core\Config::require('DIGIMIUM_REMEMBER_SECRET');
 }

@@ -19,6 +19,7 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
     <title>Digimium • Product Catalog</title>
     <link rel="stylesheet" href="./style/style.min.css">
     <link rel="stylesheet" href="./style/product_catalog.min.css">
@@ -252,9 +253,12 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
         <div id="scrollSentinel" style="height: 1px;"></div>
     </main>
 
-    <script src="./js/nav.js"></script>
-    <script src="./js/product_catalog_toggle.js"></script>
-    <script src="./js/product_catalog.js"></script>
+    <?php $v = fn($f) => filemtime(__DIR__ . '/js/' . $f); ?>
+    <script src="./js/csrf.js?v=<?= $v('csrf.js') ?>"></script>
+    <script src="./js/modal.js?v=<?= $v('modal.js') ?>"></script>
+    <script src="./js/nav.js?v=<?= $v('nav.js') ?>"></script>
+    <script src="./js/product_catalog_toggle.js?v=<?= $v('product_catalog_toggle.js') ?>"></script>
+    <script src="./js/product_catalog.js?v=<?= $v('product_catalog.js') ?>"></script>
 </body>
 
 </html>

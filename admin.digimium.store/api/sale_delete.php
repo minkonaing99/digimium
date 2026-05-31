@@ -11,21 +11,13 @@ header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405); // Method Not Allowed
+    http_response_code(405);
     header('Allow: POST');
     echo json_encode(['success' => false, 'error' => 'Method not allowed. Use POST.']);
     exit;
 }
 
-require __DIR__ . '/dbinfo.php';
-
 try {
-    if (!isset($pdo) || !($pdo instanceof PDO)) {
-        throw new RuntimeException('PDO connection not initialized. Check dbinfo.php');
-    }
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Read JSON body
     $raw  = file_get_contents('php://input');
     $data = json_decode($raw, true);
     if (!is_array($data)) {
@@ -41,18 +33,17 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare('DELETE FROM sale_overview WHERE sale_id = :id');
-    $stmt->execute([':id' => $id]);
-
-    if ($stmt->rowCount() === 0) {
+    try {
+        \Digimium\Core\SaleRepository::retail(\Digimium\Core\Database::connection())->delete($id);
+    } catch (\Digimium\Core\NotFoundException) {
         http_response_code(404);
         echo json_encode(['success' => false, 'error' => 'Record not found.']);
         exit;
     }
 
-    \Digimium\Core\ResponseCache::bustAll();
     echo json_encode(['success' => true, 'deleted' => $id]);
-} catch (Throwable $e) {
+} catch (\Throwable $e) {
+    error_log('sale_delete.php error: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Server error']);
 }

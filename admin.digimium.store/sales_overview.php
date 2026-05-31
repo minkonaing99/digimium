@@ -20,6 +20,7 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
     <title>Digimium • Sales Overview</title>
     <link rel="stylesheet" href="./style/style.min.css">
     <link rel="stylesheet" href="./style/loading.min.css">
@@ -73,7 +74,6 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
                 <div class="btn-group">
                     <button class="icon-btn" id="refreshBtn"><img src="./assets/refresh.svg" alt="Refresh"></button>
                     <?php if (in_array(($_SESSION['user']['role'] ?? ''), ['admin', 'owner'])): ?>
-                        <!-- <button class="icon-btn" id="downloadCsv"><img src="./assets/download.svg" alt="Download"></button> -->
                         <!-- <button class="icon-btn" id="uploadCsv"><img src="./assets/upload.svg" alt="Upload"></button> -->
                     <?php endif; ?>
 
@@ -271,25 +271,17 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
 
 
     </main>
-    <script>
-        // Lightweight page-level loader helpers used by loading.js.
-        // Kept inline so they are available before deferred module scripts run.
-        const appLoaderEl = document.getElementById("appLoader");
-        const showLoader = () => appLoaderEl?.classList.remove("hidden");
-        const hideLoader = () => {
-            if (!appLoaderEl) return;
-            // let the first paint happen, then fade
-            requestAnimationFrame(() => appLoaderEl.classList.add("hidden"));
-        };
-    </script>
-    <script src="./js/loading.js"></script>
-    <script src="./js/nav.js"></script>
-    <script src="./js/add_sales_toggle.js"></script>
-    <script src="./js/sales_overview.js"></script>
-    <script src="./js/sales_add_form.js"></script>
-    <script src="./js/ws_sales_overview.js"></script>
-    <script src="./js/ws_sales_add_form.js"></script>
-    <script src="./js/download_csv.js"></script>
+    <?php $v = fn($f) => filemtime(__DIR__ . '/js/' . $f); ?>
+    <script src="./js/csrf.js?v=<?= $v('csrf.js') ?>"></script>
+    <script src="./js/loading.js?v=<?= $v('loading.js') ?>"></script>
+    <script src="./js/modal.js?v=<?= $v('modal.js') ?>"></script>
+    <script src="./js/nav.js?v=<?= $v('nav.js') ?>"></script>
+    <script src="./js/add_sales_toggle.js?v=<?= $v('add_sales_toggle.js') ?>"></script>
+    <script src="./js/sales_module_factory.js?v=<?= $v('sales_module_factory.js') ?>"></script>
+    <script src="./js/sales_overview.js?v=<?= $v('sales_overview.js') ?>"></script>
+    <script src="./js/sales_add_form.js?v=<?= $v('sales_add_form.js') ?>"></script>
+    <script src="./js/ws_sales_overview.js?v=<?= $v('ws_sales_overview.js') ?>"></script>
+    <script src="./js/ws_sales_add_form.js?v=<?= $v('ws_sales_add_form.js') ?>"></script>
     <!-- <script src="./js/upload.js"></script> -->
 
 

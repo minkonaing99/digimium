@@ -4,41 +4,32 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/app/bootstrap.php';
 
-use Digimium\Core\Config;
+// Defined here so remember.php works standalone (index.php) and when auth.php is already loaded
+if (!function_exists('ip_mask')) {
+    function ip_mask(string $ip): string
+    {
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $parts = explode(':', $ip);
+            return implode(':', array_slice($parts, 0, 4));
+        }
+        return (string)preg_replace('~^((\d+\.){2}).*$~', '$1', $ip);
+    }
+}
 
 const REMEMBER_COOKIE = 'era_remember';
-const REMEMBER_DAYS = 7;
-
-function remember_secret(): string
-{
-    return Config::require('DIGIMIUM_REMEMBER_SECRET');
-}
-
-function is_https(): bool
-{
-    return !empty($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
-}
+const REMEMBER_DAYS   = 7;
 
 function b64u(string $bin): string
 {
     return rtrim(strtr(base64_encode($bin), '+/', '-_'), '=');
 }
 
-function b64u_dec(string $str): string
-{
-    $pad = 4 - (strlen($str) % 4);
-    if ($pad < 4) {
-        $str .= str_repeat('=', $pad);
-    }
-    return base64_decode(strtr($str, '-_', '+/'), true) ?: '';
-}
-
-function remember_cookie_opts(): array
+function remember_cookie_opts(int $expires): array
 {
     return [
-        'expires' => time() + REMEMBER_DAYS * 86400,
-        'path' => '/',
-        'secure' => is_https(),
+        'expires'  => $expires,
+        'path'     => '/',
+        'secure'   => !empty($_SERVER['HTTPS']),
         'httponly' => true,
         'samesite' => 'Lax',
     ];
@@ -46,23 +37,26 @@ function remember_cookie_opts(): array
 
 function remember_issue_cookie(int $userId, string $username, string $role): void
 {
-    $payload = [
-        'uid' => $userId,
-        'u' => $username,
-        'r' => strtolower($role),
-        'iat' => time(),
-        'exp' => time() + REMEMBER_DAYS * 86400,
-        'uah' => hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? ''),
-    ];
+    $selector  = b64u(random_bytes(16));
+    $verifier  = b64u(random_bytes(32));
+    $validHash = hash('sha256', $verifier);
+    $expiresAt = time() + REMEMBER_DAYS * 86400;
 
-    $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    if ($json === false) {
-        return;
-    }
+    $pdo  = \Digimium\Core\Database::connection();
+    $stmt = $pdo->prepare(
+        'INSERT INTO remember_tokens (user_id, username, role, selector, validator_hash, expires_at)
+         VALUES (:uid, :uname, :role, :sel, :hash, FROM_UNIXTIME(:exp))'
+    );
+    $stmt->execute([
+        ':uid'   => $userId,
+        ':uname' => $username,
+        ':role'  => strtolower($role),
+        ':sel'   => $selector,
+        ':hash'  => $validHash,
+        ':exp'   => $expiresAt,
+    ]);
 
-    $sig = hash_hmac('sha256', $json, remember_secret(), true);
-    $token = b64u($json) . '.' . b64u($sig);
-    setcookie(REMEMBER_COOKIE, $token, remember_cookie_opts());
+    setcookie(REMEMBER_COOKIE, $selector . '.' . $verifier, remember_cookie_opts($expiresAt));
 }
 
 function remember_try_login_from_cookie(): bool
@@ -72,69 +66,80 @@ function remember_try_login_from_cookie(): bool
     }
 
     $raw = $_COOKIE[REMEMBER_COOKIE] ?? '';
-    if ($raw === '' || strpos($raw, '.') === false) {
+    if ($raw === '' || substr_count($raw, '.') !== 1) {
         return false;
     }
 
-    [$p64, $s64] = explode('.', $raw, 2);
-    $json = b64u_dec($p64);
-    $sig = b64u_dec($s64);
-    if ($json === '' || $sig === '') {
+    [$selector, $verifier] = explode('.', $raw, 2);
+    if ($selector === '' || $verifier === '') {
         return false;
     }
 
-    $calc = hash_hmac('sha256', $json, remember_secret(), true);
-    if (!hash_equals($sig, $calc)) {
+    $pdo  = \Digimium\Core\Database::connection();
+    $stmt = $pdo->prepare(
+        'SELECT id, user_id, username, role, validator_hash, expires_at
+         FROM remember_tokens
+         WHERE selector = :sel
+         LIMIT 1'
+    );
+    $stmt->execute([':sel' => $selector]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row) {
         remember_forget_cookie();
         return false;
     }
 
-    $data = json_decode($json, true);
-    if (!is_array($data)) {
+    if (strtotime((string)$row['expires_at']) < time()) {
+        $pdo->prepare('DELETE FROM remember_tokens WHERE id = :id')->execute([':id' => $row['id']]);
         remember_forget_cookie();
         return false;
     }
 
-    $uid = $data['uid'] ?? null;
-    $usr = (string)($data['u'] ?? '');
-    $rol = (string)($data['r'] ?? '');
-    $exp = $data['exp'] ?? 0;
-
-    if (!is_int($uid)) {
-        $uid = ctype_digit((string)$uid) ? (int)$uid : null;
-    }
-    if (!is_int($exp)) {
-        $exp = ctype_digit((string)$exp) ? (int)$exp : 0;
-    }
-
-    if ($uid === null || $usr === '' || $rol === '' || $exp <= 0 || $exp < time()) {
+    // Timing-safe verifier check
+    if (!hash_equals((string)$row['validator_hash'], hash('sha256', $verifier))) {
+        // Possible theft - revoke all tokens for this user
+        $pdo->prepare('DELETE FROM remember_tokens WHERE user_id = :uid')->execute([':uid' => $row['user_id']]);
         remember_forget_cookie();
         return false;
     }
 
-    $uahCookie = (string)($data['uah'] ?? '');
-    if ($uahCookie !== '') {
-        $uahNow = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
-        if (!hash_equals($uahCookie, $uahNow)) {
-            return false;
-        }
+    // Rotate: replace selector+verifier in-place
+    $newSelector = b64u(random_bytes(16));
+    $newVerifier = b64u(random_bytes(32));
+    $newExpires  = time() + REMEMBER_DAYS * 86400;
+
+    $pdo->prepare(
+        'UPDATE remember_tokens
+         SET selector = :sel, validator_hash = :hash, expires_at = FROM_UNIXTIME(:exp)
+         WHERE id = :id'
+    )->execute([
+        ':sel'  => $newSelector,
+        ':hash' => hash('sha256', $newVerifier),
+        ':exp'  => $newExpires,
+        ':id'   => $row['id'],
+    ]);
+
+    setcookie(REMEMBER_COOKIE, $newSelector . '.' . $newVerifier, remember_cookie_opts($newExpires));
+
+    // Probabilistic cleanup of expired rows (1 in 100 requests)
+    if (random_int(1, 100) === 1) {
+        $pdo->exec('DELETE FROM remember_tokens WHERE expires_at < NOW()');
     }
 
     $_SESSION['auth'] = true;
     $_SESSION['user'] = [
-        'id' => (int)$uid,
-        'username' => $usr,
-        'role' => strtolower($rol),
+        'id'       => (int)$row['user_id'],
+        'username' => (string)$row['username'],
+        'role'     => strtolower((string)$row['role']),
     ];
 
     $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-    $ipMask = preg_replace('~^((\d+\.){2}).*$~', '$1', $ip);
-    $_SESSION['fingerprint'] = hash('sha256', $ua . '|' . $ipMask);
-
+    $_SESSION['fingerprint']   = hash('sha256', $ua . '|' . ip_mask($ip));
     $now = time();
-    $_SESSION['created_at'] = $_SESSION['created_at'] ?? $now;
-    $_SESSION['last_seen_at'] = $now;
+    $_SESSION['created_at']    = $_SESSION['created_at'] ?? $now;
+    $_SESSION['last_seen_at']  = $now;
     $_SESSION['last_regen_at'] = $now;
     session_regenerate_id(true);
 
@@ -143,15 +148,21 @@ function remember_try_login_from_cookie(): bool
 
 function remember_forget_cookie(): void
 {
-    if (!isset($_COOKIE[REMEMBER_COOKIE])) {
-        return;
+    $raw = $_COOKIE[REMEMBER_COOKIE] ?? '';
+    if ($raw !== '' && substr_count($raw, '.') === 1) {
+        [$selector] = explode('.', $raw, 2);
+        if ($selector !== '') {
+            try {
+                $pdo = \Digimium\Core\Database::connection();
+                $pdo->prepare('DELETE FROM remember_tokens WHERE selector = :sel')
+                    ->execute([':sel' => $selector]);
+            } catch (Throwable) {
+                // Non-fatal: cookie is still cleared below
+            }
+        }
     }
 
-    setcookie(REMEMBER_COOKIE, '', [
-        'expires' => time() - 3600,
-        'path' => '/',
-        'secure' => is_https(),
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
+    if (isset($_COOKIE[REMEMBER_COOKIE])) {
+        setcookie(REMEMBER_COOKIE, '', remember_cookie_opts(time() - 3600));
+    }
 }

@@ -27,7 +27,7 @@ function setupUserSettingsToggle() {
 // Fetches merged web/bot users from backend and refreshes both UI layouts.
 async function loadAllUsers() {
   try {
-    const response = await fetch("./api/user_list.php");
+    const response = await csrfFetch("./api/user_list.php");
     const result = await response.json();
 
     if (result.success) {
@@ -150,7 +150,7 @@ async function deleteUser(userId, username, userType) {
   const userTypeText = userType === "bot" ? "bot user" : "user";
 
   if (
-    !confirm(`Are you sure you want to delete ${userTypeText} \"${username}\"?`)
+    !await showConfirm(`Are you sure you want to delete ${userTypeText} "${username}"?`)
   ) {
     return;
   }
@@ -163,7 +163,7 @@ async function deleteUser(userId, username, userType) {
     const bodyData =
       userType === "bot" ? { bot_user_id: userId } : { user_id: userId };
 
-    const response = await fetch(apiUrl, {
+    const response = await csrfFetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(bodyData),
@@ -172,18 +172,14 @@ async function deleteUser(userId, username, userType) {
     const result = await response.json();
 
     if (result.success) {
-      alert(
-        `${
-          userTypeText.charAt(0).toUpperCase() + userTypeText.slice(1)
-        } deleted successfully`
-      );
+      await showAlert(`${userTypeText.charAt(0).toUpperCase() + userTypeText.slice(1)} deleted successfully`);
       loadAllUsers();
     } else {
-      alert("Error: " + (result.error || `Failed to delete ${userTypeText}`));
+      await showAlert("Error: " + (result.error || `Failed to delete ${userTypeText}`));
     }
   } catch (error) {
     console.error(`Error deleting ${userTypeText}:`, error);
-    alert(`Error: Failed to delete ${userTypeText}`);
+    await showAlert(`Error: Failed to delete ${userTypeText}`);
   }
 }
 
@@ -314,7 +310,7 @@ function setupUserCreationForm() {
     }
 
     try {
-      const resp = await fetch("api/user_create.php", {
+      const resp = await csrfFetch("api/user_create.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

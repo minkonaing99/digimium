@@ -8,7 +8,7 @@
 (() => {
   // Contract: backend responds with plain text "success" on valid credentials.
   const LOGIN_URL = "api/login.php";
-  const REDIRECT_TO = "/sales_overview.php";
+  const REDIRECT_TO = "sales_overview.php";
 
   document.addEventListener("DOMContentLoaded", () => {
     const form =

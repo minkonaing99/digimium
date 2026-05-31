@@ -84,10 +84,10 @@
 document.getElementById("logoutBtn")?.addEventListener("click", async (e) => {
   e.preventDefault();
 
-  if (!confirm("Are you sure you want to log out?")) return;
+  if (!await showConfirm("Are you sure you want to log out?")) return;
 
   try {
-    const resp = await fetch("./api/logout.php", {
+    const resp = await csrfFetch("./api/logout.php", {
       method: "POST",
       credentials: "same-origin",
       headers: { "X-Requested-With": "XMLHttpRequest" }, // optional, but nice
@@ -97,10 +97,10 @@ document.getElementById("logoutBtn")?.addEventListener("click", async (e) => {
       window.location.href = "./index.php";
     } else {
       console.error("Logout failed", await resp.text());
-      alert("Logout failed. Try again.");
+      await showAlert("Logout failed. Try again.");
     }
   } catch (err) {
     console.error("Logout failed", err);
-    alert("Network error during logout.");
+    await showAlert("Network error during logout.");
   }
 });

@@ -5,8 +5,15 @@ declare(strict_types=1);
 require_once __DIR__ . '/session_bootstrap.php'; // has session_start + secure ini
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/remember.php';
-require_once __DIR__ . '/dbinfo.php';
+require_once __DIR__ . '/rate_limit.php';
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('Method not allowed.');
+}
+
+rate_limit('login', $_SERVER['REMOTE_ADDR'] ?? 'unknown', 10, 60);
 
 $username = trim((string)($_POST['username'] ?? ''));
 $password = (string)($_POST['password'] ?? '');
@@ -17,6 +24,7 @@ if ($username === '' || $password === '') {
 }
 
 try {
+    $pdo = \Digimium\Core\Database::connection();
     // users(user_id, username, pass_hash, role, is_active, last_login_at)
     $stmt = $pdo->prepare("
         SELECT user_id, username, pass_hash, role, is_active
@@ -37,7 +45,6 @@ try {
 
     auth_mark_login($row);
     remember_issue_cookie((int)$row['user_id'], (string)$row['username'], (string)$row['role']);
-
 
     $_SESSION['username']  = $_SESSION['user']['username'];
     $_SESSION['privilege'] = $_SESSION['user']['role'];

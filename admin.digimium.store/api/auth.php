@@ -10,6 +10,15 @@ const IDLE_TIMEOUT_SECONDS = 15 * 60;
 const ABSOLUTE_TIMEOUT_SECONDS = 8 * 60 * 60;
 const REGENERATE_EVERY_SECONDS = 5 * 60;
 
+function ip_mask(string $ip): string
+{
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        $parts = explode(':', $ip);
+        return implode(':', array_slice($parts, 0, 4));
+    }
+    return (string)preg_replace('~^((\d+\.){2}).*$~', '$1', $ip);
+}
+
 function auth_is_logged_in(): bool
 {
     return isset($_SESSION['auth']) && $_SESSION['auth'] === true
@@ -27,15 +36,37 @@ function auth_mark_login(array $dbUserRow): void
 
     $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-    $ipMask = preg_replace('~^((\d+\.){2}).*$~', '$1', $ip);
-    $_SESSION['fingerprint'] = hash('sha256', $ua . '|' . $ipMask);
+    $_SESSION['fingerprint'] = hash('sha256', $ua . '|' . ip_mask($ip));
 
     $now = time();
     $_SESSION['created_at'] = $now;
     $_SESSION['last_seen_at'] = $now;
     $_SESSION['last_regen_at'] = $now;
+    unset($_SESSION['csrf_token']); // force fresh token after login
 
     session_regenerate_id(true);
+}
+
+function csrf_token(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return (string)$_SESSION['csrf_token'];
+}
+
+function csrf_verify(): void
+{
+    $token    = trim((string)($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ''));
+    $expected = (string)($_SESSION['csrf_token'] ?? '');
+    if ($expected === '' || !hash_equals($expected, $token)) {
+        if (Http::acceptsJson()) {
+            Http::json(['success' => false, 'error' => 'Invalid CSRF token'], 403);
+            exit;
+        }
+        http_response_code(403);
+        exit('Forbidden');
+    }
 }
 
 function auth_require_login(array $allowedRoles = []): void
@@ -44,11 +75,15 @@ function auth_require_login(array $allowedRoles = []): void
         auth_fail();
     }
 
+    $safeMethods = ['GET', 'HEAD', 'OPTIONS'];
+    if (!in_array($_SERVER['REQUEST_METHOD'], $safeMethods, true)) {
+        csrf_verify();
+    }
+
     $now = time();
     $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-    $ipMask = preg_replace('~^((\d+\.){2}).*$~', '$1', $ip);
-    $expected = hash('sha256', $ua . '|' . $ipMask);
+    $expected = hash('sha256', $ua . '|' . ip_mask($ip));
 
     if (!hash_equals((string)($_SESSION['fingerprint'] ?? ''), $expected)) {
         auth_fail();

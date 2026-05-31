@@ -86,13 +86,23 @@
 }
 
 .summary-filter-bar button {
-    background: #171c28;
-    color: #e6e9ef;
-    border: 1px solid #2a2f3d;
-    border-radius: 8px;
-    padding: .35rem .7rem;
-    font-size: .8rem;
-    cursor: pointer
+    background: linear-gradient(135deg, #7cc4e1, #63b7d6);
+    color: #0f172a;
+    border: 1px solid rgba(124, 196, 225, .75);
+    border-radius: 1.5rem;
+    padding: .5rem 1rem;
+    font-size: .95rem;
+    font-weight: 400;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(124, 196, 225, .24);
+    transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease, background .2s ease, border-color .2s ease
+}
+
+.summary-filter-bar button:hover {
+    background: linear-gradient(135deg, #9ad8ea, #7cc4e1);
+    border-color: rgba(154, 216, 234, .8);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(124, 196, 225, .3)
 }
 
 .summary-compare-toggle {
@@ -196,9 +206,9 @@
 }
 
 .summary-modal-header button {
-    border: 1px solid #2a2f3d;
-    background: #171c28;
-    color: #e6e9ef;
+    border: 1px solid rgba(124, 196, 225, .75);
+    background: linear-gradient(135deg, #7cc4e1, #63b7d6);
+    color: #0f172a;
     border-radius: 8px;
     padding: .3rem .55rem;
     cursor: pointer
@@ -366,9 +376,9 @@
 }
 
 .expire-filter-bar button {
-    background: #171c28;
-    color: #e6e9ef;
-    border: 1px solid #2a2f3d;
+    background: linear-gradient(135deg, #7cc4e1, #63b7d6);
+    color: #0f172a;
+    border: 1px solid rgba(124, 196, 225, .75);
     border-radius: 8px;
     padding: .35rem .7rem;
     font-size: .8rem;
@@ -376,7 +386,8 @@
 }
 
 .expire-filter-bar button:hover {
-    border-color: #4f7dff
+    background: linear-gradient(135deg, #9ad8ea, #7cc4e1);
+    border-color: rgba(154, 216, 234, .8)
 }
 
 .expire-filter-info {
@@ -415,7 +426,7 @@
     }
 
     .subs-card:hover {
-        background: rgba(46, 61, 83, 0.7)
+        background: rgba(75, 100, 141, 0.26)
     }
 
     .subs-row {
@@ -638,45 +649,45 @@
 }
 
 .destop-table td.store-digimium {
-    background-color: rgba(59, 79, 104, 0.34) !important;
+    background-color: rgba(89, 135, 168, 0.28) !important;
 }
 
 .destop-table td.store-digimium:hover {
-    background-color: rgba(66, 88, 115, 0.38) !important;
+    background-color: rgba(89, 135, 168, 0.36) !important;
 }
 
 .destop-table td.store-dmarwal {
-    background-color: rgba(51, 66, 84, 0.34) !important;
+    background-color: rgba(75, 100, 141, 0.24) !important;
 }
 
 .destop-table td.store-dmarwal:hover {
-    background-color: rgba(58, 75, 96, 0.38) !important;
+    background-color: rgba(75, 100, 141, 0.32) !important;
 }
 
 .destop-table td.store-ember {
-    background-color: rgba(66, 68, 76, 0.34) !important;
+    background-color: rgba(185, 228, 244, 0.24) !important;
 }
 
 .destop-table td.store-ember:hover {
-    background-color: rgba(76, 79, 88, 0.38) !important;
+    background-color: rgba(185, 228, 244, 0.32) !important;
 }
 
 .destop-table td.store-violet {
-    background-color: rgba(54, 64, 87, 0.34) !important;
+    background-color: rgba(103, 145, 184, 0.24) !important;
 }
 
 .destop-table td.store-violet:hover {
-    background-color: rgba(62, 73, 98, 0.38) !important;
+    background-color: rgba(103, 145, 184, 0.32) !important;
 }
 
 .destop-table td.store-void,
 .destop-table td.store-cyan {
-    background-color: rgba(45, 71, 82, 0.34) !important;
+    background-color: rgba(231, 251, 249, 0.18) !important;
 }
 
 .destop-table td.store-void:hover,
 .destop-table td.store-cyan:hover {
-    background-color: rgba(54, 82, 95, 0.38) !important;
+    background-color: rgba(185, 228, 244, 0.24) !important;
 }
 
 .destop-table td.store-default {
@@ -685,34 +696,61 @@
 
 #expired-item .subs-card.store-digimium,
 #renewal-item .subs-card.store-digimium {
-    background-color: rgba(59, 79, 104, 0.2);
-    border-left: 3px solid #3d67de;
+    background-color: rgba(89, 135, 168, 0.16);
+    border-left: 3px solid #7cc4e1;
+}
+
+#expired-item .subs-card.store-digimium:hover,
+#renewal-item .subs-card.store-digimium:hover {
+    background-color: rgba(89, 135, 168, 0.24);
 }
 
 #expired-item .subs-card.store-dmarwal,
 #renewal-item .subs-card.store-dmarwal {
-    background-color: rgba(51, 66, 84, 0.2);
-    border-left: 3px solid #5c7ca8;
+    background-color: rgba(75, 100, 141, 0.14);
+    border-left: 3px solid #4b648d;
+}
+
+#expired-item .subs-card.store-dmarwal:hover,
+#renewal-item .subs-card.store-dmarwal:hover {
+    background-color: rgba(75, 100, 141, 0.22);
 }
 
 #expired-item .subs-card.store-ember,
 #renewal-item .subs-card.store-ember {
-    background-color: rgba(66, 68, 76, 0.2);
-    border-left: 3px solid #7b808b;
+    background-color: rgba(185, 228, 244, 0.16);
+    border-left: 3px solid #b9e4f4;
+}
+
+#expired-item .subs-card.store-ember:hover,
+#renewal-item .subs-card.store-ember:hover {
+    background-color: rgba(185, 228, 244, 0.26);
 }
 
 #expired-item .subs-card.store-violet,
 #renewal-item .subs-card.store-violet {
-    background-color: rgba(54, 64, 87, 0.2);
-    border-left: 3px solid #6f7f9e;
+    background-color: rgba(103, 145, 184, 0.14);
+    border-left: 3px solid #7aa3c7;
+}
+
+#expired-item .subs-card.store-violet:hover,
+#renewal-item .subs-card.store-violet:hover {
+    background-color: rgba(103, 145, 184, 0.22);
 }
 
 #expired-item .subs-card.store-void,
 #renewal-item .subs-card.store-void,
 #expired-item .subs-card.store-cyan,
 #renewal-item .subs-card.store-cyan {
-    background-color: rgba(45, 71, 82, 0.2);
-    border-left: 3px solid #5f8091;
+    background-color: rgba(231, 251, 249, 0.14);
+    border-left: 3px solid #e7fbf9;
+}
+
+#expired-item .subs-card.store-void:hover,
+#renewal-item .subs-card.store-void:hover,
+#expired-item .subs-card.store-cyan:hover,
+#renewal-item .subs-card.store-cyan:hover {
+    background-color: rgba(185, 228, 244, 0.18);
 }
 
 

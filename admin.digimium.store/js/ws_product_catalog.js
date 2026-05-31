@@ -321,7 +321,7 @@
     tbody.innerHTML = "";
     tbody.appendChild(placeholderRow("Loading…"));
     try {
-      const r = await fetch(API.list, {
+      const r = await csrfFetch(API.list, {
         headers: { Accept: "application/json" },
       });
       const json = await r.json().catch(() => ({}));
@@ -349,16 +349,17 @@
     const tr = btn.closest("tr.era-row");
     if (!tr) return;
     const id = Number(tr.dataset.id);
-    if (!id) return alert("Missing product_id for this row.");
+    if (!id) return await showAlert("Missing product_id for this row.");
 
     const name =
       tr.querySelector(".era-product")?.textContent?.trim() || `#${id}`;
-    if (!confirm(`Delete "${name}"?\nThis cannot be undone.`)) return;
+    if (!await showConfirm(`Delete ""?
+This cannot be undone.`)) return;
 
     btn.disabled = true;
     btn.classList.add("disableBtn");
     try {
-      const resp = await fetch(API.delete, {
+      const resp = await csrfFetch(API.delete, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -378,7 +379,7 @@
       }
     } catch (err) {
       console.error("Delete failed:", err);
-      alert(`Delete failed: ${err.message}`);
+      await showAlert(`Delete failed: `);
       btn.disabled = false;
       btn.classList.remove("disableBtn");
     }
