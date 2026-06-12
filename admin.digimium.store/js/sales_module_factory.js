@@ -26,7 +26,7 @@ window.createSalesModule = function createSalesModule(cfg) {
 
   const MQ_MOBILE = window.matchMedia("(max-width: 640px)");
 
-  const COLSPAN  = 10;
+  const COLSPAN  = 9;
   const CACHE_KEY = cfg.cacheKey;
   const PAGE_SIZE = 100;
 
@@ -77,24 +77,52 @@ window.createSalesModule = function createSalesModule(cfg) {
 
   function formatKyat(n) {
     const num = Number(n);
-    if (!Number.isFinite(num)) return "-";
-    return (
-      new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(
-        Math.round(num),
-      ) + " Ks"
+    if (!Number.isFinite(num)) return "";
+    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(
+      Math.round(num),
     );
   }
 
   function formatDate(d) {
-    if (!d) return "-";
+    if (!d) return "";
     const parts = String(d).split("-");
-    if (parts.length !== 3) return "-";
+    if (parts.length !== 3) return "";
     const dt = new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]));
     return new Intl.DateTimeFormat("en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     }).format(dt);
+  }
+
+  function formatDateShort(d) {
+    if (!d) return "";
+    const parts = String(d).split("-");
+    if (parts.length !== 3) return "";
+    const dt = new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]));
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "short",
+    }).format(dt);
+  }
+
+  function daysFromNow(ymd) {
+    if (!ymd) return null;
+    const parts = String(ymd).split("-");
+    if (parts.length !== 3) return null;
+    const target = Date.UTC(+parts[0], +parts[1] - 1, +parts[2]);
+    const now = new Date();
+    const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((target - today) / 86_400_000);
+  }
+
+  function relativeLabel(endYmd) {
+    const d = daysFromNow(endYmd);
+    if (d === null) return "";
+    if (d === 0) return "expires today";
+    if (d > 0 && d <= 60) return `in ${d}d`;
+    if (d < 0 && d >= -60) return `${-d}d ago`;
+    return "";
   }
 
   const esc = (s) =>
@@ -115,9 +143,46 @@ window.createSalesModule = function createSalesModule(cfg) {
     const td = document.createElement("td");
     td.className = "era-muted";
     td.colSpan = COLSPAN;
-    td.textContent = text;
+    const isError = /^(Failed|Error)/i.test(text);
+    const isEmpty = /no\s+sales\s+found/i.test(text);
+    if (isError || isEmpty) {
+      const wrap = document.createElement("div");
+      wrap.className = "era-empty" + (isError ? " era-error" : "");
+      const icon = document.createElement("div");
+      icon.className = "era-empty-icon";
+      icon.textContent = isError ? "!" : "—";
+      const title = document.createElement("div");
+      title.className = "era-empty-title";
+      title.textContent = isError ? "Couldn't load sales" : "No sales yet";
+      const sub = document.createElement("div");
+      sub.textContent = isError ? text : "Add a sale or adjust filters to see records here.";
+      wrap.appendChild(icon);
+      wrap.appendChild(title);
+      wrap.appendChild(sub);
+      td.appendChild(wrap);
+    } else {
+      td.textContent = text;
+    }
     tr.appendChild(td);
     return tr;
+  }
+
+  function skeletonRows(count = 6) {
+    const frag = document.createDocumentFragment();
+    const widths = ["w-40", "w-60", "w-80", "w-60", "w-40"];
+    for (let i = 0; i < count; i++) {
+      const tr = document.createElement("tr");
+      tr.className = "era-skeleton-row";
+      for (let c = 0; c < COLSPAN; c++) {
+        const td = document.createElement("td");
+        const span = document.createElement("span");
+        span.className = "skel " + widths[c % widths.length];
+        td.appendChild(span);
+        tr.appendChild(td);
+      }
+      frag.appendChild(tr);
+    }
+    return frag;
   }
 
   function debounce(fn, ms = 1000) {
@@ -221,6 +286,18 @@ window.createSalesModule = function createSalesModule(cfg) {
     }
   }
 
+  function storeLabelFor(storeValue) {
+    switch (storeValue) {
+      case 0: return "Void";
+      case 1: return "Digimium";
+      case 2: return "D Mar Wal";
+      case 3: return "Ember";
+      case 4: return "Violet";
+      case 5: return "Void";
+      default: return "";
+    }
+  }
+
   function buildSaleTr(s, displayNum) {
     const tr = document.createElement("tr");
 
@@ -230,14 +307,16 @@ window.createSalesModule = function createSalesModule(cfg) {
 
     tr.className = cfg.isWholesale ? "era-row" : `era-row ${storeClass}`;
     if (s.sale_id != null) tr.dataset.id = String(s.sale_id);
+    if (s.manager) tr.dataset.manager = String(s.manager);
+    if (s.note) tr.dataset.note = String(s.note);
 
     const tdNum = document.createElement("td");
     tdNum.className = cfg.isWholesale ? "era-num" : `era-num ${storeClass}`;
     tdNum.textContent = String(displayNum);
 
     const tdProd = document.createElement("td");
-    if (!cfg.isWholesale) tdProd.className = storeClass;
-    tdProd.textContent = s.sale_product ?? "-";
+    tdProd.className = "era-cell-product" + (cfg.isWholesale ? "" : ` ${storeClass}`);
+    tdProd.textContent = s.sale_product ?? "";
 
     const makeEditable = (field, text, extraClass = "") => {
       const td = document.createElement("td");
@@ -248,25 +327,23 @@ window.createSalesModule = function createSalesModule(cfg) {
       td.dataset.field = field;
       const span = document.createElement("span");
       span.className = "inline-text";
-      span.textContent = text ?? "-";
+      span.textContent = text ?? "";
       td.appendChild(span);
       if (field === "note" || field === "customer") td.title = text ?? "";
       return td;
     };
 
-    const tdCustomer  = makeEditable("customer", s.customer, "era-muted-customer");
-    const tdEmail     = makeEditable("email", s.email, "era-muted");
+    const tdCustomer = makeEditable("customer", s.customer, "era-cell-customer");
 
-    const tdPurchased = document.createElement("td");
-    tdPurchased.className = cfg.isWholesale ? "text-center" : `text-center ${storeClass}`;
-    tdPurchased.textContent = formatDate(s.purchased_date);
+    const tdEmail = makeEditable("email", s.email, "era-email");
 
-    const tdExpired = document.createElement("td");
-    tdExpired.className = cfg.isWholesale ? "text-center" : `text-center ${storeClass}`;
-    tdExpired.textContent = formatDate(s.expired_date);
+    const tdRange = document.createElement("td");
+    tdRange.className = "era-cell-range" + (cfg.isWholesale ? "" : ` ${storeClass}`);
+    tdRange.textContent =
+      `${formatDateShort(s.purchased_date)} → ${formatDate(s.expired_date)}`;
 
-    const tdManager = makeEditable("manager", s.manager, "era-muted column-hide");
-    const tdNote    = makeEditable("note", s.note, "era-muted column-hide");
+    const tdManager = makeEditable("manager", s.manager, "era-cell-manager");
+    const tdNote    = makeEditable("note", s.note, "era-cell-note");
 
     const tdPrice = document.createElement("td");
     tdPrice.className = cfg.isWholesale ? "era-price" : `era-price ${storeClass}`;
@@ -288,8 +365,7 @@ window.createSalesModule = function createSalesModule(cfg) {
       tdProd,
       tdCustomer,
       tdEmail,
-      tdPurchased,
-      tdExpired,
+      tdRange,
       tdManager,
       tdNote,
       tdPrice,
@@ -299,27 +375,21 @@ window.createSalesModule = function createSalesModule(cfg) {
     return tr;
   }
 
-  const TOTAL_COLS      = 10;
-  const PRICE_COL_INDEX = TOTAL_COLS - 2; // 8
+  const TOTAL_COLS      = 9;
+  const PRICE_COL_INDEX = TOTAL_COLS - 2; // 7
 
   function buildSubtotalTr(dateKey) {
     const tr = document.createElement("tr");
-    tr.className = "era-row era-subtotal";
+    tr.className = "era-subtotal-row";
 
     const tdLabel = document.createElement("td");
-    tdLabel.colSpan = 6;
-    tdLabel.textContent = `Total for ${formatDate(dateKey)}`;
+    tdLabel.className = "era-subtotal-label";
+    tdLabel.colSpan = TOTAL_COLS - 2;
+    tdLabel.textContent = `${formatDate(dateKey)} · ${countsByDate.get(dateKey) || 0} sales`;
     tr.appendChild(tdLabel);
 
-    for (let i = 0; i < 2; i++) {
-      const tdFill = document.createElement("td");
-      tdFill.className = "column-hide";
-      tr.appendChild(tdFill);
-    }
-
     const tdSum = document.createElement("td");
-    tdSum.className = "era-price";
-    tdSum.style.padding = "0.4rem 0.4rem";
+    tdSum.className = "era-subtotal-sum";
     tdSum.textContent = formatKyat(totalsByDate.get(dateKey) || 0);
     tr.appendChild(tdSum);
 
@@ -786,7 +856,7 @@ window.createSalesModule = function createSalesModule(cfg) {
 
     if (!MQ_MOBILE.matches && tbody) {
       tbody.innerHTML = "";
-      tbody.appendChild(placeholderRow("Loading…"));
+      tbody.appendChild(skeletonRows(6));
     } else if (subsList) {
       subsList.innerHTML = `<article class="subs-card"><div class="subs-row">Loading…</div></article>`;
     }

@@ -8,7 +8,7 @@ AddDefaultCharset UTF-8
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
     Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 
     <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
         Header set Cache-Control "public, max-age=2592000"
@@ -46,6 +46,9 @@ AddDefaultCharset UTF-8
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.+)/$ /$1 [L,R=301]
     RewriteRule ^app(/|$) - [F,L]
+    RewriteRule ^bin(/|$) - [F,L]
+    RewriteRule ^db(/|$) - [F,L]
+    RewriteRule ^docs(/|$) - [F,L]
     RewriteRule ^\. - [F,L]
 </IfModule>
 

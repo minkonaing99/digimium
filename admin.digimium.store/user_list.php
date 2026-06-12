@@ -21,41 +21,13 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
     <title>Digimium • User</title>
-    <link rel="stylesheet" href="./style/style.min.css">
-    <link rel="stylesheet" href="./style/summary.min.css">
-    <link rel="stylesheet" href="./style/product_catalog.min.css">
-
-
+    <?php foreach (\Digimium\Core\Assets::tagsFor('user.css') as $href): ?>
+        <link rel="stylesheet" href="<?= htmlspecialchars($href, ENT_QUOTES) ?>">
+    <?php endforeach; ?>
 </head>
 
 <body>
-    <header id="navbar">
-        <div class="logo" aria-label="Home">
-            <a href="./sales_overview.php"><img src="./assets/logo_digimium.png" alt="Logo"></a>
-        </div>
-
-        <nav aria-label="Primary">
-            <div class="nav-links" id="navLinks">
-                <a href="sales_overview.php">Sales Overview</a>
-                <?php if (in_array(($_SESSION['user']['role'] ?? ''), ['admin', 'owner'])): ?>
-                    <a href="product_catalog.php" aria-label="Product Catalog">Product Catalog</a>
-                    <a href="summary.php" aria-label="Summary">Summary</a>
-                <?php endif; ?>
-                <?php if (in_array(($_SESSION['user']['role'] ?? ''), ['owner'])): ?>
-                    <a href="user_list.php" aria-label="User List">User List</a>
-                <?php endif; ?>
-                <a href="#" aria-label="LogOut" id="logoutBtn">Log Out</a>
-
-
-            </div>
-
-            <button class="burger" id="burger" aria-label="Menu Toggle">
-                <div></div>
-                <div></div>
-                <div></div>
-            </button>
-        </nav>
-    </header>
+    <?php require __DIR__ . '/app/partials/nav.php'; ?>
 
     <main class="page" role="main">
 
@@ -153,11 +125,9 @@ $user = htmlspecialchars($_SESSION['user']['username'] ?? 'Guest', ENT_QUOTES);
 
     </main>
 
-    <?php $v = fn($f) => filemtime(__DIR__ . '/js/' . $f); ?>
-    <script src="./js/csrf.js?v=<?= $v('csrf.js') ?>"></script>
-    <script src="./js/modal.js?v=<?= $v('modal.js') ?>"></script>
-    <script src="./js/nav.js?v=<?= $v('nav.js') ?>"></script>
-    <script src="./js/user_list.js?v=<?= $v('user_list.js') ?>"></script>
+    <?php foreach (\Digimium\Core\Assets::tagsFor('user.js') as $src): ?>
+        <script src="<?= htmlspecialchars($src, ENT_QUOTES) ?>"></script>
+    <?php endforeach; ?>
 
 </body>
 

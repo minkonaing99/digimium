@@ -21,8 +21,6 @@ try {
     ini_set('display_errors', '0');
     error_reporting(E_ALL);
 
-    $pdo = \Digimium\Core\Database::connection();
-
     // Optional date-range filter — push filtering into SQL instead of loading all rows
     $isYmd = static fn(string $s): bool =>
         (bool)preg_match('/^\d{4}-\d{2}-\d{2}$/', $s)
@@ -33,13 +31,11 @@ try {
     $from    = ($rawFrom !== '' && $isYmd($rawFrom)) ? $rawFrom : null;
     $to      = ($rawTo   !== '' && $isYmd($rawTo))   ? $rawTo   : null;
 
-    $fpRetail = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id FROM sale_overview')->fetch();
-    $fpWs     = $pdo->query('SELECT COALESCE(MAX(sale_id),0) AS max_id FROM ws_sale_overview')->fetch();
-    $fingerprint =
-        ((int)($fpRetail['max_id'] ?? 0)) . '|' .
-        ((int)($fpWs['max_id']    ?? 0));
+    $hardLimit = 10000;
+    $fingerprint = ResponseCache::bucketVersion('sales_retail')
+        . '|' . ResponseCache::bucketVersion('sales_wholesale');
 
-    $cacheKey = 'sales_minimal:v3:' . $fingerprint . ':f' . ($from ?? '') . ':t' . ($to ?? '');
+    $cacheKey = 'sales_minimal:v4:' . $fingerprint . ':f' . ($from ?? '') . ':t' . ($to ?? '') . ':n' . $hardLimit;
     $etag = '"' . sha1($cacheKey) . '"';
     header('ETag: ' . $etag);
 
@@ -50,12 +46,14 @@ try {
         exit;
     }
 
-    $cached = ResponseCache::get($cacheKey, 45);
+    $cached = ResponseCache::get($cacheKey, 60);
     if (is_string($cached)) {
         ob_end_clean();
         echo $cached;
         exit;
     }
+
+    $pdo = \Digimium\Core\Database::connection();
 
     // Named params must be unique across both UNION halves (EMULATE_PREPARES=false)
     $retailWhere    = '';
@@ -111,10 +109,15 @@ try {
         {$wholesaleWhere}
 
         ORDER BY purchased_date DESC, sale_id DESC
+        LIMIT :hard_limit
     ";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($dateParams);
+    foreach ($dateParams as $k => $v) {
+        $stmt->bindValue($k, $v);
+    }
+    $stmt->bindValue(':hard_limit', $hardLimit, PDO::PARAM_INT);
+    $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($rows as &$r) {

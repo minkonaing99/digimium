@@ -53,7 +53,8 @@ try {
         exit;
     }
 
-    $sale_id = \Digimium\Core\SaleRepository::wholesale(\Digimium\Core\Database::connection())->insert([
+    $repo = \Digimium\Core\SaleRepository::wholesale(\Digimium\Core\Database::connection());
+    $sale_id = $repo->insert([
         'sale_product'   => $sale_product,
         'duration'       => $duration,
         'quantity'       => $quantity,
@@ -67,6 +68,8 @@ try {
         'price'          => $price,
         'profit'         => $profit,
     ]);
+
+    \Digimium\Core\ResponseCache::bump('sales_wholesale');
 
     echo json_encode(
         ['success' => true, 'message' => 'Wholesale sale created successfully', 'sale_id' => $sale_id],

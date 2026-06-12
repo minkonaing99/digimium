@@ -16,15 +16,12 @@ header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, max-age=30, must-revalidate');
 
 try {
-    $pdo  = \Digimium\Core\Database::connection();
-    $repo = SaleRepository::retail($pdo);
-
     $limit  = isset($_GET['limit'])  ? max(1, min(2000, (int)$_GET['limit'])) : 500;
     $offset = isset($_GET['offset']) ? max(0, (int)$_GET['offset'])           : 0;
     $cursor = trim((string)($_GET['cursor'] ?? ''));
 
-    $fingerprint = $repo->fingerprint();
-    $cacheKey    = 'sales_table:v3:' . $fingerprint . ':l' . $limit . ':o' . $offset . ':c' . $cursor;
+    $version  = ResponseCache::bucketVersion('sales_retail');
+    $cacheKey = 'sales_table:v4:' . $version . ':l' . $limit . ':o' . $offset . ':c' . $cursor;
     $etag        = '"' . sha1($cacheKey) . '"';
     header('ETag: ' . $etag);
 
@@ -40,7 +37,9 @@ try {
         exit;
     }
 
-    $page    = $repo->getPage($limit, $offset, $cursor);
+    $pdo  = \Digimium\Core\Database::connection();
+    $repo = SaleRepository::retail($pdo);
+    $page = $repo->getPage($limit, $offset, $cursor);
     $payload = json_encode([
         'success' => true,
         'data'    => $page['rows'],

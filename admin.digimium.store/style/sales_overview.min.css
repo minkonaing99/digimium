@@ -56,55 +56,84 @@ body.sales-overview-page {
   text-overflow: clip;
 }
 
-/* Restrained enterprise row color coding by store */
-td.store-digimium {
-  background-color: rgba(89, 135, 168, 0.28) !important;
+/* Store color coding: bold left stripe + colored #, store chip on Product cell */
+.era-row > td.era-num {
+  position: relative;
+  padding-left: 14px !important;
 }
 
-td.store-digimium:hover {
-  background-color: rgba(89, 135, 168, 0.36) !important;
+.era-row > td.era-num::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: transparent;
 }
 
-td.store-dmarwal {
-  background-color: rgba(75, 100, 141, 0.24) !important;
+.era-row.store-digimium > td.era-num::before { background: #38bdf8; }
+.era-row.store-dmarwal  > td.era-num::before { background: #facc15; }
+.era-row.store-ember    > td.era-num::before { background: #fb923c; }
+.era-row.store-violet   > td.era-num::before { background: #a855f7; }
+.era-row.store-void     > td.era-num::before,
+.era-row.store-cyan     > td.era-num::before { background: #22c55e; }
+.era-row.store-default  > td.era-num::before { background: #4b5468; }
+
+/* Colored # number text */
+.era-row.store-digimium > td.era-num { color: #38bdf8; }
+.era-row.store-dmarwal  > td.era-num { color: #facc15; }
+.era-row.store-ember    > td.era-num { color: #fb923c; }
+.era-row.store-violet   > td.era-num { color: #a855f7; }
+.era-row.store-void     > td.era-num,
+.era-row.store-cyan     > td.era-num { color: #22c55e; }
+.era-row.store-default  > td.era-num { color: var(--text-3, #99a1b3); }
+
+/* Store-tinted hover row */
+.era-row.store-digimium:hover > td { background: rgba(56, 189, 248, .08) !important; }
+.era-row.store-dmarwal:hover  > td { background: rgba(250, 204, 21, .08) !important; }
+.era-row.store-ember:hover    > td { background: rgba(251, 146, 60, .08) !important; }
+.era-row.store-violet:hover   > td { background: rgba(168, 85, 247, .08) !important; }
+.era-row.store-void:hover     > td,
+.era-row.store-cyan:hover     > td { background: rgba(34, 197, 94, .08) !important; }
+.era-row.store-default:hover  > td { background: rgba(255, 255, 255, .03) !important; }
+
+/* Store chip rendered in Product cell */
+.store-chip {
+  display: inline-block;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  margin-right: 10px;
+  border-radius: 999px;
+  vertical-align: middle;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-td.store-dmarwal:hover {
-  background-color: rgba(75, 100, 141, 0.32) !important;
+.store-chip.store-digimium { background: rgba(124, 196, 225, .18); color: #b6e1f2; }
+.store-chip.store-dmarwal  { background: rgba(143, 159, 191, .22); color: #c7d1e8; }
+.store-chip.store-ember    { background: rgba(255, 184, 138, .18); color: #ffd5b6; }
+.store-chip.store-violet   { background: rgba(183, 148, 244, .18); color: #d8c8fb; }
+.store-chip.store-void,
+.store-chip.store-cyan     { background: rgba(110, 231, 208, .18); color: #aeefe0; }
+.store-chip.store-default  { background: rgba(255, 255, 255, .06); color: var(--text-3, #99a1b3); }
+
+.product-name {
+  vertical-align: middle;
 }
 
-td.store-default {
-  background-color: transparent;
-}
-
-td.store-default:hover {
-  background-color: transparent !important;
-}
-
-td.store-ember {
-  background-color: rgba(185, 228, 244, 0.24) !important;
-}
-
-td.store-ember:hover {
-  background-color: rgba(185, 228, 244, 0.32) !important;
-}
-
-td.store-violet {
-  background-color: rgba(103, 145, 184, 0.24) !important;
-}
-
-td.store-violet:hover {
-  background-color: rgba(103, 145, 184, 0.32) !important;
-}
-
+/* Disable any leftover heavy backgrounds on tds */
+td.store-digimium,
+td.store-dmarwal,
+td.store-ember,
+td.store-violet,
 td.store-void,
-td.store-cyan {
-  background-color: rgba(231, 251, 249, 0.18) !important;
-}
-
-td.store-void:hover,
-td.store-cyan:hover {
-  background-color: rgba(185, 228, 244, 0.24) !important;
+td.store-cyan,
+td.store-default {
+  background: transparent !important;
 }
 
 .subs-card.store-digimium {
@@ -156,5 +185,235 @@ td.store-cyan:hover {
 .subs-card.store-void:hover,
 .subs-card.store-cyan:hover {
   background-color: rgba(185, 228, 244, 0.18);
+}
+
+/* ── Skeleton rows ───────────────────────────────────────────────── */
+@keyframes skel-shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.era-skeleton-row td {
+  height: 36px;
+  padding: 0.6rem 0.4rem;
+}
+
+.era-skeleton-row .skel {
+  display: block;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.04) 0%,
+    rgba(255,255,255,.10) 50%,
+    rgba(255,255,255,.04) 100%);
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skel-shimmer 1.2s infinite linear;
+}
+
+.era-skeleton-row .skel.w-20 { width: 20%; }
+.era-skeleton-row .skel.w-40 { width: 40%; }
+.era-skeleton-row .skel.w-60 { width: 60%; }
+.era-skeleton-row .skel.w-80 { width: 80%; }
+
+/* ── Inline edit affordance ──────────────────────────────────────── */
+.editable-cell {
+  position: relative;
+  cursor: text;
+}
+
+.editable-cell:hover {
+  background: rgba(255, 255, 255, .03);
+}
+
+.editable-cell::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  background-image: url("/assets/edit.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  filter: invert(82%) sepia(11%) saturate(383%) hue-rotate(184deg);
+  transition: opacity var(--dur-fast, 120ms) var(--ease, ease);
+}
+
+.editable-cell:hover::after {
+  opacity: .55;
+}
+
+.editable-cell.editing {
+  outline: 1px solid var(--accent-1, #4fa8cc);
+  outline-offset: -1px;
+  background: var(--bg-3, #151a26);
+}
+
+.editable-cell.editing::after {
+  display: none;
+}
+
+/* Inline-edit input: kill global input border/box-shadow/bg so only the cell outline shows */
+.editable-cell input.inline-input,
+.editable-cell input.inline-input:focus {
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font: inherit !important;
+  color: var(--text-1, #e5e7eb) !important;
+}
+
+/* ── Sales table redesign ────────────────────────────────────────── */
+
+/* Reset zebra: keep just a thin row divider */
+.era-table tbody tr.era-row > td {
+  border-bottom: 1px solid rgba(255, 255, 255, .04);
+}
+
+.era-table tbody tr.era-row:hover > td {
+  background: rgba(255, 255, 255, .025) !important;
+}
+
+/* Tabular numbers everywhere relevant */
+.era-cell-range,
+.era-price,
+.era-subtotal-sum,
+.era-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* # column: compact + muted */
+.era-num {
+  width: 32px !important;
+  padding-left: 10px !important;
+  color: var(--text-3, #99a1b3);
+  font-size: .82rem;
+}
+
+/* Product cell bold + readable */
+.era-cell-product {
+  color: var(--text-1, #e5e7eb);
+  font-weight: 600;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.era-cell-customer {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.era-cell-customer .inline-text {
+  color: var(--text-1, #e5e7eb);
+  font-weight: 500;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.era-cell-range {
+  white-space: nowrap;
+  color: var(--text-1, #e5e7eb);
+}
+
+.era-cell-manager,
+.era-cell-note {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.era-cell-manager .inline-text,
+.era-cell-note .inline-text {
+  color: var(--text-3, #99a1b3);
+  font-size: .85rem;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.era-table thead th:nth-child(6),
+.era-table thead th:nth-child(7) {
+  text-align: left !important;
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+}
+
+/* Email muted by default */
+.era-email .inline-text {
+  color: var(--text-3, #99a1b3);
+  font-size: .85rem;
+}
+
+/* Price: muted suffix already removed, lighten color */
+.era-price {
+  color: var(--text-1, #e5e7eb);
+  font-weight: 600;
+}
+
+/* Delete icon: subtle until row hover */
+.era-actions .era-icon-btn {
+  opacity: 0.35;
+  transition: opacity 120ms ease;
+}
+
+.era-row:hover .era-actions .era-icon-btn,
+.era-actions .era-icon-btn:focus-visible,
+.era-actions .era-icon-btn:hover {
+  opacity: 1;
+}
+
+/* Subtotal: separator look, not a row */
+.era-subtotal-row > td {
+  border-bottom: 0 !important;
+  border-top: 1px solid var(--border, #1f2b3d);
+  background: transparent !important;
+  padding-top: 8px;
+  padding-bottom: 14px;
+}
+
+.era-subtotal-label {
+  text-align: right !important;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--text-3, #99a1b3);
+  padding-right: 14px !important;
+}
+
+.era-subtotal-sum {
+  text-align: right !important;
+  color: var(--accent-2, #7cc4e1);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: .95rem;
+}
+
+/* Tighter header */
+.era-table thead th {
+  border-bottom: 1px solid var(--border, #1f2b3d) !important;
+  letter-spacing: .08em;
 }
 

@@ -76,7 +76,6 @@ The `api/` directory contains JSON endpoints grouped by domain:
   - `ws_sale_insertion.php`
   - `ws_sale_delete.php`
   - `ws_sale_update_inline.php`
-  - `ws_sales_minimal.php`
   - `ws_sales_export_csv.php`
 - Products:
   - `products_table.php`
@@ -100,12 +99,17 @@ The `api/` directory contains JSON endpoints grouped by domain:
 
 ### `app/`
 
-- `bootstrap.php`: loads shared core classes and environment configuration.
+- `bootstrap.php`: registers a PSR-4-style autoloader for `Digimium\Core\*`, loads `.env`, and validates `DIGIMIUM_REMEMBER_SECRET`.
 - `core/Config.php`: lightweight `.env` loader and config access helpers.
 - `core/Database.php`: PDO connection factory for MySQL.
 - `core/Http.php`: request method checks, JSON response helpers, and request body parsing.
-- `core/ResponseCache.php`: file-based response caching used by selected API endpoints.
-- `cache/response/`: generated JSON cache files for short-lived API responses.
+- `core/ResponseCache.php`: file-based response caching with sharded paths, per-shard cap, opportunistic in-request sweep, and `bump()`/`bucketVersion()` for instant invalidation on writes.
+- `core/ProductRepository.php`: retail + wholesale product CRUD.
+- `core/SaleRepository.php`: retail + wholesale sale CRUD with cursor pagination.
+- `core/Assets.php`: bundle registry. `Assets::tagsFor($name)` returns either a single bundle URL or the original source URLs when the bundle is missing or stale.
+- `partials/nav.php`: shared top navigation (page links + role-based gating + logout).
+- `cache/response/`: short-lived sharded JSON cache. Runtime data, gitignored.
+- `cache/version/`: tiny mtime marker files used as cache bucket versions. Runtime data, gitignored.
 
 ### `js/`
 
@@ -132,14 +136,12 @@ Frontend scripts are organized by page and behavior:
   - `deplay_chart.js`
 - Users:
   - `user_list.js`
-- Miscellaneous:
-  - `upload.js`
 
 ### `style/`
 
-Minified CSS bundles are split by screen and shared behavior:
+Minified CSS source files split by screen and shared behavior:
 
-- `style.min.css`: shared layout and global styles.
+- `style.min.css`: shared layout, design tokens (`:root` colors/spacing/radius/shadow), global components.
 - `login.min.css`: login page styling.
 - `sales_overview.min.css`: sales dashboard styling.
 - `product_catalog.min.css`: product catalog styling.
@@ -149,9 +151,38 @@ Minified CSS bundles are split by screen and shared behavior:
 - `loading.min.css`: loading overlay styling.
 - `upload.min.css`: upload-related styles.
 
+### `style/bundles/` and `js/bundles/`
+
+Generated concatenated bundles produced by `bin/build_assets.php`. One bundle per page
+(`sales.css`, `sales.js`, `product.css`, `product.js`, `summary.css`, `summary.js`,
+`user.css`, `user.js`, `login.css`). Pages call `Assets::tagsFor('<bundle>')` to load
+the bundle when fresh and fall back to source files when missing or stale.
+
 ### `assets/`
 
-Static assets include the Digimium logo and SVG icons used across buttons, navigation, and actions.
+Static assets: Digimium logo, SVG icons, and self-hosted `assets/fonts/IBMPlexSans-{Regular,SemiBold}.woff2`.
+
+### `vendor/`
+
+Self-hosted third-party JS. Currently only `vendor/chart.umd.min.js` (Chart.js 4.4.1 UMD).
+
+### `bin/`
+
+CLI scripts. Not web-accessible (blocked by `.htaccess`).
+
+- `bin/build_assets.php`: concatenates per-page CSS and JS bundles into `style/bundles/` and `js/bundles/`. Run after every CSS/JS source change and on deploy.
+- `bin/cache_clean.php`: cron-friendly sweep. Removes `app/cache/response/` entries older than the supplied max age (default 3600s) and `remember_tokens` rows whose `expires_at < NOW()`.
+
+### `db/migrations/`
+
+- `001_remember_tokens.sql`: server-side remember-me token table (selector + validator hash + expires_at).
+- `002_cursor_indexes.sql`: composite `(purchased_date DESC, sale_id DESC)` indexes on `sale_overview` and `ws_sale_overview` for cursor pagination.
+
+### `docs/`
+
+- `hostinger_ops.md`: cron entries, file layout, OPcache recommended values.
+- `local_dev.md`: local MySQL + PHP built-in server setup.
+- `plan_item27_sales_factory.md`: historical refactor plan.
 
 ## Architecture Notes
 
@@ -159,9 +190,11 @@ Static assets include the Digimium logo and SVG icons used across buttons, navig
 - Dynamic interactions are handled with vanilla JavaScript and `fetch`.
 - Database access is centralized through PDO in `app/core/Database.php`.
 - Auth is enforced both before page render and inside API endpoints.
-- Selected APIs use short-lived file caching plus ETags to reduce repeated query cost.
+- Selected APIs use short-lived file caching plus ETags. Cache invalidation: mutating endpoints call `ResponseCache::bump('sales_retail'|'sales_wholesale')`. Read endpoints stat a tiny version marker file (`app/cache/version/*.v`) instead of running `SELECT MAX(sale_id)` per request.
 - Several frontend screens also cache fetched data in `sessionStorage` and revalidate in the background.
 - Retail and wholesale flows are intentionally parallel: each has its own API endpoints and page scripts while sharing the same UI pattern.
+- Per-page CSS and JS are concatenated by `bin/build_assets.php` into single bundles to cut HTTP requests on shared hosting.
+- Class autoloading is handled by a PSR-4-style `spl_autoload_register` callback in `app/bootstrap.php` (no Composer required).
 
 ## Data Flow Summary
 

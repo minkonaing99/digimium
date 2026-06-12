@@ -42,6 +42,8 @@ try {
         exit;
     }
 
+    \Digimium\Core\ResponseCache::bump('sales_wholesale');
+
     echo json_encode(['success' => true], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 } catch (\Throwable $e) {
     error_log('ws_sale_delete.php error: ' . $e->getMessage());

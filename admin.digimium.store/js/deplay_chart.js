@@ -189,11 +189,85 @@
     el.classList.toggle("down", pct < 0);
   }
 
+  /** Computes a 7-day daily series for every KPI. */
+  function dailySeriesForSparkline(allRows, days = 7) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const buckets = new Map();
+    for (let i = days - 1; i >= 0; i--) {
+      buckets.set(ymd(addDays(today, -i)), { sales: 0, profit: 0, orders: 0 });
+    }
+    for (const r of allRows) {
+      const d = String(r.purchased_date || "");
+      const b = buckets.get(d);
+      if (!b) continue;
+      b.sales += Number(r.price) || 0;
+      b.profit += Number(r.profit) || 0;
+      b.orders += 1;
+    }
+    const series = { period_sales: [], period_profits: [], period_orders: [], avg_profit_order: [] };
+    for (const [, b] of buckets) {
+      series.period_sales.push(b.sales);
+      series.period_profits.push(b.profit);
+      series.period_orders.push(b.orders);
+      series.avg_profit_order.push(b.orders > 0 ? b.profit / b.orders : 0);
+    }
+    return series;
+  }
+
+  /** Renders one card's sparkline as a small SVG polyline. */
+  function paintSparkline(card, values) {
+    const svg = card.querySelector(".kpi-spark");
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (!values || values.length < 2) return;
+
+    const W = 100;
+    const H = 28;
+    const pad = 1.5;
+    const max = Math.max(...values, 1);
+    const min = Math.min(...values, 0);
+    const span = max - min || 1;
+    const step = (W - pad * 2) / (values.length - 1);
+
+    const pts = values.map((v, i) => {
+      const x = pad + step * i;
+      const y = H - pad - ((v - min) / span) * (H - pad * 2);
+      return [x, y];
+    });
+
+    const NS = "http://www.w3.org/2000/svg";
+    const linePath = document.createElementNS(NS, "path");
+    linePath.setAttribute("class", "spark-line");
+    linePath.setAttribute("d", pts.map(([x, y], i) => (i === 0 ? `M${x},${y}` : `L${x},${y}`)).join(" "));
+
+    const areaPath = document.createElementNS(NS, "path");
+    areaPath.setAttribute("class", "spark-area");
+    const areaD = pts.map(([x, y], i) => (i === 0 ? `M${x},${y}` : `L${x},${y}`)).join(" ")
+      + ` L${pts[pts.length - 1][0]},${H} L${pts[0][0]},${H} Z`;
+    areaPath.setAttribute("d", areaD);
+
+    const tip = document.createElementNS(NS, "circle");
+    tip.setAttribute("class", "spark-tip");
+    tip.setAttribute("cx", String(pts[pts.length - 1][0]));
+    tip.setAttribute("cy", String(pts[pts.length - 1][1]));
+    tip.setAttribute("r", "2.2");
+
+    svg.appendChild(areaPath);
+    svg.appendChild(linePath);
+    svg.appendChild(tip);
+
+    const last = values[values.length - 1];
+    const first = values[0];
+    card.dataset.trend = last >= first ? "up" : "down";
+  }
+
   /** Paints KPI cards for the current range and optional comparison period. */
   function renderKPIs(filteredRows) {
     const metrics = computeMetrics(filteredRows);
     const prevRows = rowsInRange(rows, previousRange(currentRange));
     const prevMetrics = computeMetrics(prevRows);
+    const sparkSeries = dailySeriesForSparkline(rows, 7);
 
     document.querySelectorAll(".kpi-card").forEach((card) => {
       const key = card.dataset.kpi;
@@ -213,6 +287,8 @@
         valueEl.textContent = fmtMoney(metrics.avgProfit);
         setCompare(card, metrics.avgProfit, prevMetrics.avgProfit);
       }
+
+      paintSparkline(card, sparkSeries[key]);
     });
   }
 

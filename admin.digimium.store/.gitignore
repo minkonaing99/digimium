@@ -11,6 +11,7 @@ CLAUDE.md
 
 # Runtime cache
 app/cache/response/
+app/cache/version/
 
 # Legacy credentials file
 python-bot/creds.py

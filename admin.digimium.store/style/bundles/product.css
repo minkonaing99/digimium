@@ -1,3 +1,4 @@
+/* style.min.css */
 @font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;src:url("/assets/fonts/IBMPlexSans-Regular.woff2") format("woff2")}
 @font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:600;font-display:swap;src:url("/assets/fonts/IBMPlexSans-SemiBold.woff2") format("woff2")}
 
@@ -1146,3 +1147,69 @@ select::-ms-expand {
     color: #0b1220;
 }
 .app-modal-ok:hover { opacity: .85; }
+/* product_catalog.min.css */
+.catalogPage{padding:.5rem .4rem;width:140px}#inputRow .form-row{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:1rem;align-items:end}#inputRow .form-col{display:flex;flex-direction:column}#inputRow .form-submit{grid-column:-2/-1;justify-self:end;align-self:end;margin-top:0}#delUserRow{padding:0}.disableBtn{background-color:gray!important;cursor:text!important;pointer-events:none;opacity:.6}#delUserRow .form-row{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:1rem;align-items:end}#delUserRow .form-col{display:flex;flex-direction:column}#delUserRow .form-submit{grid-column:-2/-1;justify-self:end}@media (max-width:1280px){#inputRow .form-row{grid-template-columns:repeat(3,minmax(220px,1fr))}#delUserRow .form-row{grid-template-columns:repeat(3,minmax(220px,1fr))}}@media (max-width:960px){#inputRow .form-row{grid-template-columns:repeat(2,minmax(200px,1fr))}#delUserRow .form-row{grid-template-columns:repeat(2,minmax(200px,1fr))}}@media (max-width:640px){#delUserRow .form-row{grid-template-columns:1fr}#delUserRow .form-submit{grid-column:1/-1;justify-self:stretch}#delUserRow .form-submit .form-btn{width:100%}#addProductBtn,#userSettingBtn{display:inline-flex;padding:.5rem 1rem;width:40px}#inputRow .form-row{grid-template-columns:1fr}#inputRow .form-submit{grid-column:1/-1;justify-self:stretch}#inputRow .form-submit .form-btn{width:100%}}
+@media (min-width:1025px) and (max-width:1194px){#inputRow .form-row{grid-template-columns:repeat(3,minmax(200px,1fr));gap:.8rem}#delUserRow .form-row{grid-template-columns:repeat(3,minmax(200px,1fr));gap:.8rem}}
+@media (min-width:768px) and (max-width:1024px){#inputRow .form-row{grid-template-columns:repeat(2,minmax(180px,1fr));gap:.75rem}#delUserRow .form-row{grid-template-columns:repeat(2,minmax(180px,1fr));gap:.75rem}}
+/* wholesale.min.css */
+@media (max-width:935px) {
+    .era-table-title.seg-toggle {
+        height: 34px;
+        font-size: .8rem
+    }
+
+    .era-table-title.seg-toggle > span {
+        min-width: 84px;
+        padding: 0 14px
+    }
+}
+
+.era-table-card {
+    position: relative;
+    overflow: visible
+}
+
+#subscriptions.era-table-title button,
+#subscriptions.era-table-title span {
+    transition: all .3s cubic-bezier(.4, 0, .2, 1)
+}
+
+.era-qty {
+    text-align: center !important;
+    justify-items: center;
+    vertical-align: middle
+}
+
+.subs-quantity {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px
+}
+
+.subs-quantity .era-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--accent);
+    color: var(--white);
+    font-weight: 500
+}
+
+.subs-row-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px
+}
+
+.subs-product {
+    flex: 1;
+    min-width: 200px;
+    font-weight: 600
+}
+
+.subs-quantity {
+    flex-shrink: 0
+}

@@ -21,8 +21,9 @@ if (!empty($_SESSION['auth']) || remember_try_login_from_cookie()) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Digimium | Login</title>
-    <link rel="stylesheet" href="./style/style.min.css">
-    <link rel="stylesheet" href="./style/login.min.css">
+    <?php foreach (\Digimium\Core\Assets::tagsFor('login.css') as $href): ?>
+        <link rel="stylesheet" href="<?= htmlspecialchars($href, ENT_QUOTES) ?>">
+    <?php endforeach; ?>
 </head>
 
 <body class="auth-page">
@@ -47,7 +48,6 @@ if (!empty($_SESSION['auth']) || remember_try_login_from_cookie()) {
                             <img id="toggleIcon" src="./assets/eye.svg" alt="" />
                         </button>
                     </div>
-
                 </div>
                 <button class="submit" type="submit" id="loginBtn">Log In</button>
                 <div id="feedbackLogin" class="feedback"></div>

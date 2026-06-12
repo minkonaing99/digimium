@@ -6,9 +6,9 @@ Items fixed across prior sessions are NOT listed here. This file only tracks wha
 
 ## Infrastructure
 
-### DB Migration: run these files
+### DB Migration: run these files on production
 
-Two migrations were created during the hardening work. They have NOT been run against the database yet.
+Both migrations have been applied to the **local** development database (`digimium_admin` on 127.0.0.1). They still need to be run on the Hostinger production database.
 
 **Run in order:**
 ```bash
@@ -19,23 +19,42 @@ mysql -u YOUR_USER -p YOUR_DB < db/migrations/001_remember_tokens.sql
 mysql -u YOUR_USER -p YOUR_DB < db/migrations/002_cursor_indexes.sql
 ```
 
-**Note on migration 002:** `sale_overview` and `ws_sale_overview` may be database VIEWs rather than base tables. If `ALTER TABLE` fails, run `SHOW CREATE VIEW sale_overview` to find the underlying table name and add the index there instead.
+**Notes:**
+- Migration 002 uses `CREATE INDEX IF NOT EXISTS` which requires MySQL 8.0.29+. On older versions, drop the `IF NOT EXISTS` clause manually, or run `CREATE INDEX idx_cursor_pagination ON sale_overview (purchased_date DESC, sale_id DESC);` and ignore the duplicate-key error if the index already exists.
+- If `sale_overview` or `ws_sale_overview` is a VIEW, `ALTER TABLE` will fail. Run `SHOW CREATE VIEW sale_overview` to find the underlying base table and index that instead.
+
+### Asset build on deploy
+
+After deploy, SSH into Hostinger and run:
+```bash
+php bin/build_assets.php
+```
+This concatenates `style/*.min.css` and `js/*.js` into `style/bundles/` and `js/bundles/`. Pages auto-fall back to source files if a bundle is missing, but bundles are required for the request-count reduction.
+
+### Cron job
+
+Add via hPanel -> Advanced -> Cron Jobs (see `docs/hostinger_ops.md` for the full snippet):
+```
+0 * * * * /usr/bin/php /home/USER/.../bin/cache_clean.php 3600
+```
 
 ---
 
 ## Security: Manual Action Required
 
-**DB password rotation** — the password `Tkhantnaing1` visible in `.env` must be rotated directly in MySQL. This cannot be done in code. Steps:
+**DB password rotation** — the password `Tkhantnaing1` is reused on the Hostinger production database and must be rotated there:
 
 ```sql
 ALTER USER 'your_db_user'@'localhost' IDENTIFIED BY 'new_strong_password';
 FLUSH PRIVILEGES;
 ```
 
-Then update `.env`:
+Then update production `.env`:
 ```
-DB_PASS=new_strong_password
+DIGIMIUM_DB_PASS=new_strong_password
 ```
+
+(Local `.env` keeps the convenience password.)
 
 ---
 

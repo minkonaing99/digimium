@@ -94,6 +94,8 @@ try {
         json_fail('Sale not found.', 404);
     }
 
+    \Digimium\Core\ResponseCache::bump('sales_retail');
+
     json_ok(['id' => $id, 'field' => $field, 'value' => $value]);
 } catch (\Throwable $e) {
     error_log('sale_update_inline.php error: ' . $e->getMessage());

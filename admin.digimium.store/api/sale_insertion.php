@@ -86,7 +86,8 @@ try {
         exit;
     }
 
-    $id = \Digimium\Core\SaleRepository::retail(\Digimium\Core\Database::connection())->insert([
+    $repo = \Digimium\Core\SaleRepository::retail(\Digimium\Core\Database::connection());
+    $id = $repo->insert([
         'sale_product'   => $sale_product,
         'duration'       => $duration,
         'renew'          => $renew,
@@ -100,6 +101,8 @@ try {
         'profit'         => $profitStr,
         'store'          => $store,
     ]);
+
+    \Digimium\Core\ResponseCache::bump('sales_retail');
 
     http_response_code(201);
     echo json_encode(['success' => true, 'id' => $id]);

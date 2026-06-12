@@ -1,3 +1,343 @@
+/* csrf.js */
+"use strict";
+
+(() => {
+  const getMeta = () =>
+    document.querySelector('meta[name="csrf-token"]')?.content ?? "";
+
+  window.csrfFetch = function (resource, init = {}) {
+    const method = (init.method || "GET").toUpperCase();
+    const safeMethods = ["GET", "HEAD", "OPTIONS"];
+    if (safeMethods.includes(method)) {
+      return fetch(resource, init);
+    }
+    const headers = new Headers(init.headers ?? {});
+    if (!headers.has("X-CSRF-Token")) {
+      headers.set("X-CSRF-Token", getMeta());
+    }
+    return fetch(resource, { ...init, headers });
+  };
+})();;
+/* modal.js */
+(() => {
+  "use strict";
+
+  let root = null;
+
+  function getRoot() {
+    if (root) return root;
+
+    root = document.createElement("div");
+    root.className = "app-modal";
+    root.setAttribute("aria-hidden", "true");
+    root.innerHTML =
+      '<div class="app-modal-box" role="dialog" aria-modal="true">' +
+        '<p class="app-modal-msg"></p>' +
+        '<div class="app-modal-actions">' +
+          '<button class="app-modal-cancel">Cancel</button>' +
+          '<button class="app-modal-ok">OK</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(root);
+    return root;
+  }
+
+  function open(msg, isConfirm) {
+    return new Promise((resolve) => {
+      const el = getRoot();
+      el.querySelector(".app-modal-msg").textContent = msg;
+
+      const cancelBtn = el.querySelector(".app-modal-cancel");
+      const okBtn     = el.querySelector(".app-modal-ok");
+      cancelBtn.style.display = isConfirm ? "" : "none";
+
+      el.classList.add("active");
+      el.setAttribute("aria-hidden", "false");
+      okBtn.focus();
+
+      const cleanup = (result) => {
+        el.classList.remove("active");
+        el.setAttribute("aria-hidden", "true");
+        okBtn.removeEventListener("click", onOk);
+        cancelBtn.removeEventListener("click", onCancel);
+        document.removeEventListener("keydown", onKey);
+        resolve(result);
+      };
+
+      const onOk     = () => cleanup(true);
+      const onCancel = () => cleanup(false);
+      const onKey    = (e) => {
+        if (e.key === "Enter")  { e.preventDefault(); cleanup(true); }
+        if (e.key === "Escape") { e.preventDefault(); cleanup(false); }
+      };
+
+      okBtn.addEventListener("click", onOk);
+      cancelBtn.addEventListener("click", onCancel);
+      document.addEventListener("keydown", onKey);
+    });
+  }
+
+  window.showAlert   = (msg) => open(String(msg), false);
+  window.showConfirm = (msg) => open(String(msg), true);
+})();;
+/* nav.js */
+/**
+ * Module: Shared navigation behavior.
+ * Purpose: Handles active-link highlighting, mobile burger toggle, and logout.
+ */
+(function () {
+  // Small DOM helpers for this file only.
+  const $ = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+
+  /** Normalizes URL-like href input to a consistent pathname key. */
+  function normalize(href) {
+    try {
+      const url = new URL(href, location.href);
+      let p = url.pathname.toLowerCase().replace(/\/+$/, "");
+      p = p.replace(/\/(index|default)\.(html|php)$/, ""); // treat index as folder
+      return p || "/";
+    } catch {
+      return href;
+    }
+  }
+
+  // -> "sales_overview.html" | "product_catalog.html" | "index"
+  /** Extracts comparable page key from URL/path for nav highlighting. */
+  function pageKey(href) {
+    const p = normalize(href);
+    if (p === "/") return "index";
+    const segs = p.split("/").filter(Boolean);
+    return segs.pop() || "index";
+  }
+
+  /** Marks the current page link as active in the navigation menu. */
+  function setActiveNav() {
+    // We match by normalized "page key" so links work consistently with
+    // `/foo`, `/foo/`, and `/foo/index.php` style URLs.
+    const hereKey = pageKey(location.pathname);
+
+    $$("nav .nav-links a[href]").forEach((a) => {
+      a.classList.remove("active");
+      a.removeAttribute("aria-current");
+
+      const href = a.getAttribute("href");
+      if (!href || href.startsWith("#") || href.startsWith("javascript:"))
+        return;
+
+      const targetKey = pageKey(href);
+      if (hereKey === targetKey) {
+        a.classList.add("active");
+        a.setAttribute("aria-current", "page");
+      }
+    });
+  }
+
+  /** Binds burger-menu open/close behavior for small screens. */
+  function initNavigationToggle() {
+    const burger = $("#burger");
+    const navLinks = $("#navLinks");
+    if (!burger || !navLinks) return;
+
+    burger.addEventListener("click", () => {
+      burger.classList.toggle("open");
+      navLinks.classList.toggle("active");
+    });
+
+    $$("nav .nav-links a").forEach((link) => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("active");
+        burger.classList.remove("open");
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initNavigationToggle();
+    setActiveNav();
+  });
+  // Keep highlighting in sync for browser navigation/history changes.
+  document.addEventListener("DOMContentLoaded", setActiveNav);
+
+  window.addEventListener("popstate", setActiveNav);
+  window.addEventListener("hashchange", setActiveNav);
+})();
+
+// Global logout action shared across all authenticated pages.
+document.getElementById("logoutBtn")?.addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  if (!await showConfirm("Are you sure you want to log out?")) return;
+
+  try {
+    const resp = await csrfFetch("./api/logout.php", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "X-Requested-With": "XMLHttpRequest" }, // optional, but nice
+    });
+
+    if (resp.ok) {
+      window.location.href = "./index.php";
+    } else {
+      console.error("Logout failed", await resp.text());
+      await showAlert("Logout failed. Try again.");
+    }
+  } catch (err) {
+    console.error("Logout failed", err);
+    await showAlert("Network error during logout.");
+  }
+});;
+/* product_catalog_toggle.js */
+"use strict";
+
+/**
+ * Module: Product catalog tab and form visibility toggles.
+ * Purpose: Switches between retail/wholesale views and opens/closes the add form.
+ */
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Get the button and form sections
+  const addProductBtn = document.getElementById("addProductBtn");
+  const addProductForm = document.getElementById("addProductForm");
+
+  // Get the tab buttons to check which is active
+  const retailBtn = document.getElementById("retail_page");
+  const wholesaleBtn = document.getElementById("wholesale_page");
+
+  // Initialize form visibility - ensure it starts hidden
+  if (addProductForm) addProductForm.style.display = "none";
+
+  if (addProductBtn) {
+    addProductBtn.addEventListener("click", () => {
+      // Toggle add product form
+      if (addProductForm) {
+        const currentDisplay = addProductForm.style.display;
+        if (currentDisplay === "none" || currentDisplay === "") {
+          addProductForm.style.display = "block";
+          // Hide other forms
+          const editForm = document.getElementById("editProductForm");
+          const userSetting = document.getElementById("user_setting");
+          if (editForm) editForm.style.display = "none";
+          if (userSetting) userSetting.style.display = "none";
+        } else {
+          addProductForm.style.display = "none";
+        }
+      }
+    });
+  }
+
+  // Also handle form hiding when switching tabs
+  // This ensures forms are hidden when switching between retail/wholesale
+  if (retailBtn) {
+    retailBtn.addEventListener("click", () => {
+      // Hide any open forms when switching to retail
+      if (addProductForm) addProductForm.style.display = "none";
+      const editForm = document.getElementById("editProductForm");
+      const userSetting = document.getElementById("user_setting");
+      if (editForm) editForm.style.display = "none";
+      if (userSetting) userSetting.style.display = "none";
+    });
+  }
+
+  if (wholesaleBtn) {
+    wholesaleBtn.addEventListener("click", () => {
+      // Hide any open forms when switching to wholesale
+      if (addProductForm) addProductForm.style.display = "none";
+      const editForm = document.getElementById("editProductForm");
+      const userSetting = document.getElementById("user_setting");
+      if (editForm) editForm.style.display = "none";
+      if (userSetting) userSetting.style.display = "none";
+    });
+  }
+
+  // Functions to hide forms after successful submission
+  // These can be called from other JavaScript files
+  window.hideAddProductForm = () => {
+    if (addProductForm) addProductForm.style.display = "none";
+  };
+
+  window.hideEditProductForm = () => {
+    const editForm = document.getElementById("editProductForm");
+    if (editForm) editForm.style.display = "none";
+  };
+
+  // User Setting Button Handler
+  const userSettingBtn = document.getElementById("userSettingBtn");
+  const userSettingForm = document.getElementById("user_setting");
+
+  if (userSettingBtn && userSettingForm) {
+    userSettingBtn.addEventListener("click", () => {
+      const currentDisplay = userSettingForm.style.display;
+      if (currentDisplay === "none" || currentDisplay === "") {
+        userSettingForm.style.display = "block";
+        // Hide other forms
+        const addForm = document.getElementById("addProductForm");
+        const editForm = document.getElementById("editProductForm");
+        if (addForm) addForm.style.display = "none";
+        if (editForm) editForm.style.display = "none";
+      } else {
+        userSettingForm.style.display = "none";
+      }
+    });
+  }
+});
+
+// Tab switching functionality
+const retailBtn = document.getElementById("retail_page");
+const wholesaleBtn = document.getElementById("wholesale_page");
+
+// all content sections with these classes
+const retailSections = document.querySelectorAll(".retail_page");
+const wholesaleSections = document.querySelectorAll(".wholesale_page");
+
+/** Switches retail/wholesale tab styles and section visibility. */
+function showPage(page) {
+  if (page === "retail") {
+    retailBtn.classList.add("btn-active");
+    retailBtn.classList.remove("btn-inactive");
+    wholesaleBtn.classList.add("btn-inactive");
+    wholesaleBtn.classList.remove("btn-active");
+
+    // show retail, hide wholesale
+    retailSections.forEach((el) => (el.style.display = "block"));
+    wholesaleSections.forEach((el) => (el.style.display = "none"));
+
+    // Hide any open forms when switching pages
+    const addProductForm = document.getElementById("addProductForm");
+    const editForm = document.getElementById("editProductForm");
+    const userSetting = document.getElementById("user_setting");
+    if (addProductForm) addProductForm.style.display = "none";
+    if (editForm) editForm.style.display = "none";
+    if (userSetting) userSetting.style.display = "none";
+  } else {
+    wholesaleBtn.classList.add("btn-active");
+    wholesaleBtn.classList.remove("btn-inactive");
+    retailBtn.classList.add("btn-inactive");
+    retailBtn.classList.remove("btn-active");
+
+    // show wholesale, hide retail
+    wholesaleSections.forEach((el) => (el.style.display = "block"));
+    retailSections.forEach((el) => (el.style.display = "none"));
+
+    // Hide any open forms when switching pages
+    const addProductForm = document.getElementById("addProductForm");
+    const editForm = document.getElementById("editProductForm");
+    const userSetting = document.getElementById("user_setting");
+    if (addProductForm) addProductForm.style.display = "none";
+    if (editForm) editForm.style.display = "none";
+    if (userSetting) userSetting.style.display = "none";
+  }
+}
+
+// attach events
+if (retailBtn && wholesaleBtn) {
+  retailBtn.addEventListener("click", () => showPage("retail"));
+  wholesaleBtn.addEventListener("click", () => showPage("wholesale"));
+}
+
+// default load: show retail
+showPage("retail");;
+/* product_catalog.js */
 /**
  * Module: Retail + wholesale product catalog CRUD controller.
  * Purpose: Fetches product rows, validates add/edit forms, performs CRUD calls,

@@ -41,6 +41,8 @@ try {
         exit;
     }
 
+    \Digimium\Core\ResponseCache::bump('sales_retail');
+
     echo json_encode(['success' => true, 'deleted' => $id]);
 } catch (\Throwable $e) {
     error_log('sale_delete.php error: ' . $e->getMessage());

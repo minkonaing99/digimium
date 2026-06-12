@@ -1,3 +1,193 @@
+/* csrf.js */
+"use strict";
+
+(() => {
+  const getMeta = () =>
+    document.querySelector('meta[name="csrf-token"]')?.content ?? "";
+
+  window.csrfFetch = function (resource, init = {}) {
+    const method = (init.method || "GET").toUpperCase();
+    const safeMethods = ["GET", "HEAD", "OPTIONS"];
+    if (safeMethods.includes(method)) {
+      return fetch(resource, init);
+    }
+    const headers = new Headers(init.headers ?? {});
+    if (!headers.has("X-CSRF-Token")) {
+      headers.set("X-CSRF-Token", getMeta());
+    }
+    return fetch(resource, { ...init, headers });
+  };
+})();;
+/* modal.js */
+(() => {
+  "use strict";
+
+  let root = null;
+
+  function getRoot() {
+    if (root) return root;
+
+    root = document.createElement("div");
+    root.className = "app-modal";
+    root.setAttribute("aria-hidden", "true");
+    root.innerHTML =
+      '<div class="app-modal-box" role="dialog" aria-modal="true">' +
+        '<p class="app-modal-msg"></p>' +
+        '<div class="app-modal-actions">' +
+          '<button class="app-modal-cancel">Cancel</button>' +
+          '<button class="app-modal-ok">OK</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(root);
+    return root;
+  }
+
+  function open(msg, isConfirm) {
+    return new Promise((resolve) => {
+      const el = getRoot();
+      el.querySelector(".app-modal-msg").textContent = msg;
+
+      const cancelBtn = el.querySelector(".app-modal-cancel");
+      const okBtn     = el.querySelector(".app-modal-ok");
+      cancelBtn.style.display = isConfirm ? "" : "none";
+
+      el.classList.add("active");
+      el.setAttribute("aria-hidden", "false");
+      okBtn.focus();
+
+      const cleanup = (result) => {
+        el.classList.remove("active");
+        el.setAttribute("aria-hidden", "true");
+        okBtn.removeEventListener("click", onOk);
+        cancelBtn.removeEventListener("click", onCancel);
+        document.removeEventListener("keydown", onKey);
+        resolve(result);
+      };
+
+      const onOk     = () => cleanup(true);
+      const onCancel = () => cleanup(false);
+      const onKey    = (e) => {
+        if (e.key === "Enter")  { e.preventDefault(); cleanup(true); }
+        if (e.key === "Escape") { e.preventDefault(); cleanup(false); }
+      };
+
+      okBtn.addEventListener("click", onOk);
+      cancelBtn.addEventListener("click", onCancel);
+      document.addEventListener("keydown", onKey);
+    });
+  }
+
+  window.showAlert   = (msg) => open(String(msg), false);
+  window.showConfirm = (msg) => open(String(msg), true);
+})();;
+/* nav.js */
+/**
+ * Module: Shared navigation behavior.
+ * Purpose: Handles active-link highlighting, mobile burger toggle, and logout.
+ */
+(function () {
+  // Small DOM helpers for this file only.
+  const $ = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+
+  /** Normalizes URL-like href input to a consistent pathname key. */
+  function normalize(href) {
+    try {
+      const url = new URL(href, location.href);
+      let p = url.pathname.toLowerCase().replace(/\/+$/, "");
+      p = p.replace(/\/(index|default)\.(html|php)$/, ""); // treat index as folder
+      return p || "/";
+    } catch {
+      return href;
+    }
+  }
+
+  // -> "sales_overview.html" | "product_catalog.html" | "index"
+  /** Extracts comparable page key from URL/path for nav highlighting. */
+  function pageKey(href) {
+    const p = normalize(href);
+    if (p === "/") return "index";
+    const segs = p.split("/").filter(Boolean);
+    return segs.pop() || "index";
+  }
+
+  /** Marks the current page link as active in the navigation menu. */
+  function setActiveNav() {
+    // We match by normalized "page key" so links work consistently with
+    // `/foo`, `/foo/`, and `/foo/index.php` style URLs.
+    const hereKey = pageKey(location.pathname);
+
+    $$("nav .nav-links a[href]").forEach((a) => {
+      a.classList.remove("active");
+      a.removeAttribute("aria-current");
+
+      const href = a.getAttribute("href");
+      if (!href || href.startsWith("#") || href.startsWith("javascript:"))
+        return;
+
+      const targetKey = pageKey(href);
+      if (hereKey === targetKey) {
+        a.classList.add("active");
+        a.setAttribute("aria-current", "page");
+      }
+    });
+  }
+
+  /** Binds burger-menu open/close behavior for small screens. */
+  function initNavigationToggle() {
+    const burger = $("#burger");
+    const navLinks = $("#navLinks");
+    if (!burger || !navLinks) return;
+
+    burger.addEventListener("click", () => {
+      burger.classList.toggle("open");
+      navLinks.classList.toggle("active");
+    });
+
+    $$("nav .nav-links a").forEach((link) => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("active");
+        burger.classList.remove("open");
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initNavigationToggle();
+    setActiveNav();
+  });
+  // Keep highlighting in sync for browser navigation/history changes.
+  document.addEventListener("DOMContentLoaded", setActiveNav);
+
+  window.addEventListener("popstate", setActiveNav);
+  window.addEventListener("hashchange", setActiveNav);
+})();
+
+// Global logout action shared across all authenticated pages.
+document.getElementById("logoutBtn")?.addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  if (!await showConfirm("Are you sure you want to log out?")) return;
+
+  try {
+    const resp = await csrfFetch("./api/logout.php", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "X-Requested-With": "XMLHttpRequest" }, // optional, but nice
+    });
+
+    if (resp.ok) {
+      window.location.href = "./index.php";
+    } else {
+      console.error("Logout failed", await resp.text());
+      await showAlert("Logout failed. Try again.");
+    }
+  } catch (err) {
+    console.error("Logout failed", err);
+    await showAlert("Network error during logout.");
+  }
+});;
+/* user_list.js */
 /**
  * Module: User management screen controller.
  * Purpose: Loads web/bot users, renders desktop + mobile lists, and handles
@@ -350,4 +540,3 @@ function setupUserCreationForm() {
     }
   });
 }
-
